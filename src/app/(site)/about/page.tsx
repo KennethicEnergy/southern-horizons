@@ -13,10 +13,10 @@ const values = [
 ];
 
 const officers = [
-  { name: "Officer name", role: "President" },
-  { name: "Officer name", role: "Treasurer" },
-  { name: "Officer name", role: "Secretary" },
-  { name: "Officer name", role: "Projects lead" },
+  { name: "Lorem Ipsum", role: "President" },
+  { name: "Dolor Sit Amet", role: "Treasurer" },
+  { name: "Consectetur Elit", role: "Secretary" },
+  { name: "Adipiscing Sed", role: "Projects lead" },
 ];
 
 export default function AboutPage() {
@@ -24,13 +24,13 @@ export default function AboutPage() {
     <>
       <PageHeader
         title="A few friends from one city, then a few dozen"
-        lead={`${site.name} started in ${site.city} with a handful of volunteers and one school supply drive. Replace this with how you actually began.`}
+        lead={`${site.name} started in ${site.city}. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`}
       />
       <div className="mx-auto max-w-6xl px-5 py-16">
         <section className="grid gap-10 md:grid-cols-3">
           {values.map((v) => (
             <div key={v.title}>
-              <div className="h-0.5 w-12 bg-marigold" />
+              <div className="h-1 w-12 rounded-full bg-sea" />
               <h2 className="mt-5 text-2xl font-semibold">{v.title}</h2>
               <p className="mt-2 text-ink-soft">{v.body}</p>
             </div>
