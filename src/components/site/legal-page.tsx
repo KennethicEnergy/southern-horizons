@@ -13,7 +13,7 @@ export function LegalPage({
     <>
       <PageHeader title={title} lead={`Last updated ${updated}`} />
       <div className="mx-auto max-w-6xl px-5 py-14">
-        <div className="mb-10 max-w-[68ch] rounded-lg bg-marigold-mist px-4 py-3 text-[0.95rem] text-ink">
+        <div className="mb-10 max-w-[68ch] rounded-lg bg-sun-mist px-4 py-3 text-[0.95rem] text-ink">
           Draft template. Have a lawyer review this page before launch.
         </div>
         <div className="article space-y-10">

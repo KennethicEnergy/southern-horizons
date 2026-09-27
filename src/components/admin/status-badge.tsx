@@ -1,9 +1,9 @@
 const styles: Record<string, string> = {
   draft: "bg-sky text-ink-soft",
-  in_review: "bg-marigold-mist text-marigold-deep",
+  in_review: "bg-sun-mist text-sun-ink ring-1 ring-inset ring-sun-deep",
   published: "bg-leaf-mist text-leaf",
   archived: "bg-sky text-ink-soft",
-  pending: "bg-marigold-mist text-marigold-deep",
+  pending: "bg-sun-mist text-sun-ink ring-1 ring-inset ring-sun-deep",
   confirmed: "bg-leaf-mist text-leaf",
   rejected: "bg-danger-mist text-danger",
 };

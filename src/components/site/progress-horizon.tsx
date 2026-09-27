@@ -1,5 +1,5 @@
 /**
- * Campaign progress drawn as the horizon filling with sunlight.
+ * Campaign progress drawn as the horizon filling in.
  * Same visual language as the logo and hero.
  */
 export function ProgressHorizon({ given, goal, unit }: { given: number; goal: number; unit: string }) {
@@ -21,7 +21,7 @@ export function ProgressHorizon({ given, goal, unit }: { given: number; goal: nu
         aria-valuemax={goal}
         aria-label={`${given} of ${goal} ${unit} given`}
       >
-        <div className="absolute inset-y-0 left-0 rounded-full bg-marigold" style={{ width: `${pct}%` }} />
+        <div className="absolute inset-y-0 left-0 rounded-full bg-sea" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );

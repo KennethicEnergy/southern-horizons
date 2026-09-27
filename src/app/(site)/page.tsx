@@ -35,7 +35,6 @@ export default async function HomePage() {
       {/* Hero: the horizon */}
       <section className="relative overflow-hidden">
         <div className="mx-auto max-w-6xl px-5 pb-0 pt-16 md:pt-24">
-          <p className="text-ink-soft">Volunteers from {site.city}</p>
           <h1 className="mt-4 max-w-5xl text-5xl font-semibold [text-wrap:pretty] md:text-7xl">
             School bags, clean-ups, and the receipts to prove it.
           </h1>
@@ -53,7 +52,12 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="relative mt-10 h-28 md:mt-6 md:h-52" aria-hidden="true">
-          <div className="animate-sunrise absolute bottom-0 right-[8%] h-24 w-48 rounded-t-full bg-marigold md:h-48 md:w-96" />
+          {/* Overlapping translucent circles, as in the logo */}
+          <div className="animate-sunrise absolute bottom-0 right-[8%] h-24 w-48 md:h-48 md:w-96">
+            <div className="absolute -left-[30%] bottom-0 h-[80%] w-[80%] rounded-t-full bg-sea/80" />
+            <div className="absolute -right-[20%] bottom-0 h-[60%] w-[60%] rounded-t-full bg-mint/80" />
+            <div className="absolute inset-0 rounded-t-full bg-sun/85" />
+          </div>
           <div className="horizon-line absolute inset-x-0 bottom-0" />
         </div>
       </section>
@@ -154,7 +158,7 @@ export default async function HomePage() {
           <ol className="mt-6 space-y-6">
             {givingSteps.map((step, i) => (
               <li key={step.title} className="grid grid-cols-[2.5rem_1fr] gap-3">
-                <span className="flex size-9 items-center justify-center rounded-full bg-marigold-mist font-display font-semibold text-marigold-deep">
+                <span className="flex size-9 items-center justify-center rounded-full bg-sun font-display font-semibold text-ink">
                   {i + 1}
                 </span>
                 <div>

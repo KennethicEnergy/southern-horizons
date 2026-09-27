@@ -1,36 +1,37 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@import "@fontsource-variable/bricolage-grotesque";
-@import "@fontsource-variable/source-serif-4";
-
 /*
- * Southern Horizons palette
- * ink      — deep sea night, text
- * sea      — primary, links and structure
- * marigold — the sun on the horizon; reserved for giving
- * leaf     — confirmed, done, growth
- * sky      — quiet panels
+ * Southern Horizons brand palette: #023d54 · #0c6980 · #94dfa7 · #fdfd68 · #ffffff
+ * ink   — brand deep teal; text, footer
+ * sea   — brand teal; primary, links and structure
+ * sun   — brand yellow; reserved for giving. Too light for text or thin lines on
+ *         white: use it as a fill with ink on top, and sun-ink for text on sun-mist.
+ * mint  — brand mint; decorative fills
+ * leaf  — confirmed, done, growth (a darker mint that passes contrast as text)
+ * sky   — quiet panels
  */
 @theme {
-  --color-ink: #14222e;
-  --color-ink-soft: #3d4f5c;
-  --color-sea: #0b5e7a;
-  --color-sea-deep: #083f53;
-  --color-sea-mist: #d7e8ee;
-  --color-sky: #f1f6f8;
-  --color-marigold: #f0a830;
-  --color-marigold-deep: #c9811a;
-  --color-marigold-mist: #fdf0d8;
-  --color-leaf: #2f7a45;
-  --color-leaf-mist: #dcefe1;
+  --color-ink: #023d54;
+  --color-ink-soft: #4a6671;
+  --color-sea: #0c6980;
+  --color-sea-deep: #023d54;
+  --color-sea-mist: #d4eaef;
+  --color-sky: #eff7f8;
+  --color-sun: #fdfd68;
+  --color-sun-deep: #ecea3f;
+  --color-sun-ink: #5c5800;
+  --color-sun-mist: #fefed8;
+  --color-mint: #94dfa7;
+  --color-leaf: #1f7446;
+  --color-leaf-mist: #e1f6e7;
   --color-danger: #b3261e;
   --color-danger-mist: #fbe4e2;
-  --color-line: #d5dee3;
+  --color-line: #d3e1e5;
 
-  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Source Serif 4 Variable", Georgia, serif;
-  --font-sans: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  /* One family for everything. Helvetica World is used where installed; there is no web font file in the repo. */
+  --font-sans: "Helvetica World", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: var(--font-sans);
 }
 
 @layer base {
@@ -50,7 +51,6 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    font-optical-sizing: auto;
     letter-spacing: -0.02em;
     line-height: 1.08;
     text-wrap: balance;
@@ -59,7 +59,7 @@
     text-wrap: pretty;
   }
   :focus-visible {
-    outline: 3px solid var(--color-marigold);
+    outline: 3px solid var(--color-sea);
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -74,15 +74,11 @@
 }
 
 @layer components {
-  /* Long-form reading: serif body, comfortable measure. */
+  /* Long-form reading: comfortable measure. */
   .article {
-    font-family: var(--font-serif);
     font-size: 1.125rem;
     line-height: 1.7;
     max-width: 68ch;
-  }
-  .article :where(h2, h3, h4) {
-    font-family: var(--font-display);
   }
 
   /* The horizon: a single line the sun rises from. Used in the hero and progress bars. */

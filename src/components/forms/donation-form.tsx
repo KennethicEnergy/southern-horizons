@@ -74,7 +74,7 @@ export function DonationForm({
                   <label
                     key={i.id}
                     className={`flex cursor-pointer items-center justify-between gap-4 rounded-xl border-2 px-4 py-3.5 ${
-                      values.itemId === i.id ? "border-marigold bg-marigold-mist" : "border-line hover:border-ink/30"
+                      values.itemId === i.id ? "border-sea bg-sun-mist" : "border-line hover:border-ink/30"
                     }`}
                   >
                     <span className="flex items-center gap-3">
@@ -84,7 +84,7 @@ export function DonationForm({
                         value={i.id}
                         checked={values.itemId === i.id}
                         onChange={() => setFieldValue("itemId", i.id)}
-                        className="accent-marigold-deep"
+                        className="accent-sea"
                       />
                       {i.name}
                     </span>
