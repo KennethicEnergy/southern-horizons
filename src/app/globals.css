@@ -38,6 +38,8 @@
   html {
     color: var(--color-ink);
     background: #ffffff;
+    /* Reserve the scrollbar's width so centered content doesn't jump between short and long pages. */
+    scrollbar-gutter: stable;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
