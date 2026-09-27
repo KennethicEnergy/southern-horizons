@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="80 150 1400 1130" role="img" aria-label="Southern Horizons — Rising Together, Giving Back With Purpose.">
+  <g fill-opacity="0.8">
+    <circle cx="755" cy="685" r="315" fill="#fdfd68"/>
+    <circle cx="957" cy="515" r="215" fill="#94dfa7"/>
+    <circle cx="672" cy="555" r="260" fill="#0c6980"/>
+    <circle cx="910" cy="780" r="198" fill="#023d54"/>
+  </g>
+  <circle cx="830" cy="221" r="48" fill="#0c6980" opacity="0.85"/>
+  <circle cx="1248" cy="605" r="50" fill="#94dfa7" opacity="0.85"/>
+  <circle cx="1199" cy="766" r="29" fill="#0c6980" opacity="0.75"/>
+  <circle cx="295" cy="637" r="25" fill="#fdfd68"/>
+  <circle cx="493" cy="921" r="31" fill="#023d54" opacity="0.85"/>
+  <g fill="none" stroke="#fff" stroke-linecap="round">
+    <path d="M656 680a125 125 0 0 1 250 0" stroke-width="11"/>
+    <path d="M779 620a72 72 0 0 1 85 47" stroke-width="5"/>
+    <path d="M781 542L781 460M745.3 546.7L734.4 506.1M816.7 546.7L827.6 506.1M712 560.5L671 489.5M850 560.5L891 489.5M683.4 582.4L653.7 552.7M878.6 582.4L908.3 552.7M661.5 611L590.5 570M900.5 611L971.5 570M647.7 644.3L607.1 633.4M914.3 644.3L954.9 633.4" stroke-width="10"/>
+    <path d="M550 686H1013M594 717H969M656 747H906" stroke-width="12"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="'Helvetica World', Helvetica, Arial, sans-serif" font-weight="700">
+    <text x="780" y="1150" font-size="146">Southern Horizons</text>
+    <text x="780" y="1225" font-size="50">Rising Together, Giving Back With Purpose.</text>
+  </g>
+</svg>
