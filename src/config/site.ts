@@ -1,8 +1,12 @@
 export const site = {
   name: "Southern Horizons",
-  city: process.env.NEXT_PUBLIC_ORG_CITY ?? "Lipa City, Batangas",
+  // `||` rather than `??`: a variable set to an empty string on Vercel should fall back too.
+  city: process.env.NEXT_PUBLIC_ORG_CITY || "Lipa City, Batangas",
   tagline: "Rising Together, Giving Back With Purpose",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url:
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`) ||
+    "http://localhost:3000",
   email: "southernhorizonsph@gmail.com",
   phone: "+63 993 757 7410",
   facebook: "https://www.facebook.com/SouthernHorizons2025",
