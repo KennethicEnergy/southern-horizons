@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: `${site.name} — volunteers from ${site.city}`, template: `%s | ${site.name}` },
+  title: { default: `${site.name} — Rising Together, Giving Back With Purpose`, template: `%s | ${site.name}` },
   description: site.tagline,
   openGraph: { siteName: site.name, type: "website", locale: "en_PH" },
 };
