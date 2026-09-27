@@ -1,0 +1,315 @@
+import { relations, sql } from "drizzle-orm";
+import {
+  boolean,
+  index,
+  integer,
+  jsonb,
+  pgEnum,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+  type AnyPgColumn,
+} from "drizzle-orm/pg-core";
+
+/* ------------------------------------------------------------------ */
+/* Enums                                                               */
+/* ------------------------------------------------------------------ */
+
+export const roleEnum = pgEnum("role", ["admin", "editor", "creator", "treasurer", "member"]);
+export const postTypeEnum = pgEnum("post_type", ["news", "event", "update", "story"]);
+export const postStatusEnum = pgEnum("post_status", ["draft", "in_review", "published", "archived"]);
+export const mediaKindEnum = pgEnum("media_kind", ["image", "video", "document"]);
+export const campaignStatusEnum = pgEnum("campaign_status", ["draft", "active", "closed"]);
+export const donationChannelEnum = pgEnum("donation_channel", ["qrph_static", "gateway", "cash", "in_kind"]);
+export const donationStatusEnum = pgEnum("donation_status", ["pending", "confirmed", "rejected"]);
+export const ledgerKindEnum = pgEnum("ledger_kind", ["income", "expense"]);
+
+const timestamps = {
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+};
+
+/** Soft delete: rows are hidden, never removed. Supports the audit trail. */
+const softDelete = {
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+};
+
+/* ------------------------------------------------------------------ */
+/* Users                                                               */
+/* ------------------------------------------------------------------ */
+
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    passwordHash: text("password_hash").notNull(),
+    role: roleEnum("role").notNull().default("member"),
+    avatarMediaId: uuid("avatar_media_id"),
+    isActive: boolean("is_active").notNull().default(true),
+    lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+    ...timestamps,
+    ...softDelete,
+  },
+  (t) => [uniqueIndex("users_email_idx").on(sql`lower(${t.email})`)],
+);
+
+/* ------------------------------------------------------------------ */
+/* Media (stored in Cloudflare R2)                                     */
+/* ------------------------------------------------------------------ */
+
+export const media = pgTable(
+  "media",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    key: text("key").notNull().unique(),
+    url: text("url").notNull(),
+    filename: text("filename").notNull(),
+    mimeType: text("mime_type").notNull(),
+    size: integer("size").notNull(),
+    kind: mediaKindEnum("kind").notNull(),
+    alt: text("alt"),
+    width: integer("width"),
+    height: integer("height"),
+    /** False until /api/uploads/finalize confirms the object exists and its bytes match the declared type. */
+    verified: boolean("verified").notNull().default(false),
+    uploadedById: uuid("uploaded_by_id").references(() => users.id),
+    ...timestamps,
+    ...softDelete,
+  },
+  (t) => [index("media_kind_idx").on(t.kind)],
+);
+
+/* ------------------------------------------------------------------ */
+/* Posts: news, events, event updates (threads), stories               */
+/* ------------------------------------------------------------------ */
+
+export const posts = pgTable(
+  "posts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    excerpt: text("excerpt"),
+    type: postTypeEnum("type").notNull().default("news"),
+    status: postStatusEnum("status").notNull().default("draft"),
+    /** Tiptap JSON document */
+    content: jsonb("content").$type<Record<string, unknown>>().notNull(),
+    coverMediaId: uuid("cover_media_id").references(() => media.id),
+    /** An `update` post points at its parent `event`, which turns the event page into a thread. */
+    parentId: uuid("parent_id").references((): AnyPgColumn => posts.id),
+    eventStartAt: timestamp("event_start_at", { withTimezone: true }),
+    eventEndAt: timestamp("event_end_at", { withTimezone: true }),
+    location: text("location"),
+    authorId: uuid("author_id")
+      .notNull()
+      .references(() => users.id),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    ...timestamps,
+    ...softDelete,
+  },
+  (t) => [
+    uniqueIndex("posts_slug_idx").on(t.slug),
+    index("posts_status_published_idx").on(t.status, t.publishedAt),
+    index("posts_parent_idx").on(t.parentId),
+  ],
+);
+
+/** Attachments: PDFs, DOCX, videos, extra images on a post. */
+export const postMedia = pgTable(
+  "post_media",
+  {
+    postId: uuid("post_id")
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    mediaId: uuid("media_id")
+      .notNull()
+      .references(() => media.id, { onDelete: "cascade" }),
+    sortOrder: integer("sort_order").notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.postId, t.mediaId] })],
+);
+
+/* ------------------------------------------------------------------ */
+/* Campaigns & donations                                               */
+/* ------------------------------------------------------------------ */
+
+export const campaigns = pgTable(
+  "campaigns",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    summary: text("summary").notNull(),
+    content: jsonb("content").$type<Record<string, unknown>>(),
+    status: campaignStatusEnum("status").notNull().default("draft"),
+    /** The event this campaign funds, if any. */
+    eventPostId: uuid("event_post_id").references(() => posts.id),
+    coverMediaId: uuid("cover_media_id").references(() => media.id),
+    /** Static QR Ph image from the org's bank / e-wallet account. */
+    qrMediaId: uuid("qr_media_id").references(() => media.id),
+    qrAccountName: text("qr_account_name"),
+    startsAt: timestamp("starts_at", { withTimezone: true }),
+    endsAt: timestamp("ends_at", { withTimezone: true }),
+    ...timestamps,
+    ...softDelete,
+  },
+  (t) => [uniqueIndex("campaigns_slug_idx").on(t.slug)],
+);
+
+/** "₱250 = 1 Bag of Hope" — the unit donors buy on behalf of a beneficiary. */
+export const donationItems = pgTable("donation_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  campaignId: uuid("campaign_id")
+    .notNull()
+    .references(() => campaigns.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  /** Amounts are stored in centavos to avoid floating point errors. */
+  unitAmount: integer("unit_amount").notNull(),
+  goalQuantity: integer("goal_quantity").notNull(),
+  /** e.g. ["6 notebooks", "2 pencils", "1 ruler"] */
+  contents: jsonb("contents").$type<string[]>().notNull().default([]),
+  imageMediaId: uuid("image_media_id").references(() => media.id),
+  sortOrder: integer("sort_order").notNull().default(0),
+  ...timestamps,
+});
+
+export const donations = pgTable(
+  "donations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    campaignId: uuid("campaign_id")
+      .notNull()
+      .references(() => campaigns.id),
+    itemId: uuid("item_id").references(() => donationItems.id),
+    quantity: integer("quantity").notNull().default(1),
+    amount: integer("amount").notNull(),
+    donorName: text("donor_name"),
+    donorEmail: text("donor_email"),
+    isAnonymous: boolean("is_anonymous").notNull().default(false),
+    message: text("message"),
+    /** Reference number from the donor's bank / e-wallet receipt. */
+    referenceNumber: text("reference_number"),
+    /** Gateway payment id once a payment gateway is integrated. */
+    externalId: text("external_id"),
+    channel: donationChannelEnum("channel").notNull().default("qrph_static"),
+    status: donationStatusEnum("status").notNull().default("pending"),
+    reviewedById: uuid("reviewed_by_id").references(() => users.id),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    reviewNote: text("review_note"),
+    ...timestamps,
+  },
+  (t) => [
+    index("donations_campaign_status_idx").on(t.campaignId, t.status),
+    uniqueIndex("donations_external_id_idx").on(t.externalId),
+  ],
+);
+
+/** Public ledger for transparency: money in, money out, with receipts. */
+export const ledgerEntries = pgTable(
+  "ledger_entries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    campaignId: uuid("campaign_id").references(() => campaigns.id),
+    kind: ledgerKindEnum("kind").notNull(),
+    description: text("description").notNull(),
+    amount: integer("amount").notNull(),
+    occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull(),
+    receiptMediaId: uuid("receipt_media_id").references(() => media.id),
+    createdById: uuid("created_by_id")
+      .notNull()
+      .references(() => users.id),
+    ...timestamps,
+    ...softDelete,
+  },
+  (t) => [index("ledger_campaign_idx").on(t.campaignId, t.occurredAt)],
+);
+
+/* ------------------------------------------------------------------ */
+/* Contact messages & audit log                                        */
+/* ------------------------------------------------------------------ */
+
+export const contactMessages = pgTable("contact_messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  isRead: boolean("is_read").notNull().default(false),
+  ...timestamps,
+});
+
+export const auditLogs = pgTable(
+  "audit_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    actorId: uuid("actor_id").references(() => users.id),
+    action: text("action").notNull(),
+    entityType: text("entity_type").notNull(),
+    entityId: text("entity_id").notNull(),
+    changes: jsonb("changes").$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("audit_entity_idx").on(t.entityType, t.entityId)],
+);
+
+/* ------------------------------------------------------------------ */
+/* Relations                                                           */
+/* ------------------------------------------------------------------ */
+
+export const usersRelations = relations(users, ({ many }) => ({
+  posts: many(posts),
+}));
+
+export const postsRelations = relations(posts, ({ one, many }) => ({
+  author: one(users, { fields: [posts.authorId], references: [users.id] }),
+  cover: one(media, { fields: [posts.coverMediaId], references: [media.id] }),
+  parent: one(posts, { fields: [posts.parentId], references: [posts.id], relationName: "thread" }),
+  updates: many(posts, { relationName: "thread" }),
+  attachments: many(postMedia),
+}));
+
+export const postMediaRelations = relations(postMedia, ({ one }) => ({
+  post: one(posts, { fields: [postMedia.postId], references: [posts.id] }),
+  media: one(media, { fields: [postMedia.mediaId], references: [media.id] }),
+}));
+
+export const campaignsRelations = relations(campaigns, ({ one, many }) => ({
+  items: many(donationItems),
+  donations: many(donations),
+  ledger: many(ledgerEntries),
+  cover: one(media, { fields: [campaigns.coverMediaId], references: [media.id], relationName: "campaign_cover" }),
+  qr: one(media, { fields: [campaigns.qrMediaId], references: [media.id], relationName: "campaign_qr" }),
+  event: one(posts, { fields: [campaigns.eventPostId], references: [posts.id] }),
+}));
+
+export const donationItemsRelations = relations(donationItems, ({ one }) => ({
+  campaign: one(campaigns, { fields: [donationItems.campaignId], references: [campaigns.id] }),
+  image: one(media, { fields: [donationItems.imageMediaId], references: [media.id] }),
+}));
+
+export const donationsRelations = relations(donations, ({ one }) => ({
+  campaign: one(campaigns, { fields: [donations.campaignId], references: [campaigns.id] }),
+  item: one(donationItems, { fields: [donations.itemId], references: [donationItems.id] }),
+}));
+
+export const ledgerEntriesRelations = relations(ledgerEntries, ({ one }) => ({
+  campaign: one(campaigns, { fields: [ledgerEntries.campaignId], references: [campaigns.id] }),
+  receipt: one(media, { fields: [ledgerEntries.receiptMediaId], references: [media.id] }),
+}));
+
+export type Role = (typeof roleEnum.enumValues)[number];
+export type PostType = (typeof postTypeEnum.enumValues)[number];
+export type PostStatus = (typeof postStatusEnum.enumValues)[number];
+export type MediaKind = (typeof mediaKindEnum.enumValues)[number];
+export type User = typeof users.$inferSelect;
+export type Post = typeof posts.$inferSelect;
+export type Media = typeof media.$inferSelect;

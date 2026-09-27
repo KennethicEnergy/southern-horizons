@@ -1,0 +1,88 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  DashboardSquare01Icon,
+  Home01Icon,
+  Image01Icon,
+  Logout01Icon,
+  Menu01Icon,
+  MoneyReceiveSquareIcon,
+  News01Icon,
+} from "@hugeicons/core-free-icons";
+import { can, ROLE_LABELS, type Permission } from "@/lib/rbac";
+import type { Role } from "@/db/schema";
+import { HorizonMark } from "@/components/site/horizon-mark";
+import { useAdminUi } from "@/stores/admin-ui-store";
+import { logout } from "@/actions/auth";
+
+const nav: { href: string; label: string; icon: typeof Home01Icon; permission: Permission }[] = [
+  { href: "/admin", label: "Dashboard", icon: DashboardSquare01Icon, permission: "admin:access" },
+  { href: "/admin/posts", label: "Posts", icon: News01Icon, permission: "post:create" },
+  { href: "/admin/media", label: "Media", icon: Image01Icon, permission: "media:upload" },
+  { href: "/admin/donations", label: "Donations", icon: MoneyReceiveSquareIcon, permission: "donation:view" },
+];
+
+export function AdminSidebar({ user }: { user: { name?: string | null; role: Role } }) {
+  const pathname = usePathname();
+  const { sidebarOpen, toggleSidebar, closeSidebar } = useAdminUi();
+  const items = nav.filter((n) => can(user.role, n.permission)); // Layer 3: cosmetic only.
+
+  return (
+    <>
+      <div className="flex h-14 items-center justify-between border-b border-line bg-white px-4 lg:hidden">
+        <span className="flex items-center gap-2 font-display font-semibold">
+          <HorizonMark className="size-6" /> Backoffice
+        </span>
+        <button type="button" onClick={toggleSidebar} aria-label="Toggle menu" aria-expanded={sidebarOpen} className="p-2">
+          <HugeiconsIcon icon={Menu01Icon} size={22} />
+        </button>
+      </div>
+      <aside
+        className={`${sidebarOpen ? "block" : "hidden"} border-r border-line bg-white lg:sticky lg:top-0 lg:block lg:h-dvh lg:w-64 lg:shrink-0`}
+      >
+        <div className="flex h-full flex-col p-4">
+          <Link href="/admin" className="hidden items-center gap-2.5 px-2 py-2 lg:flex">
+            <HorizonMark className="size-7" />
+            <span className="font-display font-semibold">Backoffice</span>
+          </Link>
+          <nav aria-label="Backoffice" className="mt-4 flex-1 space-y-1">
+            {items.map((item) => {
+              const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={closeSidebar}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-[0.95rem] ${
+                    active ? "bg-sea-mist font-medium text-sea-deep" : "text-ink-soft hover:bg-sky hover:text-ink"
+                  }`}
+                >
+                  <HugeiconsIcon icon={item.icon} size={20} />
+                  {item.label}
+                </Link>
+              );
+            })}
+            <Link href="/" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[0.95rem] text-ink-soft hover:bg-sky hover:text-ink">
+              <HugeiconsIcon icon={Home01Icon} size={20} />
+              View site
+            </Link>
+          </nav>
+          <div className="border-t border-line px-2 pt-4">
+            <p className="truncate font-medium">{user.name}</p>
+            <p className="text-sm text-ink-soft">{ROLE_LABELS[user.role]}</p>
+            <form action={logout}>
+              <button type="submit" className="mt-3 flex items-center gap-2 text-sm text-ink-soft hover:text-danger">
+                <HugeiconsIcon icon={Logout01Icon} size={18} />
+                Sign out
+              </button>
+            </form>
+          </div>
+        </div>
+      </aside>
+    </>
+  );
+}
