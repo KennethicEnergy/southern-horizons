@@ -43,7 +43,7 @@ Sign in at `http://localhost:3000/login` with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_P
 ### 3. Vercel
 1. Import the GitHub repo. Framework preset: Next.js. Package manager is detected from `pnpm-lock.yaml`.
 2. Add every variable from `.env.example` under **Settings → Environment Variables** (you can skip the `SEED_*` ones).
-3. Set `AUTH_URL` and `NEXT_PUBLIC_SITE_URL` to your production domain.
+3. Set `AUTH_URL` and `SITE_URL` to your production domain.
 4. **Domains:** add your domain, then create the DNS records Vercel shows you in Cloudflare. Set those records to **DNS only** (grey cloud) so Vercel can issue the SSL certificate.
 
 Run migrations against production from your machine with the production `DATABASE_URL`: `pnpm db:migrate`.
