@@ -8,6 +8,13 @@
       "when": 1790527673574,
       "tag": "0000_ambiguous_mister_sinister",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790959802420,
+      "tag": "0001_optional_password",
+      "breakpoints": true
     }
   ]
 }

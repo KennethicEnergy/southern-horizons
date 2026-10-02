@@ -18,6 +18,13 @@ export async function login(values: LoginValues): Promise<ActionResult> {
   }
 }
 
+/** Form action for "Continue with Google". Only follows callback paths inside the backoffice. */
+export async function loginWithGoogle(formData: FormData) {
+  const callback = String(formData.get("callbackUrl") ?? "");
+  const redirectTo = callback.startsWith("/admin") && !callback.startsWith("//") ? callback : "/admin";
+  await signIn("google", { redirectTo });
+}
+
 export async function logout() {
   await signOut({ redirectTo: "/login" });
 }

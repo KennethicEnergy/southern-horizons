@@ -48,6 +48,12 @@ Sign in at `http://localhost:3000/login` with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_P
 
 Run migrations against production from your machine with the production `DATABASE_URL`: `pnpm db:migrate`.
 
+### 4. Google sign-in (invite-only)
+1. In Google Cloud Console, create an **OAuth consent screen** (External), then **Credentials → Create OAuth client ID → Web application**.
+2. Authorized redirect URIs: `https://www.southern-horizons.org/api/auth/callback/google` and `http://localhost:3000/api/auth/callback/google`.
+3. Put the client ID and secret in `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` (`.env.local` and Vercel). The button appears once both are set.
+4. Admins invite people under **Backoffice → Members**. A Google account can sign in only if its email is on that list and active; anyone else is sent back to `/login` with a "not invited" message. Google doesn't accept preview-deployment URLs, so use email and password there.
+
 ## Roles and permissions
 
 Code checks permissions, never role names. The map lives in `src/lib/rbac.ts`.

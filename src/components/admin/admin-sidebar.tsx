@@ -11,6 +11,7 @@ import {
   Menu01Icon,
   MoneyReceiveSquareIcon,
   News01Icon,
+  UserGroupIcon,
 } from "@hugeicons/core-free-icons";
 import { can, ROLE_LABELS, type Permission } from "@/lib/rbac";
 import type { Role } from "@/db/schema";
@@ -23,6 +24,7 @@ const nav: { href: string; label: string; icon: typeof Home01Icon; permission: P
   { href: "/admin/posts", label: "Posts", icon: News01Icon, permission: "post:create" },
   { href: "/admin/media", label: "Media", icon: Image01Icon, permission: "media:upload" },
   { href: "/admin/donations", label: "Donations", icon: MoneyReceiveSquareIcon, permission: "donation:view" },
+  { href: "/admin/users", label: "Members", icon: UserGroupIcon, permission: "user:manage" },
 ];
 
 export function AdminSidebar({ user }: { user: { name?: string | null; role: Role } }) {

@@ -50,7 +50,8 @@ export const users = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     name: text("name").notNull(),
     email: text("email").notNull(),
-    passwordHash: text("password_hash").notNull(),
+    /** Null for invited members who sign in with Google only. */
+    passwordHash: text("password_hash"),
     role: roleEnum("role").notNull().default("member"),
     avatarMediaId: uuid("avatar_media_id"),
     isActive: boolean("is_active").notNull().default(true),
