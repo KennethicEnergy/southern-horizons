@@ -12,6 +12,11 @@ export const inviteSchema = z.object({
 
 export type InviteValues = z.infer<typeof inviteSchema>;
 
+export const setRoleSchema = z.object({
+  userId: z.uuid(),
+  role: z.enum(roles, { message: "Pick a role." }),
+});
+
 export const setActiveSchema = z.object({
   userId: z.uuid(),
   active: z.boolean(),

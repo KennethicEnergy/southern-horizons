@@ -8,6 +8,7 @@ import { formatDateTime } from "@/lib/dates";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { InviteForm } from "@/components/admin/invite-form";
 import { MemberActiveToggle } from "@/components/admin/member-active-toggle";
+import { MemberRoleSelect } from "@/components/admin/member-role-select";
 import { ApplicationReviewButtons } from "@/components/admin/application-review";
 
 export default async function MembersPage() {
@@ -91,7 +92,9 @@ export default async function MembersPage() {
                   {m.name}
                   <span className="block text-sm text-ink-soft">{m.email}</span>
                 </td>
-                <td className="px-5 py-3.5">{ROLE_LABELS[m.role]}</td>
+                <td className="px-5 py-3.5">
+                  {m.id === actor.id ? ROLE_LABELS[m.role] : <MemberRoleSelect userId={m.id} name={m.name} role={m.role} />}
+                </td>
                 <td className="px-5 py-3.5 text-sm">
                   {!m.isActive ? (
                     <span className="inline-flex rounded-full bg-sky px-2.5 py-0.5 font-medium text-ink-soft">Deactivated</span>
