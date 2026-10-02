@@ -8,6 +8,7 @@ import {
   Home01Icon,
   Image01Icon,
   Logout01Icon,
+  Mail01Icon,
   Menu01Icon,
   MoneyReceiveSquareIcon,
   News01Icon,
@@ -24,6 +25,7 @@ const nav: { href: string; label: string; icon: typeof Home01Icon; permission: P
   { href: "/admin/posts", label: "Posts", icon: News01Icon, permission: "post:create" },
   { href: "/admin/media", label: "Media", icon: Image01Icon, permission: "media:upload" },
   { href: "/admin/donations", label: "Donations", icon: MoneyReceiveSquareIcon, permission: "donation:view" },
+  { href: "/admin/messages", label: "Messages", icon: Mail01Icon, permission: "message:view" },
   { href: "/admin/users", label: "Members", icon: UserGroupIcon, permission: "admin:access" },
 ];
 

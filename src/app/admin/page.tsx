@@ -55,7 +55,7 @@ export default async function DashboardPage() {
     cards.push({
       label: "Unread messages",
       value: await countWhere(schema.contactMessages, eq(schema.contactMessages.isRead, false)),
-      href: "/admin",
+      href: "/admin/messages",
       hint: "From the contact form",
     });
   }

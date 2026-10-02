@@ -13,7 +13,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!user) redirect("/login?callbackUrl=/admin");
   if (!can(user.role, "admin:access")) redirect("/");
 
-  // Only admins review applications, so only they see the count.
+  // Counts for the sidebar badges, only for roles that can act on them.
   const badges: Record<string, number> = {};
   if (can(user.role, "user:manage")) {
     const [row] = await getDb()
@@ -21,6 +21,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       .from(schema.memberApplications)
       .where(eq(schema.memberApplications.status, "pending"));
     if (row?.n) badges["/admin/users"] = row.n;
+  }
+  if (can(user.role, "message:view")) {
+    const [row] = await getDb()
+      .select({ n: count() })
+      .from(schema.contactMessages)
+      .where(eq(schema.contactMessages.isRead, false));
+    if (row?.n) badges["/admin/messages"] = row.n;
   }
 
   return (
