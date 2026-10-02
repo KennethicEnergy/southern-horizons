@@ -7,6 +7,7 @@ import { renderContent } from "@/lib/content/render";
 import { formatPeso } from "@/lib/money";
 import { ProgressHorizon } from "@/components/site/progress-horizon";
 import { DonationForm } from "@/components/forms/donation-form";
+import { baseOpenGraph } from "@/config/og";
 
 export const revalidate = 120;
 export const generateStaticParams = async () => [];
@@ -19,7 +20,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: c.title,
     description: c.summary,
-    openGraph: { images: c.cover ? [{ url: c.cover.url }] : undefined },
+    // Only add `images` when there's a cover: the key alone, even undefined, hides the site-wide share card.
+    openGraph: { ...baseOpenGraph, ...(c.cover ? { images: [{ url: c.cover.url, alt: c.cover.alt ?? "" }] } : {}) },
   };
 }
 

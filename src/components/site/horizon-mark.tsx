@@ -3,9 +3,9 @@
  * Simplified from public/brand/logo-mark.svg so it stays legible at icon sizes;
  * keep in sync with src/app/icon.svg.
  */
-export function HorizonMark({ className = "size-8" }: { className?: string }) {
+export function HorizonMark({ className = "size-8", size }: { className?: string; size?: number }) {
   return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
+    <svg viewBox="0 0 32 32" width={size} height={size} className={className} aria-hidden="true">
       <g fillOpacity="0.8">
         <circle cx="13.5" cy="18.5" r="9.5" fill="#fdfd68" />
         <circle cx="21" cy="12.5" r="7.5" fill="#94dfa7" />

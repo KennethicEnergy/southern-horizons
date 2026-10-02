@@ -8,6 +8,8 @@ import { getPostBySlug } from "@/lib/queries";
 import { renderContent } from "@/lib/content/render";
 import { eventPhase, formatDate, formatDateTime } from "@/lib/dates";
 import { AttachmentList } from "@/components/site/attachment-list";
+import { newsPage } from "@/config/news";
+import { baseOpenGraph } from "@/config/og";
 
 export const revalidate = 300;
 export const generateStaticParams = async () => [];
@@ -20,12 +22,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.title,
     description: post.excerpt ?? undefined,
+    // No `images` key: it would suppress the share card from the sibling opengraph-image.tsx.
     openGraph: {
+      ...baseOpenGraph,
       title: post.title,
       description: post.excerpt ?? undefined,
       type: "article",
       publishedTime: post.publishedAt?.toISOString(),
-      images: post.cover ? [{ url: post.cover.url, alt: post.cover.alt ?? "" }] : undefined,
     },
   };
 }
@@ -44,7 +47,7 @@ export default async function PostPage({ params }: Props) {
       <header className="mx-auto max-w-4xl px-5 pt-10 md:pt-16">
         <Link href="/news" className="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink">
           <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
-          News & events
+          {newsPage.title}
         </Link>
         {post.parent ? (
           <p className="mt-6 text-sea">

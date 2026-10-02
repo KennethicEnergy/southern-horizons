@@ -4,10 +4,11 @@ import { PageHeader } from "@/components/site/page-header";
 import { PostCard } from "@/components/site/post-card";
 import { getPublishedPosts } from "@/lib/queries";
 import type { PostType } from "@/db/schema";
+import { newsPage } from "@/config/news";
 
 export const metadata: Metadata = {
-  title: "News & events",
-  description: "What we've done, what we're doing, and what's coming next.",
+  title: newsPage.title,
+  description: newsPage.lead,
 };
 
 const filters: { value?: PostType; label: string }[] = [
@@ -33,7 +34,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
 
   return (
     <>
-      <PageHeader title="News & events" lead="What we've done, what we're doing, and what's coming next." />
+      <PageHeader title={newsPage.title} lead={newsPage.lead} />
       <div className="mx-auto max-w-6xl px-5 py-12">
         <nav aria-label="Filter posts" className="flex flex-wrap gap-2">
           {filters.map((f) => {

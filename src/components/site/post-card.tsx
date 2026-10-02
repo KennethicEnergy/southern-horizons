@@ -4,8 +4,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Calendar03Icon, Location01Icon } from "@hugeicons/core-free-icons";
 import type { Media, Post } from "@/db/schema";
 import { eventPhase, formatDate } from "@/lib/dates";
+import { postTypeLabel } from "@/config/posts";
 
-const typeLabel: Record<Post["type"], string> = { news: "News", event: "Event", update: "Update", story: "Story" };
 const phaseLabel = { upcoming: "Upcoming", ongoing: "Happening now", past: "Past event" } as const;
 
 export function PostCard({ post, featured = false }: { post: Post & { cover: Media | null }; featured?: boolean }) {
@@ -32,7 +32,7 @@ export function PostCard({ post, featured = false }: { post: Post & { cover: Med
       <div className={featured ? "mt-5 md:mt-0 md:self-center" : "mt-4"}>
         <p className="text-sm text-ink-soft">
           <span className={phase === "upcoming" || phase === "ongoing" ? "font-medium text-sea" : ""}>
-            {phase ? phaseLabel[phase] : typeLabel[post.type]}
+            {phase ? phaseLabel[phase] : postTypeLabel[post.type]}
           </span>
           {post.publishedAt && !phase ? <span>, {formatDate(post.publishedAt)}</span> : null}
         </p>
