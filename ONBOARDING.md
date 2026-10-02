@@ -84,7 +84,7 @@ A branch starts as a copy of its parent's data, and you can delete it and create
 
 ```bash
 pnpm db:migrate          # applies the SQL files in drizzle/
-pnpm db:seed             # creates the admin from SEED_ADMIN_* and a sample campaign
+pnpm db:seed             # creates a President account from SEED_ADMIN_* and a sample campaign
 pnpm db:seed:samples     # optional: placeholder news, events, donations, and ledger entries
 ```
 
@@ -97,9 +97,19 @@ pnpm dev
 ```
 
 - Public site: http://localhost:3000
-- Backoffice: http://localhost:3000/login. Sign in with your `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`.
+- Backoffice: http://localhost:3000/login. Sign in with your `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`. That account is a President, so its changes skip approval.
 - Component showcase: http://localhost:3000/components
 - Database browser: `pnpm db:studio`
+
+### Test as another position
+
+Every position except President sends its changes to **Backoffice → Approvals**, so you need a second account to test that flow:
+
+1. Set `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` in `.env.local`. Invited members have no password and can only sign in with Google.
+2. As the President, invite a second Google account under **Backoffice → Members** and give it a position, such as Communications.
+3. Sign in with that account in a private window. Its publish, edit, and delete actions now show up in Approvals for the President to decide.
+
+A position change takes effect within 5 minutes, or immediately if that person signs out and back in. The positions and the approval rules are explained in [README → Positions, permissions, and approvals](README.md#positions-permissions-and-approvals).
 
 ## 7. Check that everything passes
 
@@ -118,15 +128,18 @@ You can also run `pnpm typecheck` for a faster type-only check.
 ```
 src/
   app/(site)/     public pages (home, news, campaigns, transparency, …)
-  app/admin/      backoffice pages
+  app/admin/      backoffice pages (posts, approvals, donations, media, messages, members, …)
   app/api/        route handlers (auth, upload presign and finalize)
-  actions/        server actions; each one calls requirePermission()
+  actions/        server actions; each one calls requirePermission() or requireAction()
   components/     UI, grouped as site/, admin/, forms/, og/
-  config/         constants and static config (site.ts, brand.ts, …)
+  config/         constants and static config (roles.ts, site.ts, posts.ts, …)
   db/             Drizzle schema, client, and seed scripts
-  lib/            pure helpers and wrappers (rbac, r2, money, dates, validations/)
+  lib/            pure helpers and wrappers
+    approvals/    approval requests: create, query, and apply once approved
+    posts/        post access rules, change diffs, and writes
+    validations/  Zod schemas shared by forms and server actions
   stores/         Zustand stores
-  types/          shared types
+  types/          shared types (rbac.ts, approvals.ts, …)
   auth.ts         Auth.js setup (credentials and Google)
   proxy.ts        keeps signed-out users out of /admin
 drizzle/          generated SQL migrations (committed)
@@ -136,10 +149,21 @@ Start with these files:
 
 - [src/config/roles.ts](src/config/roles.ts) and [src/lib/rbac.ts](src/lib/rbac.ts): positions, what each may do, and who approves their changes. Code checks permissions, never position names.
 - [src/db/schema.ts](src/db/schema.ts): every table and enum.
-- [src/lib/session.ts](src/lib/session.ts): `requirePermission()`, the server-side permission check.
+- [src/lib/session.ts](src/lib/session.ts): `requirePermission()` and `requireAction()`, the server-side checks.
+- [src/lib/approvals/](src/lib/approvals/): how a change waits for approval and is applied once approved. Post changes go through [src/lib/posts/approval-handler.ts](src/lib/posts/approval-handler.ts).
 - [src/actions/_helpers.ts](src/actions/_helpers.ts): `runAction()`, which turns errors thrown in server actions into messages forms can show.
 
 ## 9. Everyday workflows
+
+### Pull the latest changes
+
+```bash
+git pull
+pnpm install       # in case dependencies changed
+pnpm db:migrate    # in case new files landed in drizzle/
+```
+
+Skipping the migration is the most common cause of "column does not exist" errors after a pull.
 
 ### Change the database schema
 
@@ -156,8 +180,9 @@ The full rules are in [CLAUDE.md](CLAUDE.md). In short:
 
 - Use `const` arrow functions and destructuring. Some older files still use `function` declarations; new code shouldn't.
 - Put helpers in `src/lib/`, constants in `src/config/`, shared types in `src/types/`, and hooks in `src/hooks/useXxx.ts`.
-- Follow TDD: write a failing test first. Tests live next to the code as `*.test.ts` and run with Vitest. See [src/lib/og.test.ts](src/lib/og.test.ts) for an example.
-- Never trust the client for permissions or money. Server actions call `requirePermission()`, and donation amounts are computed on the server.
+- Follow TDD: write a failing test first. Tests live next to the code as `*.test.ts` and run with Vitest. See [src/lib/rbac.test.ts](src/lib/rbac.test.ts) or [src/lib/posts/changes.test.ts](src/lib/posts/changes.test.ts) for examples.
+- Never trust the client for permissions, approvals, or money. Server actions call `requirePermission()` or `requireAction()` and decide on the server whether a change needs approval. Donation amounts are computed on the server too.
+- Check permissions, never position names. To change what a position may do or who approves it, edit [src/config/roles.ts](src/config/roles.ts), not the components.
 
 ### Commit
 
@@ -187,7 +212,10 @@ Variables already set in your shell take priority over `.env.local`. Set the pro
 | `pnpm db:seed` fails with a password error | `SEED_ADMIN_PASSWORD` must be at least 12 characters. |
 | `R2_… is not set` when uploading | Add the R2 variables (see the README), or skip media work. |
 | Uploads fail in the browser with a CORS error | Your origin is missing from the bucket's CORS policy (see the README). |
-| Google sign-in sends you back with "not invited" | Your email isn't an active member. Ask an admin to invite you. |
+| Google sign-in sends you back with "not invited" | Your email isn't an active member. Ask the President to invite you. |
+| `column … does not exist` or `relation … does not exist` | Your database branch is behind. Run `pnpm db:migrate`. |
+| A new position doesn't apply yet | Positions refresh every 5 minutes. Sign out and back in to apply it now. |
+| Your change went to Approvals instead of going live | Expected for every position except President. The President approves it under **Backoffice → Approvals**. |
 | Google sign-in fails on a preview deployment | Expected: Google rejects preview URLs. Use email and password there. |
 | Images from R2 don't load through `next/image` | Set `R2_PUBLIC_URL` and restart `pnpm dev`. `next.config.ts` reads it at startup. |
 
