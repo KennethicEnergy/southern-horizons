@@ -36,7 +36,7 @@ export default async function HomePage() {
       <section className="relative overflow-hidden">
         <div className="mx-auto max-w-6xl px-5 pb-0 pt-16 md:pt-24">
           <h1 className="mt-4 max-w-5xl text-5xl font-semibold [text-wrap:pretty] md:text-7xl">
-            School bags, clean-ups, and the receipts to prove it.
+            Rising Together, Giving Back With Purpose.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-ink-soft">
             We run drives for kids and communities, and we publish every peso that comes in and every peso that goes
