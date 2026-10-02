@@ -16,6 +16,7 @@ import { RichTextEditor } from "./rich-text-editor";
 import { ACCEPT_IMAGES, UploadDropzone } from "./upload-dropzone";
 import { UploadQueue } from "./upload-queue";
 import { MediaThumb } from "./media-thumb";
+import { CoverPositioner } from "./cover-positioner";
 import { DeletePostButton } from "./delete-post-button";
 
 type MediaLite = Pick<Media, "id" | "kind" | "url" | "mimeType" | "alt" | "filename">;
@@ -187,14 +188,25 @@ export function PostForm({ postId, initialValues, initialCover, initialAttachmen
                   <p className="text-sm font-medium">Cover photo</p>
                   {cover ? (
                     <div className="relative">
-                      <MediaThumb media={cover} className="aspect-[3/2] w-full" />
+                      <CoverPositioner
+                        src={cover.url}
+                        alt={cover.alt ?? ""}
+                        x={values.coverFocusX}
+                        y={values.coverFocusY}
+                        onChange={(x, y) => {
+                          void setFieldValue("coverFocusX", x, false);
+                          void setFieldValue("coverFocusY", y, false);
+                        }}
+                      />
                       <button
                         type="button"
-                        className="absolute right-2 top-2 rounded-full bg-white/90 p-1.5 text-ink hover:text-danger"
+                        className="absolute right-2 top-2 z-10 rounded-full bg-white/90 p-1.5 text-ink hover:text-danger"
                         aria-label="Remove cover photo"
                         onClick={() => {
                           setCover(null);
                           void setFieldValue("coverMediaId", "");
+                          void setFieldValue("coverFocusX", 50, false);
+                          void setFieldValue("coverFocusY", 50, false);
                         }}
                       >
                         <HugeiconsIcon icon={Cancel01Icon} size={16} />
@@ -210,6 +222,8 @@ export function PostForm({ postId, initialValues, initialCover, initialAttachmen
                         if (!m) return;
                         setCover(m);
                         void setFieldValue("coverMediaId", m.id);
+                        void setFieldValue("coverFocusX", 50, false);
+                        void setFieldValue("coverFocusY", 50, false);
                       }}
                     />
                   )}

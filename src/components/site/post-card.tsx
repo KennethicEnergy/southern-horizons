@@ -22,6 +22,7 @@ export function PostCard({ post, featured = false }: { post: Post & { cover: Med
             fill
             sizes={featured ? "(min-width: 768px) 60vw, 100vw" : "(min-width: 768px) 33vw, 100vw"}
             className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            style={{ objectPosition: `${post.coverFocusX}% ${post.coverFocusY}%` }}
           />
         ) : (
           <div className="flex h-full items-end p-5">

@@ -105,6 +105,9 @@ export const posts = pgTable(
     /** Tiptap JSON document */
     content: jsonb("content").$type<Record<string, unknown>>().notNull(),
     coverMediaId: uuid("cover_media_id").references(() => media.id),
+    /** Point of the cover photo to keep in frame when it's cropped (0–100, % from left / top). Used as CSS object-position. */
+    coverFocusX: integer("cover_focus_x").notNull().default(50),
+    coverFocusY: integer("cover_focus_y").notNull().default(50),
     /** An `update` post points at its parent `event`, which turns the event page into a thread. */
     parentId: uuid("parent_id").references((): AnyPgColumn => posts.id),
     eventStartAt: timestamp("event_start_at", { withTimezone: true }),

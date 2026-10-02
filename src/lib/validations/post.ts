@@ -26,6 +26,9 @@ export const postFormSchema = z
       message: "Write something in the body.",
     }),
     coverMediaId: optionalId,
+    /** Where the cover is framed when cropped, 0–100 (% from left / top). */
+    coverFocusX: z.number().int().min(0).max(100),
+    coverFocusY: z.number().int().min(0).max(100),
     parentId: optionalId,
     eventStartAt: optionalText(40),
     eventEndAt: optionalText(40),

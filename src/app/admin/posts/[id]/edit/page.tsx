@@ -49,6 +49,8 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
           type: post.type,
           content: post.content,
           coverMediaId: post.coverMediaId ?? "",
+          coverFocusX: post.coverFocusX,
+          coverFocusY: post.coverFocusY,
           parentId: post.parentId ?? "",
           eventStartAt: toManilaInputValue(post.eventStartAt),
           eventEndAt: toManilaInputValue(post.eventEndAt),

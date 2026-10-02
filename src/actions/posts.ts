@@ -80,6 +80,8 @@ export async function savePost(
       status,
       content: data.content,
       coverMediaId: orNull(data.coverMediaId),
+      coverFocusX: data.coverFocusX,
+      coverFocusY: data.coverFocusY,
       parentId: data.type === "update" ? orNull(data.parentId) : null,
       eventStartAt: data.type === "event" ? toDate(data.eventStartAt) : null,
       eventEndAt: data.type === "event" ? toDate(data.eventEndAt) : null,

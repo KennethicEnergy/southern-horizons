@@ -20,6 +20,8 @@ export default async function NewPostPage() {
           type: "news",
           content: emptyDoc,
           coverMediaId: "",
+          coverFocusX: 50,
+          coverFocusY: 50,
           parentId: "",
           eventStartAt: "",
           eventEndAt: "",

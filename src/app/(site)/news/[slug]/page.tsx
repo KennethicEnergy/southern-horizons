@@ -44,11 +44,31 @@ export default async function PostPage({ params }: Props) {
 
   return (
     <article>
-      <header className="mx-auto max-w-4xl px-5 pt-10 md:pt-16">
+      <div className={`mx-auto px-5 pt-8 md:pt-12 ${post.cover ? "max-w-6xl" : "max-w-4xl"}`}>
         <Link href="/news" className="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink">
           <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
           {newsPage.title}
         </Link>
+      </div>
+
+      {/* Banner: 16:9 at the top, framed on the point chosen in the editor (cards use the same point at 3:2). */}
+      {post.cover ? (
+        <div className="mx-auto mt-4 max-w-6xl px-5">
+          <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-sky">
+            <Image
+              src={post.cover.url}
+              alt={post.cover.alt ?? ""}
+              fill
+              priority
+              sizes="(min-width: 1152px) 1152px, 100vw"
+              className="object-cover"
+              style={{ objectPosition: `${post.coverFocusX}% ${post.coverFocusY}%` }}
+            />
+          </div>
+        </div>
+      ) : null}
+
+      <header className={`mx-auto max-w-4xl px-5 ${post.cover ? "pt-10" : "pt-2"}`}>
         {post.parent ? (
           <p className="mt-6 text-sea">
             Update on <Link href={`/news/${post.parent.slug}`} className="underline">{post.parent.title}</Link>
@@ -80,14 +100,6 @@ export default async function PostPage({ params }: Props) {
           ) : null}
         </div>
       </header>
-
-      {post.cover ? (
-        <div className="mx-auto mt-10 max-w-6xl px-5">
-          <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-sky">
-            <Image src={post.cover.url} alt={post.cover.alt ?? ""} fill priority sizes="(min-width: 1152px) 1152px, 100vw" className="object-cover" />
-          </div>
-        </div>
-      ) : null}
 
       <div className="mx-auto max-w-4xl px-5 py-12">
         <div

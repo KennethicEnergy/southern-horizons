@@ -57,6 +57,8 @@ function samplePost(overrides: Partial<PostWithCover> & Pick<Post, "id" | "title
     status: "published",
     content: {},
     coverMediaId: null,
+    coverFocusX: 50,
+    coverFocusY: 50,
     parentId: null,
     eventStartAt: null,
     eventEndAt: null,
