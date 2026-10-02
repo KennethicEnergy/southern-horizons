@@ -26,6 +26,7 @@ export const campaignStatusEnum = pgEnum("campaign_status", ["draft", "active", 
 export const donationChannelEnum = pgEnum("donation_channel", ["qrph_static", "gateway", "cash", "in_kind"]);
 export const donationStatusEnum = pgEnum("donation_status", ["pending", "confirmed", "rejected"]);
 export const ledgerKindEnum = pgEnum("ledger_kind", ["income", "expense"]);
+export const applicationStatusEnum = pgEnum("application_status", ["pending", "approved", "rejected"]);
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -247,6 +248,24 @@ export const contactMessages = pgTable("contact_messages", {
   isRead: boolean("is_read").notNull().default(false),
   ...timestamps,
 });
+
+/** Public "Apply to join" form. Approving one invites the applicant (see actions/applications.ts). */
+export const memberApplications = pgTable(
+  "member_applications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    /** The Google account they will sign in with. */
+    email: text("email").notNull(),
+    phone: text("phone"),
+    message: text("message").notNull(),
+    status: applicationStatusEnum("status").notNull().default("pending"),
+    reviewedById: uuid("reviewed_by_id").references(() => users.id),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    ...timestamps,
+  },
+  (t) => [index("member_applications_status_idx").on(t.status, t.createdAt)],
+);
 
 export const auditLogs = pgTable(
   "audit_logs",
