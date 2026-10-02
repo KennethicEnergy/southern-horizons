@@ -131,18 +131,21 @@ src/
   app/admin/      backoffice pages (posts, approvals, donations, media, messages, members, …)
   app/api/        route handlers (auth, upload presign and finalize)
   actions/        server actions; each one calls requirePermission() or requireAction()
-  components/     UI, grouped as site/, admin/, forms/, og/
-  config/         constants and static config (roles.ts, site.ts, posts.ts, …)
+  components/     UI, grouped as ui/ (shared building blocks), site/, admin/, forms/, og/
+  config/         constants and static config (roles.ts, icons.ts, site.ts, posts.ts, …)
   db/             Drizzle schema, client, and seed scripts
+  hooks/          custom React hooks (useXxx.ts), each with a test next to it
   lib/            pure helpers and wrappers
     approvals/    approval requests: create, query, and apply once approved
     posts/        post access rules, change diffs, and writes
     validations/  Zod schemas shared by forms and server actions
-  stores/         Zustand stores
-  types/          shared types (rbac.ts, approvals.ts, …)
+  stores/         Zustand stores (including the toast store)
+  test/           test-only helpers, such as renderHook
+  types/          shared types (rbac.ts, approvals.ts, toast.ts, …)
   auth.ts         Auth.js setup (credentials and Google)
   proxy.ts        keeps signed-out users out of /admin
 drizzle/          generated SQL migrations (committed)
+docs/             design specs written before larger features
 ```
 
 Start with these files:
@@ -181,8 +184,17 @@ The full rules are in [CLAUDE.md](CLAUDE.md). In short:
 - Use `const` arrow functions and destructuring. Some older files still use `function` declarations; new code shouldn't.
 - Put helpers in `src/lib/`, constants in `src/config/`, shared types in `src/types/`, and hooks in `src/hooks/useXxx.ts`.
 - Follow TDD: write a failing test first. Tests live next to the code as `*.test.ts` and run with Vitest. See [src/lib/rbac.test.ts](src/lib/rbac.test.ts) or [src/lib/posts/changes.test.ts](src/lib/posts/changes.test.ts) for examples.
+- To test a hook, put `// @vitest-environment happy-dom` at the top of the test file and use `renderHook` from [src/test/render-hook.ts](src/test/render-hook.ts). See [src/hooks/useDismissTimer.test.ts](src/hooks/useDismissTimer.test.ts).
 - Never trust the client for permissions, approvals, or money. Server actions call `requirePermission()` or `requireAction()` and decide on the server whether a change needs approval. Donation amounts are computed on the server too.
 - Check permissions, never position names. To change what a position may do or who approves it, edit [src/config/roles.ts](src/config/roles.ts), not the components.
+
+### Build UI
+
+- Reuse what's in `src/components/ui/` (`Button`, `IconButton`, `TextLink`, form fields, …) before writing new markup. The live catalogue is at http://localhost:3000/components. When you add or change a shared component, add its states there too.
+- Each action (save, delete, approve, …) has one icon, defined in `actionIcons` in [src/config/icons.ts](src/config/icons.ts). Pass it to a button, for example `<Button icon={actionIcons.save}>`. For a new action, add an entry there so every button for that action looks the same. Icons that describe content rather than an action, such as a date, a place, or a file type, can be imported from `@hugeicons/core-free-icons` directly.
+- Show feedback with toasts, never `alert()`. Use `toastResult(result)` for a server action's result, or `toast.success()`, `toast.error()` and `toast.info()` from [src/stores/toast-store.ts](src/stores/toast-store.ts). Form validation errors stay inline next to the fields.
+- Motion (`.reveal`, and `.parallax` layers inside a `.parallax-scope`) and the brand surfaces (`bg-horizon`, `bg-tide`, …) are plain CSS in [src/app/globals.css](src/app/globals.css), with usage notes in the comments there. Motion switches off on its own for people who prefer reduced motion.
+- Keep tap targets at least 44px tall. The shared buttons and fields already do this.
 
 ### Commit
 
