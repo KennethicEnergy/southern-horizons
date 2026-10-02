@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { brandColors } from "@/config/brand";
 import { baseOpenGraph } from "@/config/og";
 import { site } from "@/config/site";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,10 +14,14 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: brandColors.ink };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en-PH">
-      <body className="min-h-dvh bg-white">{children}</body>
-    </html>
-  );
-}
+const RootLayout = ({ children }: { children: React.ReactNode }) => (
+  // data-scroll-behavior lets Next.js turn smooth scrolling off during route changes, so pages still open at the top instantly.
+  <html lang="en-PH" data-scroll-behavior="smooth">
+    <body className="min-h-dvh bg-white">
+      {children}
+      <Toaster />
+    </body>
+  </html>
+);
+
+export default RootLayout;

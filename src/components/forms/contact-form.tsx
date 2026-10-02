@@ -5,11 +5,14 @@ import { toFormikValidationSchema } from "zod-formik-adapter";
 import { useState } from "react";
 import { contactSchema, type ContactValues } from "@/lib/validations/contact";
 import { sendContactMessage } from "@/actions/contact";
+import { actionIcons } from "@/config/icons";
+import { toastResult } from "@/stores/toast-store";
 import { FormAlert, TextArea, TextField } from "@/components/ui/form-fields";
 import { Button } from "@/components/ui/button";
 
-export function ContactForm({ defaultSubject = "" }: { defaultSubject?: string }) {
-  const [status, setStatus] = useState<{ tone: "error" | "success"; text: string } | null>(null);
+/** Errors stay beside the form so they can be fixed; a sent message clears it and confirms with a toast. */
+export const ContactForm = ({ defaultSubject = "" }: { defaultSubject?: string }) => {
+  const [error, setError] = useState<string | null>(null);
   const initialValues: ContactValues = { name: "", email: "", subject: defaultSubject, message: "", website: "" };
 
   return (
@@ -17,15 +20,15 @@ export function ContactForm({ defaultSubject = "" }: { defaultSubject?: string }
       initialValues={initialValues}
       validationSchema={toFormikValidationSchema(contactSchema)}
       onSubmit={async (values, { resetForm, setErrors }) => {
-        setStatus(null);
+        setError(null);
         const res = await sendContactMessage(values);
-        if (res.ok) {
-          resetForm();
-          setStatus({ tone: "success", text: res.message ?? "Message sent." });
-        } else {
-          setStatus({ tone: "error", text: res.message });
+        if (!res.ok) {
+          setError(res.message);
           if (res.fieldErrors) setErrors(res.fieldErrors);
+          return;
         }
+        resetForm();
+        toastResult(res, "Message sent.");
       }}
     >
       {({ isSubmitting }) => (
@@ -43,12 +46,12 @@ export function ContactForm({ defaultSubject = "" }: { defaultSubject?: string }
               <input name="website" tabIndex={-1} autoComplete="off" />
             </label>
           </div>
-          {status ? <FormAlert tone={status.tone}>{status.text}</FormAlert> : null}
-          <Button type="submit" size="lg" disabled={isSubmitting}>
+          {error ? <FormAlert tone="error">{error}</FormAlert> : null}
+          <Button type="submit" size="lg" icon={actionIcons.send} className="w-full sm:w-auto" disabled={isSubmitting}>
             {isSubmitting ? "Sending…" : "Send message"}
           </Button>
         </Form>
       )}
     </Formik>
   );
-}
+};

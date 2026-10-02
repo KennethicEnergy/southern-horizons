@@ -5,8 +5,13 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { deleteSuggestion, setSuggestionDone } from "@/actions/suggestions";
+import { actionIcons } from "@/config/icons";
+import { toastResult } from "@/stores/toast-store";
+import { Icon } from "@/components/ui/icon";
 
-export function SuggestionDoneToggle({ suggestionId, title, done, canChange }: { suggestionId: string; title: string; done: boolean; canChange: boolean }) {
+type SuggestionDoneToggleProps = { suggestionId: string; title: string; done: boolean; canChange: boolean };
+
+export const SuggestionDoneToggle = ({ suggestionId, title, done, canChange }: SuggestionDoneToggleProps) => {
   const router = useRouter();
   const [pending, start] = useTransition();
   return (
@@ -17,35 +22,34 @@ export function SuggestionDoneToggle({ suggestionId, title, done, canChange }: {
       disabled={!canChange || pending}
       aria-label={done ? `Mark "${title}" as not done` : `Mark "${title}" as done`}
       title={canChange ? undefined : "Only the person who added it, or the President, can tick it off"}
-      onChange={(e) =>
+      onChange={({ target: { checked } }) =>
         start(async () => {
-          const res = await setSuggestionDone({ suggestionId, done: e.target.checked });
-          if (!res.ok) alert(res.message);
+          toastResult(await setSuggestionDone({ suggestionId, done: checked }));
           router.refresh();
         })
       }
     />
   );
-}
+};
 
-export function SuggestionDeleteButton({ suggestionId, title }: { suggestionId: string; title: string }) {
+export const SuggestionDeleteButton = ({ suggestionId, title }: { suggestionId: string; title: string }) => {
   const router = useRouter();
   const [pending, start] = useTransition();
   return (
     <button
       type="button"
       disabled={pending}
-      className="text-sm text-ink-soft hover:text-danger disabled:opacity-50"
+      className="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-danger disabled:opacity-50"
       onClick={() =>
         start(async () => {
           if (!confirm(`Delete "${title}"?`)) return;
-          const res = await deleteSuggestion(suggestionId);
-          if (!res.ok) alert(res.message);
+          toastResult(await deleteSuggestion(suggestionId), "Suggestion deleted.");
           router.refresh();
         })
       }
     >
+      <Icon icon={actionIcons.delete} size={16} />
       Delete<span className="sr-only"> {title}</span>
     </button>
   );
-}
+};

@@ -13,6 +13,8 @@ import { savePost } from "@/actions/posts";
 import { slugify } from "@/lib/slug";
 import { FormAlert, SelectField, TextArea, TextField } from "@/components/ui/form-fields";
 import { Button } from "@/components/ui/button";
+import { actionIcons } from "@/config/icons";
+import { toastResult } from "@/stores/toast-store";
 import { RichTextEditor } from "./rich-text-editor";
 import { ACCEPT_IMAGES, UploadDropzone } from "./upload-dropzone";
 import { UploadQueue } from "./upload-queue";
@@ -34,7 +36,7 @@ type Props = {
   currentStatus?: string;
 };
 
-function BodyField() {
+const BodyField = () => {
   const { values, setFieldValue, errors, touched, setFieldTouched } = useFormikContext<PostFormValues>();
   const error = touched.content ? (errors.content as string | undefined) : undefined;
   return (
@@ -51,13 +53,13 @@ function BodyField() {
       {error ? <p className="text-sm text-danger">{error}</p> : null}
     </div>
   );
-}
+};
 
-export function PostForm({ postId, initialValues, initialCover, initialAttachments, events, access, currentStatus }: Props) {
+export const PostForm = ({ postId, initialValues, initialCover, initialAttachments, events, access, currentStatus }: Props) => {
   const router = useRouter();
   const [cover, setCover] = useState<MediaLite | null>(initialCover);
   const [attachments, setAttachments] = useState<MediaLite[]>(initialAttachments);
-  const [notice, setNotice] = useState<{ tone: "error" | "success"; text: string } | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <>
@@ -65,14 +67,14 @@ export function PostForm({ postId, initialValues, initialCover, initialAttachmen
         initialValues={initialValues}
         validationSchema={toFormikValidationSchema(postFormSchema)}
         onSubmit={async (values, { setErrors }) => {
-          setNotice(null);
+          setError(null);
           const res = await savePost(values, postId);
           if (!res.ok) {
-            setNotice({ tone: "error", text: res.message });
+            setError(res.message);
             if (res.fieldErrors) setErrors(res.fieldErrors);
             return;
           }
-          setNotice({ tone: "success", text: res.message ?? "Saved." });
+          toastResult(res, "Saved.");
           if (!postId && res.data) router.replace(`/admin/posts/${res.data.id}/edit`);
           router.refresh();
         }}
@@ -135,22 +137,22 @@ export function PostForm({ postId, initialValues, initialCover, initialAttachmen
                       Current status: <StatusBadge status={currentStatus} />
                     </p>
                   ) : null}
-                  {notice ? <FormAlert tone={notice.tone}>{notice.text}</FormAlert> : null}
+                  {error ? <FormAlert tone="error">{error}</FormAlert> : null}
                   {access.edit === "approval" ? (
                     <div className="grid gap-2">
                       <p className="text-sm text-ink-soft">This post is live. Your changes go live once they&apos;re approved.</p>
-                      <Button type="button" variant="primary" disabled={isSubmitting} onClick={() => submitWith("publish")}>
+                      <Button type="button" variant="primary" icon={actionIcons.send} disabled={isSubmitting} onClick={() => submitWith("publish")}>
                         Request changes
                       </Button>
                     </div>
                   ) : (
                     <div className="grid gap-2">
                       {access.publish !== "denied" ? (
-                        <Button type="button" variant="primary" disabled={isSubmitting} onClick={() => submitWith("publish")}>
+                        <Button type="button" variant="primary" icon={actionIcons.send} disabled={isSubmitting} onClick={() => submitWith("publish")}>
                           {access.publish === "approval" ? "Submit for approval" : currentStatus === "published" ? "Update post" : "Publish"}
                         </Button>
                       ) : null}
-                      <Button type="button" variant="outline" disabled={isSubmitting} onClick={() => submitWith("save_draft")}>
+                      <Button type="button" variant="outline" icon={actionIcons.save} disabled={isSubmitting} onClick={() => submitWith("save_draft")}>
                         {currentStatus === "published" ? "Unpublish and save as draft" : "Save draft"}
                       </Button>
                     </div>
@@ -249,4 +251,4 @@ export function PostForm({ postId, initialValues, initialCover, initialAttachmen
       <UploadQueue />
     </>
   );
-}
+};

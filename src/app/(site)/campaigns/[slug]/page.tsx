@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getCampaignBySlug } from "@/lib/queries";
 import { renderContent } from "@/lib/content/render";
 import { formatPeso } from "@/lib/money";
+import { Eyebrow } from "@/components/site/eyebrow";
 import { ProgressHorizon } from "@/components/site/progress-horizon";
 import { DonationForm } from "@/components/forms/donation-form";
 import { baseOpenGraph } from "@/config/og";
@@ -14,7 +15,7 @@ export const generateStaticParams = async () => [];
 
 type Props = { params: Promise<{ slug: string }> };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   const c = await getCampaignBySlug((await params).slug);
   if (!c) return {};
   return {
@@ -23,9 +24,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // Only add `images` when there's a cover: the key alone, even undefined, hides the site-wide share card.
     openGraph: { ...baseOpenGraph, ...(c.cover ? { images: [{ url: c.cover.url, alt: c.cover.alt ?? "" }] } : {}) },
   };
-}
+};
 
-export default async function CampaignPage({ params }: Props) {
+const CampaignPage = async ({ params }: Props) => {
   const campaign = await getCampaignBySlug((await params).slug);
   if (!campaign) notFound();
   const isOpen = campaign.status === "active";
@@ -33,7 +34,7 @@ export default async function CampaignPage({ params }: Props) {
   return (
     <div className="mx-auto grid max-w-6xl gap-14 px-5 py-14 lg:grid-cols-[1.1fr_1fr]">
       <div>
-        <p className="font-medium text-sea">{isOpen ? "Open for donations" : "This campaign has closed"}</p>
+        <Eyebrow>{isOpen ? "Open for donations" : "This campaign has closed"}</Eyebrow>
         <h1 className="mt-3 text-4xl font-semibold md:text-5xl">{campaign.title}</h1>
         <p className="mt-5 text-xl text-ink-soft">{campaign.summary}</p>
 
@@ -95,7 +96,7 @@ export default async function CampaignPage({ params }: Props) {
       </div>
 
       <aside className="lg:sticky lg:top-24 lg:self-start">
-        <div className="rounded-2xl border border-line p-6 md:p-8">
+        <div className="rounded-3xl bg-white p-6 shadow-lift ring-1 ring-line md:p-8">
           {isOpen ? (
             <DonationForm
               campaignId={campaign.id}
@@ -111,4 +112,6 @@ export default async function CampaignPage({ params }: Props) {
       </aside>
     </div>
   );
-}
+};
+
+export default CampaignPage;

@@ -8,10 +8,11 @@ import { applicationSchema, type ApplicationValues } from "@/lib/validations/app
 import { submitApplication } from "@/actions/applications";
 import { CheckboxField, FormAlert, TextArea, TextField } from "@/components/ui/form-fields";
 import { Button } from "@/components/ui/button";
+import { actionIcons } from "@/config/icons";
 
 type FormValues = Omit<ApplicationValues, "consent"> & { consent: boolean };
 
-export function ApplicationForm() {
+export const ApplicationForm = () => {
   const [done, setDone] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -67,11 +68,11 @@ export function ApplicationForm() {
             </label>
           </div>
           {error ? <FormAlert tone="error">{error}</FormAlert> : null}
-          <Button type="submit" size="lg" disabled={isSubmitting}>
+          <Button type="submit" size="lg" icon={actionIcons.join} className="w-full sm:w-auto" disabled={isSubmitting}>
             {isSubmitting ? "Sending…" : "Send application"}
           </Button>
         </Form>
       )}
     </Formik>
   );
-}
+};

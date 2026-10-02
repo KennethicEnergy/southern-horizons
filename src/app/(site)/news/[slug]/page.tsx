@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft01Icon, Calendar03Icon, Location01Icon } from "@hugeicons/core-free-icons";
+import { Icon } from "@/components/ui/icon";
+import { TextLink } from "@/components/ui/text-link";
+import { Calendar03Icon, Location01Icon } from "@hugeicons/core-free-icons";
 import { getPostBySlug } from "@/lib/queries";
 import { renderContent } from "@/lib/content/render";
 import { eventPhase, formatDate, formatDateTime } from "@/lib/dates";
@@ -16,7 +17,7 @@ export const generateStaticParams = async () => [];
 
 type Props = { params: Promise<{ slug: string }> };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   const post = await getPostBySlug((await params).slug);
   if (!post) return {};
   return {
@@ -31,11 +32,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.publishedAt?.toISOString(),
     },
   };
-}
+};
 
 const phaseText = { upcoming: "Upcoming event", ongoing: "Happening now", past: "Past event" } as const;
 
-export default async function PostPage({ params }: Props) {
+const PostPage = async ({ params }: Props) => {
   const post = await getPostBySlug((await params).slug);
   if (!post) notFound();
 
@@ -45,16 +46,15 @@ export default async function PostPage({ params }: Props) {
   return (
     <article>
       <div className={`mx-auto px-5 pt-8 md:pt-12 ${post.cover ? "max-w-6xl" : "max-w-4xl"}`}>
-        <Link href="/news" className="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink">
-          <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
+        <TextLink href="/news" direction="back" className="text-sm">
           {newsPage.title}
-        </Link>
+        </TextLink>
       </div>
 
       {/* Banner: 16:9 at the top, framed on the point chosen in the editor (cards use the same point at 3:2). */}
       {post.cover ? (
         <div className="mx-auto mt-4 max-w-6xl px-5">
-          <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-sky">
+          <div className="relative aspect-[16/9] overflow-hidden rounded-3xl bg-sky shadow-soft">
             <Image
               src={post.cover.url}
               alt={post.cover.alt ?? ""}
@@ -82,14 +82,14 @@ export default async function PostPage({ params }: Props) {
         <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[0.95rem] text-ink-soft">
           {post.type === "event" && post.eventStartAt ? (
             <span className="flex items-center gap-1.5">
-              <HugeiconsIcon icon={Calendar03Icon} size={18} />
+              <Icon icon={Calendar03Icon} size={18} className="text-sea" />
               {formatDateTime(post.eventStartAt)}
               {post.eventEndAt ? ` to ${formatDateTime(post.eventEndAt)}` : ""}
             </span>
           ) : null}
           {post.location ? (
             <span className="flex items-center gap-1.5">
-              <HugeiconsIcon icon={Location01Icon} size={18} />
+              <Icon icon={Location01Icon} size={18} className="text-sea" />
               {post.location}
             </span>
           ) : null}
@@ -149,4 +149,6 @@ export default async function PostPage({ params }: Props) {
       ) : null}
     </article>
   );
-}
+};
+
+export default PostPage;

@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { deletePost } from "@/actions/posts";
+import { actionIcons } from "@/config/icons";
+import { toastResult } from "@/stores/toast-store";
+import { Icon } from "@/components/ui/icon";
 
 type DeletePostButtonProps = {
   postId: string;
@@ -24,18 +27,18 @@ export const DeletePostButton = ({ postId, title, afterDelete, needsApproval = f
     <button
       type="button"
       disabled={pending}
-      className="text-sm text-danger hover:underline disabled:opacity-50"
+      className="inline-flex items-center gap-1.5 text-sm text-danger hover:underline disabled:opacity-50"
       onClick={() => {
         if (!confirm(question)) return;
         start(async () => {
           const res = await deletePost(postId);
-          if (!res.ok) return alert(res.message);
-          if (res.data?.requested) alert(res.message);
-          else if (afterDelete) router.push(afterDelete);
+          if (!toastResult(res)) return;
+          if (!res.data?.requested && afterDelete) router.push(afterDelete);
           router.refresh();
         });
       }}
     >
+      <Icon icon={actionIcons.delete} size={16} />
       {needsApproval ? (pending ? "Sending…" : "Request delete") : pending ? "Deleting…" : "Delete"}
       <span className="sr-only"> {title}</span>
     </button>

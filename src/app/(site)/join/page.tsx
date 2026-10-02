@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PageHeader } from "@/components/site/page-header";
+import { StepList } from "@/components/site/step-list";
 import { ApplicationForm } from "@/components/forms/application-form";
+import { TextLink } from "@/components/ui/text-link";
 
 export const metadata: Metadata = { title: "Become a member" };
 
@@ -11,38 +12,26 @@ const steps = [
   { title: "Sign in with Google", body: "Once approved, choose Continue with Google on the sign-in page." },
 ];
 
-export default function JoinPage() {
-  return (
-    <>
-      <PageHeader
-        title="Become a member"
-        lead="Members write our stories, run drives, and keep the donation ledger honest. Apply below and the President will get back to you."
-      />
-      <div className="mx-auto grid max-w-6xl gap-14 px-5 py-14 md:grid-cols-[1.5fr_1fr]">
-        <ApplicationForm />
-        <aside>
+const JoinPage = () => (
+  <>
+    <PageHeader
+      eyebrow="Membership"
+      title="Become a member"
+      lead="Members write our stories, run drives, and keep the donation ledger honest. Apply below and the President will get back to you."
+    />
+    <div className="mx-auto grid max-w-6xl gap-14 px-5 py-14 md:grid-cols-[1.5fr_1fr]">
+      <ApplicationForm />
+      <aside className="md:pt-1">
+        <div className="rounded-3xl bg-sky p-6 sm:p-7">
           <h2 className="text-xl font-semibold">How it works</h2>
-          <ol className="mt-6 space-y-6">
-            {steps.map((step, i) => (
-              <li key={step.title} className="grid grid-cols-[2.5rem_1fr] gap-3">
-                <span className="flex size-9 items-center justify-center rounded-full bg-sun font-display font-semibold text-ink">
-                  {i + 1}
-                </span>
-                <div>
-                  <h3 className="text-lg font-semibold">{step.title}</h3>
-                  <p className="text-ink-soft">{step.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-8 text-ink-soft">
-            Already approved?{" "}
-            <Link href="/login" className="text-sea hover:underline">
-              Sign in
-            </Link>
-          </p>
-        </aside>
-      </div>
-    </>
-  );
-}
+          <StepList steps={steps} className="mt-6" />
+        </div>
+        <p className="mt-6 flex flex-wrap items-center gap-x-2 text-ink-soft">
+          Already approved? <TextLink href="/login">Sign in</TextLink>
+        </p>
+      </aside>
+    </div>
+  </>
+);
+
+export default JoinPage;

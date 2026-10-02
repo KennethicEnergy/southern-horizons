@@ -4,9 +4,14 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { reviewApprovalRequest } from "@/actions/approvals";
 import type { ApprovalReview } from "@/lib/validations/approval";
+import { actionIcons } from "@/config/icons";
+import { toastResult } from "@/stores/toast-store";
 import { Button } from "@/components/ui/button";
 
-/** Approve applies the change right away; reject asks for a reason the requester will see. */
+/**
+ * Approve applies the change right away; reject asks for a reason the requester will see.
+ * Errors stay inline beside the controls (the reason may need fixing); a success pops a toast.
+ */
 export const ApprovalReviewControls = ({ requestId, title }: { requestId: string; title: string }) => {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -19,6 +24,7 @@ export const ApprovalReviewControls = ({ requestId, title }: { requestId: string
       setError(null);
       const res = await reviewApprovalRequest(review);
       if (!res.ok) return setError(res.message);
+      toastResult(res, `“${title}” approved.`);
       router.refresh();
     });
 
@@ -34,10 +40,10 @@ export const ApprovalReviewControls = ({ requestId, title }: { requestId: string
           value={reason}
           onChange={({ target }) => setReason(target.value)}
           disabled={pending}
-          className="rounded-lg border border-line bg-white px-3 py-2 text-[0.95rem] focus:border-sea focus:outline-none"
+          className="rounded-xl border border-line bg-white px-3 py-2 text-[0.95rem] focus:border-sea focus:outline-none focus:ring-2 focus:ring-sea/20"
         />
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" disabled={pending} onClick={() => decide({ requestId, decision: "rejected", reason })}>
+          <Button size="sm" variant="outline" icon={actionIcons.reject} disabled={pending} onClick={() => decide({ requestId, decision: "rejected", reason })}>
             {pending ? "Rejecting…" : "Reject"}
           </Button>
           <Button size="sm" variant="ghost" disabled={pending} onClick={() => setRejecting(false)}>
@@ -52,10 +58,10 @@ export const ApprovalReviewControls = ({ requestId, title }: { requestId: string
   return (
     <div className="grid justify-items-end gap-2">
       <div className="flex gap-2">
-        <Button size="sm" disabled={pending} onClick={() => decide({ requestId, decision: "approved" })}>
+        <Button size="sm" icon={actionIcons.approve} disabled={pending} onClick={() => decide({ requestId, decision: "approved" })}>
           {pending ? "Approving…" : "Approve"}
         </Button>
-        <Button size="sm" variant="outline" disabled={pending} onClick={() => setRejecting(true)}>
+        <Button size="sm" variant="outline" icon={actionIcons.reject} disabled={pending} onClick={() => setRejecting(true)}>
           Reject
         </Button>
       </div>

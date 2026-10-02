@@ -3,9 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { setUserActive } from "@/actions/users";
+import { toastResult } from "@/stores/toast-store";
 import { Button } from "@/components/ui/button";
 
-export function MemberActiveToggle({ userId, name, active }: { userId: string; name: string; active: boolean }) {
+export const MemberActiveToggle = ({ userId, name, active }: { userId: string; name: string; active: boolean }) => {
   const router = useRouter();
   const [pending, start] = useTransition();
 
@@ -13,7 +14,7 @@ export function MemberActiveToggle({ userId, name, active }: { userId: string; n
     start(async () => {
       if (active && !confirm(`Remove ${name}'s access? They'll be signed out within 5 minutes.`)) return;
       const res = await setUserActive({ userId, active: !active });
-      if (!res.ok) alert(res.message);
+      toastResult(res, active ? `${name} can no longer sign in.` : `${name} can sign in again.`);
       router.refresh();
     });
 
@@ -22,4 +23,4 @@ export function MemberActiveToggle({ userId, name, active }: { userId: string; n
       {active ? "Deactivate" : "Reactivate"}
     </Button>
   );
-}
+};

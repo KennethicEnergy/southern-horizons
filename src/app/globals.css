@@ -29,6 +29,24 @@
   --color-danger-mist: #fbe4e2;
   --color-line: #d3e1e5;
 
+  /* Shadows are tinted with ink so they sit in the palette instead of looking grey. */
+  --shadow-soft: 0 1px 2px rgb(2 61 84 / 0.06), 0 6px 20px -8px rgb(2 61 84 / 0.14);
+  --shadow-lift: 0 2px 6px rgb(2 61 84 / 0.06), 0 22px 44px -16px rgb(2 61 84 / 0.28);
+
+  /* One curve for every transition: quick start, long gentle settle. */
+  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.1, 1);
+
+  /* Toast time-left bar; the toast sets the duration inline. */
+  --animate-toast-countdown: toast-countdown linear forwards;
+  @keyframes toast-countdown {
+    from {
+      transform: scaleX(1);
+    }
+    to {
+      transform: scaleX(0);
+    }
+  }
+
   /* One family for everything. Helvetica World is used where installed; there is no web font file in the repo. */
   --font-sans: "Helvetica World", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-display: var(--font-sans);
@@ -42,6 +60,16 @@
     scrollbar-gutter: stable;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  ::selection {
+    background: var(--color-sun);
+    color: var(--color-ink);
   }
   body {
     font-family: var(--font-sans);
@@ -87,6 +115,91 @@
   .horizon-line {
     height: 2px;
     background: var(--color-ink);
+  }
+
+  /* A sun-yellow marker behind ink text. Sun is a fill only: it never carries text itself. */
+  .highlight-sun {
+    background: linear-gradient(transparent 60%, var(--color-sun) 60%, var(--color-sun) 92%, transparent 92%);
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+}
+
+/* Morning sky: sky fading to white, warmed by faint sun and mint glows. Hero and page headers. */
+@utility bg-horizon {
+  background:
+    radial-gradient(55% 60% at 88% 0%, rgb(148 223 167 / 0.32), transparent 70%),
+    radial-gradient(40% 50% at 0% 0%, rgb(253 253 104 / 0.22), transparent 70%),
+    linear-gradient(180deg, var(--color-sky) 0%, #ffffff 100%);
+}
+
+/* Deep water: ink into sea. Calls to action on a dark ground. */
+@utility bg-tide {
+  background: linear-gradient(135deg, var(--color-ink) 0%, var(--color-sea) 100%);
+}
+
+/* The four logo colors in a row. A thin accent above the footer. */
+@utility bg-brand-stripe {
+  background: linear-gradient(90deg, var(--color-sun), var(--color-mint), var(--color-sea), var(--color-ink));
+}
+
+/*
+ * Motion. Scroll-driven, so it runs off the main thread and stays smooth on phones.
+ * Browsers without scroll timelines, and anyone who asks for reduced motion, get a still page.
+ *
+ * .parallax-scope  marks the block whose trip through the viewport drives its layers.
+ * .parallax        a layer inside it; drifts by --parallax-shift (positive sinks back, negative floats forward).
+ * .reveal          fades a block up as it scrolls into view. Keep it on blocks shorter than the screen.
+ * .header-elevate  lifts a sticky header off the page once you start scrolling.
+ *
+ * Clip the ancestors of these with overflow-clip, never overflow-hidden: `hidden` makes the element a
+ * scroll container, the timeline binds to it instead of the page, and the motion silently stops.
+ */
+@keyframes parallax-drift {
+  from {
+    translate: 0 calc(var(--parallax-shift, 32px) * -1);
+  }
+  to {
+    translate: 0 var(--parallax-shift, 32px);
+  }
+}
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes header-elevate {
+  to {
+    box-shadow: var(--shadow-soft);
+    border-color: transparent;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .parallax-scope {
+      view-timeline: --parallax block;
+    }
+    /* The shorthand resets animation-timeline, so the timeline always comes after it. */
+    .parallax {
+      animation: parallax-drift linear both;
+      animation-timeline: --parallax;
+      animation-range: cover;
+    }
+    .reveal {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+    .header-elevate {
+      animation: header-elevate linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 96px;
+    }
   }
 }
 

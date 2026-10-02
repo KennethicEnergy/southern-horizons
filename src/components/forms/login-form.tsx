@@ -8,8 +8,9 @@ import { loginSchema, type LoginValues } from "@/lib/validations/auth";
 import { login } from "@/actions/auth";
 import { FormAlert, TextField } from "@/components/ui/form-fields";
 import { Button } from "@/components/ui/button";
+import { actionIcons } from "@/config/icons";
 
-export function LoginForm() {
+export const LoginForm = () => {
   const router = useRouter();
   const params = useSearchParams();
   const [error, setError] = useState<string | null>(null);
@@ -40,11 +41,11 @@ export function LoginForm() {
           <TextField name="email" label="Email" type="email" autoComplete="email" />
           <TextField name="password" label="Password" type="password" autoComplete="current-password" />
           {error ? <FormAlert tone="error">{error}</FormAlert> : null}
-          <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" size="lg" icon={actionIcons.signIn} className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Signing in…" : "Sign in"}
           </Button>
         </Form>
       )}
     </Formik>
   );
-}
+};

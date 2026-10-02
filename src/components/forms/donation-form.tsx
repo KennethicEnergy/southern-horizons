@@ -10,11 +10,12 @@ import { donationPledgeSchema, type DonationPledgeValues } from "@/lib/validatio
 import { submitDonation } from "@/actions/donations";
 import { CheckboxField, FormAlert, TextArea, TextField } from "@/components/ui/form-fields";
 import { Button } from "@/components/ui/button";
+import { actionIcons } from "@/config/icons";
 import { formatPeso } from "@/lib/money";
 
 type Item = { id: string; name: string; unitAmount: number };
 
-export function DonationForm({
+export const DonationForm = ({
   campaignId,
   items,
   qr,
@@ -22,7 +23,7 @@ export function DonationForm({
   campaignId: string;
   items: Item[];
   qr: { url: string; accountName: string | null } | null;
-}) {
+}) => {
   const [done, setDone] = useState<{ amount: number; message?: string } | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -146,7 +147,7 @@ export function DonationForm({
             </fieldset>
 
             {formError ? <FormAlert tone="error">{formError}</FormAlert> : null}
-            <Button type="submit" variant="give" size="lg" className="w-full" disabled={isSubmitting || !qr}>
+            <Button type="submit" variant="give" size="lg" icon={actionIcons.send} className="w-full" disabled={isSubmitting || !qr}>
               {isSubmitting ? "Sending…" : "Send donation details"}
             </Button>
           </Form>
@@ -154,4 +155,4 @@ export function DonationForm({
       }}
     </Formik>
   );
-}
+};

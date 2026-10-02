@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/site/page-header";
+import { Icon } from "@/components/ui/icon";
+import { ButtonLink } from "@/components/ui/button";
+import { actionIcons } from "@/config/icons";
 
 export const metadata: Metadata = { title: "FAQs" };
 
@@ -31,23 +34,31 @@ const faqs = [
   },
 ];
 
-export default function FaqsPage() {
-  return (
-    <>
-      <PageHeader title="Questions people ask us" />
-      <div className="mx-auto max-w-3xl px-5 py-14">
-        <div className="divide-y divide-line border-y border-line">
-          {faqs.map((f) => (
-            <details key={f.q} className="group py-5">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 font-display text-xl font-semibold">
-                {f.q}
-                <span aria-hidden="true" className="text-2xl font-normal text-sea transition-transform group-open:rotate-45">+</span>
-              </summary>
-              <p className="mt-3 max-w-prose text-lg text-ink-soft">{f.a}</p>
-            </details>
-          ))}
-        </div>
+const FaqsPage = () => (
+  <>
+    <PageHeader eyebrow="FAQs" title="Questions people ask us" />
+    <div className="mx-auto max-w-3xl px-5 py-14">
+      <div className="space-y-3">
+        {faqs.map(({ q, a }) => (
+          <details key={q} className="group rounded-2xl bg-white ring-1 ring-line transition-shadow duration-300 open:shadow-soft">
+            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-6 px-5 py-4 font-display text-lg font-semibold sm:text-xl [&::-webkit-details-marker]:hidden">
+              {q}
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sea-mist text-sea transition-transform duration-300 ease-out-soft group-open:rotate-45">
+                <Icon icon={actionIcons.add} size={18} />
+              </span>
+            </summary>
+            <p className="max-w-prose px-5 pb-5 text-lg text-ink-soft">{a}</p>
+          </details>
+        ))}
       </div>
-    </>
-  );
-}
+      <div className="mt-12 flex flex-col items-start gap-4 rounded-3xl bg-sky p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+        <p className="text-lg font-semibold">Still wondering about something?</p>
+        <ButtonLink href="/contact" icon={actionIcons.email} className="w-full sm:w-auto">
+          Ask us directly
+        </ButtonLink>
+      </div>
+    </div>
+  </>
+);
+
+export default FaqsPage;

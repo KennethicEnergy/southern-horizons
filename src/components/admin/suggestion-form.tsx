@@ -8,10 +8,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { suggestionSchema, type SuggestionValues } from "@/lib/validations/suggestion";
 import { addSuggestion } from "@/actions/suggestions";
+import { actionIcons } from "@/config/icons";
+import { toastResult } from "@/stores/toast-store";
 import { FormAlert, TextArea, TextField } from "@/components/ui/form-fields";
 import { Button } from "@/components/ui/button";
 
-export function SuggestionForm() {
+export const SuggestionForm = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
@@ -28,6 +30,7 @@ export function SuggestionForm() {
           return;
         }
         resetForm();
+        toastResult(res);
         router.refresh();
       }}
     >
@@ -36,11 +39,11 @@ export function SuggestionForm() {
           <TextField name="title" label="Title" placeholder="e.g. Add a photo gallery to event pages" />
           <TextArea name="description" label="Description (optional)" rows={3} placeholder="What should change, and why?" />
           {error ? <FormAlert tone="error">{error}</FormAlert> : null}
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" icon={actionIcons.add} disabled={isSubmitting}>
             {isSubmitting ? "Adding…" : "Add suggestion"}
           </Button>
         </Form>
       )}
     </Formik>
   );
-}
+};
