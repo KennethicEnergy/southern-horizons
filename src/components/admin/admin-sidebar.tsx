@@ -4,8 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+  ArrowLeft01Icon,
   DashboardSquare01Icon,
   Home01Icon,
+  Idea01Icon,
   Image01Icon,
   Logout01Icon,
   Mail01Icon,
@@ -27,7 +29,19 @@ const nav: { href: string; label: string; icon: typeof Home01Icon; permission: P
   { href: "/admin/donations", label: "Donations", icon: MoneyReceiveSquareIcon, permission: "donation:view" },
   { href: "/admin/messages", label: "Messages", icon: Mail01Icon, permission: "message:view" },
   { href: "/admin/users", label: "Members", icon: UserGroupIcon, permission: "admin:access" },
+  // TEMPORARY: see the note on `suggestions` in src/db/schema.ts.
+  { href: "/admin/suggestions", label: "Suggestions", icon: Idea01Icon, permission: "admin:access" },
 ];
+
+/**
+ * Where the mobile back button goes: the section list for a page inside it
+ * (e.g. /admin/posts/123/edit → Posts), or the dashboard for a section list itself.
+ */
+function parentOf(pathname: string): { href: string; label: string } | null {
+  if (pathname === "/admin") return null;
+  const section = nav.find((n) => n.href !== "/admin" && pathname.startsWith(`${n.href}/`));
+  return section ? { href: section.href, label: section.label } : { href: "/admin", label: "Dashboard" };
+}
 
 /** `badges` maps a nav href to a count shown beside it, e.g. pending member applications. */
 export function AdminSidebar({ user, badges = {} }: { user: { name?: string | null; role: Role }; badges?: Record<string, number> }) {
@@ -35,13 +49,26 @@ export function AdminSidebar({ user, badges = {} }: { user: { name?: string | nu
   const { sidebarOpen, toggleSidebar, closeSidebar } = useAdminUi();
   const items = nav.filter((n) => can(user.role, n.permission)); // Layer 3: cosmetic only.
   const totalBadges = Object.values(badges).reduce((a, n) => a + n, 0);
+  const parent = parentOf(pathname);
 
   return (
     <>
-      <div className="flex h-14 items-center justify-between border-b border-line bg-white px-4 lg:hidden">
-        <span className="flex items-center gap-2 font-display font-semibold">
-          <HorizonMark className="size-6" /> Backoffice
-        </span>
+      <div className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-white px-2 lg:hidden">
+        <div className="flex min-w-0 items-center gap-1">
+          {parent ? (
+            <Link
+              href={parent.href}
+              onClick={closeSidebar}
+              aria-label={`Back to ${parent.label}`}
+              className="flex size-10 shrink-0 items-center justify-center rounded-full text-ink hover:bg-sky"
+            >
+              <HugeiconsIcon icon={ArrowLeft01Icon} size={22} />
+            </Link>
+          ) : null}
+          <Link href="/admin" onClick={closeSidebar} className={`flex items-center gap-2 font-display font-semibold ${parent ? "" : "pl-2"}`}>
+            <HorizonMark className="size-6" /> Backoffice
+          </Link>
+        </div>
         <button
           type="button"
           onClick={toggleSidebar}

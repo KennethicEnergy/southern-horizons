@@ -94,6 +94,11 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                   <td className="whitespace-nowrap px-5 py-3.5 text-ink-soft">{formatDate(p.updatedAt)}</td>
                   <td className="px-5 py-3.5 text-right">
                     <div className="flex justify-end gap-3">
+                      {canOnPost(user, "edit", p) ? (
+                        <Link href={`/admin/posts/${p.id}/edit`} className="text-sm font-medium text-sea hover:underline">
+                          Edit<span className="sr-only"> {p.title}</span>
+                        </Link>
+                      ) : null}
                       {p.status === "published" ? (
                         <Link href={`/news/${p.slug}`} className="text-sm text-sea hover:underline" target="_blank">
                           View

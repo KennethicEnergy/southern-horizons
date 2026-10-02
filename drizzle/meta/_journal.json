@@ -22,6 +22,13 @@
       "when": 1790964286739,
       "tag": "0002_member_applications",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790966027774,
+      "tag": "0003_suggestions",
+      "breakpoints": true
     }
   ]
 }

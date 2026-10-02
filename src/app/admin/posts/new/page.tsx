@@ -11,7 +11,7 @@ export default async function NewPostPage() {
 
   return (
     <>
-      <AdminPageHeader title="Write a post" />
+      <AdminPageHeader title="Write a post" back={{ href: "/admin/posts", label: "Posts" }} />
       <PostForm
         initialValues={{
           title: "",

@@ -126,7 +126,8 @@ export async function savePost(
       published: "Published.",
       archived: "Archived.",
     };
-    return { ok: true, message: messages[status], data: { id, slug, status } };
+    const message = status === "published" && existing?.status === "published" ? "Changes are live." : messages[status];
+    return { ok: true, message, data: { id, slug, status } };
   });
 }
 

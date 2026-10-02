@@ -267,6 +267,31 @@ export const memberApplications = pgTable(
   (t) => [index("member_applications_status_idx").on(t.status, t.createdAt)],
 );
 
+/**
+ * TEMPORARY: the Backoffice "Suggestions" to-do list.
+ * To remove: delete this table, src/app/admin/suggestions, src/actions/suggestions.ts,
+ * src/lib/validations/suggestion.ts, src/components/admin/suggestion-*.tsx and its sidebar entry,
+ * then run `pnpm db:generate` and `pnpm db:migrate` to drop the table.
+ */
+export const suggestions = pgTable(
+  "suggestions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    isDone: boolean("is_done").notNull().default(false),
+    createdById: uuid("created_by_id")
+      .notNull()
+      .references(() => users.id),
+    ...timestamps,
+  },
+  (t) => [index("suggestions_done_idx").on(t.isDone, t.createdAt)],
+);
+
+export const suggestionsRelations = relations(suggestions, ({ one }) => ({
+  author: one(users, { fields: [suggestions.createdById], references: [users.id] }),
+}));
+
 export const auditLogs = pgTable(
   "audit_logs",
   {

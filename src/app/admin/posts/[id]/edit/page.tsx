@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { and, asc, eq, isNull } from "drizzle-orm";
 import { getDb, schema } from "@/db";
@@ -23,8 +24,11 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
       <div className="rounded-xl bg-white p-8">
         <h1 className="text-2xl font-semibold">You can&apos;t edit this post</h1>
         <p className="mt-2 text-ink-soft">
-          Content creators can edit their own drafts and posts in review. Ask an editor to change a published post.
+          Content creators can edit their own drafts and posts in review. Ask an editor or admin to change a published post.
         </p>
+        <Link href="/admin/posts" className="mt-4 inline-flex items-center gap-1.5 text-sea hover:underline">
+          <span aria-hidden="true">←</span> Back to posts
+        </Link>
       </div>
     );
   }
@@ -34,7 +38,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
 
   return (
     <>
-      <AdminPageHeader title="Edit post" />
+      <AdminPageHeader title="Edit post" back={{ href: "/admin/posts", label: "Posts" }} />
       <PostForm
         postId={post.id}
         currentStatus={post.status}
