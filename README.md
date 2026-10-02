@@ -6,6 +6,8 @@ Website and backoffice for a volunteer group: news and events as threads, QR Ph 
 
 ## Getting started
 
+New to the project? Follow [ONBOARDING.md](ONBOARDING.md) for the full step-by-step setup.
+
 ```bash
 pnpm install
 cp .env.example .env.local      # fill in the values (see below)
