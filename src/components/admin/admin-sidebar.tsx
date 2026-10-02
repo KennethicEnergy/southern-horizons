@@ -24,13 +24,15 @@ const nav: { href: string; label: string; icon: typeof Home01Icon; permission: P
   { href: "/admin/posts", label: "Posts", icon: News01Icon, permission: "post:create" },
   { href: "/admin/media", label: "Media", icon: Image01Icon, permission: "media:upload" },
   { href: "/admin/donations", label: "Donations", icon: MoneyReceiveSquareIcon, permission: "donation:view" },
-  { href: "/admin/users", label: "Members", icon: UserGroupIcon, permission: "user:manage" },
+  { href: "/admin/users", label: "Members", icon: UserGroupIcon, permission: "admin:access" },
 ];
 
-export function AdminSidebar({ user }: { user: { name?: string | null; role: Role } }) {
+/** `badges` maps a nav href to a count shown beside it, e.g. pending member applications. */
+export function AdminSidebar({ user, badges = {} }: { user: { name?: string | null; role: Role }; badges?: Record<string, number> }) {
   const pathname = usePathname();
   const { sidebarOpen, toggleSidebar, closeSidebar } = useAdminUi();
   const items = nav.filter((n) => can(user.role, n.permission)); // Layer 3: cosmetic only.
+  const totalBadges = Object.values(badges).reduce((a, n) => a + n, 0);
 
   return (
     <>
@@ -38,8 +40,15 @@ export function AdminSidebar({ user }: { user: { name?: string | null; role: Rol
         <span className="flex items-center gap-2 font-display font-semibold">
           <HorizonMark className="size-6" /> Backoffice
         </span>
-        <button type="button" onClick={toggleSidebar} aria-label="Toggle menu" aria-expanded={sidebarOpen} className="p-2">
+        <button
+          type="button"
+          onClick={toggleSidebar}
+          aria-label={totalBadges > 0 ? `Toggle menu, ${totalBadges} waiting` : "Toggle menu"}
+          aria-expanded={sidebarOpen}
+          className="relative p-2"
+        >
           <HugeiconsIcon icon={Menu01Icon} size={22} />
+          {totalBadges > 0 ? <span aria-hidden="true" className="absolute right-1 top-1 size-2.5 rounded-full bg-sea" /> : null}
         </button>
       </div>
       <aside
@@ -65,6 +74,12 @@ export function AdminSidebar({ user }: { user: { name?: string | null; role: Rol
                 >
                   <HugeiconsIcon icon={item.icon} size={20} />
                   {item.label}
+                  {badges[item.href] ? (
+                    <span className="ml-auto rounded-full bg-sea px-2 py-0.5 text-xs font-semibold tabular-nums text-white">
+                      {badges[item.href]}
+                      <span className="sr-only"> waiting</span>
+                    </span>
+                  ) : null}
                 </Link>
               );
             })}

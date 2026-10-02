@@ -45,7 +45,7 @@ export async function submitApplication(values: ApplicationValues): Promise<Acti
       phone: data.phone || null,
       message: data.message,
     });
-    revalidatePath("/admin/users");
+    revalidatePath("/admin", "layout");
     return { ok: true, message: THANKS };
   });
 }
@@ -97,8 +97,8 @@ export async function reviewApplication(input: ApplicationReview): Promise<Actio
       entityId: data.applicationId,
       changes: data.decision === "approved" ? { role: data.role } : undefined,
     });
-    revalidatePath("/admin/users");
-    revalidatePath("/admin");
+    // The whole backoffice layout: the sidebar badge counts pending applications.
+    revalidatePath("/admin", "layout");
     return { ok: true, message };
   });
 }

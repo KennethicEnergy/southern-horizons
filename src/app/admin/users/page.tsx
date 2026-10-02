@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { asc, eq, isNull } from "drizzle-orm";
+import { and, asc, eq, isNull } from "drizzle-orm";
+import type { Role } from "@/db/schema";
 import { getDb, schema } from "@/db";
 import { requireUser } from "@/lib/session";
 import { can, ROLE_LABELS } from "@/lib/rbac";
@@ -13,8 +13,8 @@ import { ApplicationReviewButtons } from "@/components/admin/application-review"
 
 export default async function MembersPage() {
   const actor = await requireUser();
-  // Send other roles back to the dashboard instead of an error page.
-  if (!can(actor.role, "user:manage")) redirect("/admin");
+  const canManage = can(actor.role, "user:manage");
+  // Everyone in the backoffice can see who the members are; only admins can change them.
   const members = await getDb()
     .select({
       id: schema.users.id,
@@ -25,8 +25,11 @@ export default async function MembersPage() {
       lastLoginAt: schema.users.lastLoginAt,
     })
     .from(schema.users)
-    .where(isNull(schema.users.deletedAt))
+    .where(canManage ? isNull(schema.users.deletedAt) : and(isNull(schema.users.deletedAt), eq(schema.users.isActive, true)))
     .orderBy(asc(schema.users.name));
+
+  if (!canManage) return <MemberDirectory members={members} actorId={actor.id} />;
+
   const applications = await getDb()
     .select()
     .from(schema.memberApplications)
@@ -109,6 +112,36 @@ export default async function MembersPage() {
                 <td className="px-5 py-3.5 text-right">
                   {m.id === actor.id ? <span className="text-sm text-ink-soft">You</span> : <MemberActiveToggle userId={m.id} name={m.name} active={m.isActive} />}
                 </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
+/** Read-only view for editors, creators, treasurers and members: names and roles only, no emails. */
+function MemberDirectory({ members, actorId }: { members: { id: string; name: string; role: Role }[]; actorId: string }) {
+  return (
+    <>
+      <AdminPageHeader title="Members" description="Everyone who can sign in to the backoffice. Ask an admin to change someone's role." />
+      <div className="overflow-x-auto rounded-xl bg-white">
+        <table className="w-full min-w-[28rem] text-left text-[0.95rem]">
+          <thead className="border-b border-line text-sm text-ink-soft">
+            <tr>
+              <th scope="col" className="px-5 py-3 font-medium">Member</th>
+              <th scope="col" className="px-5 py-3 font-medium">Role</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-line">
+            {members.map((m) => (
+              <tr key={m.id}>
+                <td className="px-5 py-3.5">
+                  {m.name}
+                  {m.id === actorId ? <span className="ml-2 text-sm text-ink-soft">(you)</span> : null}
+                </td>
+                <td className="px-5 py-3.5">{ROLE_LABELS[m.role]}</td>
               </tr>
             ))}
           </tbody>
