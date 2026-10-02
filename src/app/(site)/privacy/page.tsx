@@ -21,6 +21,7 @@ export default function PrivacyPage() {
           body: [
             "Donors: your name (unless you give anonymously), optional email, the payment reference number, amount, and any message you send.",
             "Contact form: your name, email, and message.",
+            "Member applications: your name, Google email, optional mobile number, and what you wrote about how you would like to help.",
             "Volunteers with accounts: name, email, and a record of the changes you make on the site.",
           ],
         },

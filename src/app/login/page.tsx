@@ -64,7 +64,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             </Suspense>
           </div>
         </div>
-        <p className="mt-6 text-center text-sm text-ink-soft">Need an account? Ask an admin to invite you.</p>
+        <p className="mt-6 text-center text-sm text-ink-soft">
+          Not a member yet?{" "}
+          <Link href="/join" className="text-sea hover:underline">
+            Apply to join
+          </Link>
+        </p>
       </div>
     </div>
   );

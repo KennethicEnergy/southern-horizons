@@ -22,7 +22,7 @@ export function SiteFooter() {
         <nav aria-label="Footer">
           <h2 className="font-display text-base font-semibold text-white">Explore</h2>
           <ul className="mt-4 space-y-2.5 text-[0.95rem]">
-            {[...site.nav, ...site.legal].map((item) => (
+            {[...site.nav, { href: "/join", label: "Become a member" }, ...site.legal].map((item) => (
               <li key={item.href}>
                 <Link href={item.href} className="hover:text-white">
                   {item.label}

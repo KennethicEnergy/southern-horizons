@@ -5,7 +5,7 @@ import { site } from "@/config/site";
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticPages = ["", "/news", "/transparency", "/about", "/contact", "/faqs", "/privacy", "/terms"].map((p) => ({
+  const staticPages = ["", "/news", "/transparency", "/about", "/contact", "/faqs", "/join", "/privacy", "/terms"].map((p) => ({
     url: `${site.url}${p}`,
     changeFrequency: "weekly" as const,
   }));

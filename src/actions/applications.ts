@@ -86,7 +86,7 @@ export async function reviewApplication(input: ApplicationReview): Promise<Actio
           entityId: user!.id,
           changes: { email: application.email, role: data.role, fromApplication: data.applicationId },
         });
-        message = `${application.name} is now a ${ROLE_LABELS[data.role]} and can sign in with Google using ${application.email}.`;
+        message = `${application.name} was added as ${ROLE_LABELS[data.role]} and can sign in with Google using ${application.email}.`;
       }
     }
 

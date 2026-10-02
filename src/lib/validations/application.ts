@@ -15,8 +15,8 @@ export const applicationSchema = z.object({
     .optional(),
   message: z.string().trim().min(10, "Tell us a bit more (at least 10 characters).").max(1500),
   consent: z.literal(true, { message: "Please agree so we can keep your application on file." }),
-  /** Honeypot: real people never see or fill this. */
-  website: z.string().max(0).optional(),
+  /** Honeypot: real people never see or fill this. Not length-checked, so the action can quietly ignore bots. */
+  website: z.string().max(500).optional(),
 });
 
 export type ApplicationValues = z.infer<typeof applicationSchema>;

@@ -6,7 +6,10 @@ import { can } from "@/lib/rbac";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { ButtonLink } from "@/components/ui/button";
 
-async function countWhere(table: typeof schema.posts | typeof schema.donations | typeof schema.contactMessages, where: ReturnType<typeof and>) {
+async function countWhere(
+  table: typeof schema.posts | typeof schema.donations | typeof schema.contactMessages | typeof schema.memberApplications,
+  where: ReturnType<typeof and>,
+) {
   const [row] = await getDb().select({ n: count() }).from(table).where(where);
   return row?.n ?? 0;
 }
@@ -38,6 +41,14 @@ export default async function DashboardPage() {
       value: await countWhere(schema.donations, eq(schema.donations.status, "pending")),
       href: "/admin/donations",
       hint: "Match these against the bank record",
+    });
+  }
+  if (can(user.role, "user:manage")) {
+    cards.push({
+      label: "Member applications",
+      value: await countWhere(schema.memberApplications, eq(schema.memberApplications.status, "pending")),
+      href: "/admin/users",
+      hint: "From the Become a member form",
     });
   }
   if (can(user.role, "message:view")) {
