@@ -17,9 +17,9 @@ export const metadata: Metadata = { title: "Sign in", robots: { index: false } }
 
 /** Auth.js and our signIn callback redirect here with ?error=… */
 const errorMessages: Record<string, string> = {
-  NotInvited: "This Google account hasn't been invited. Ask an admin to add your email to the members list.",
+  NotInvited: "This Google account hasn't been invited. Ask the President to add your email to the members list.",
   GoogleEmailUnverified: "Google hasn't verified this account's email address, so we can't sign you in with it.",
-  AccessDenied: "This account isn't allowed to sign in. Ask an admin to check your membership.",
+  AccessDenied: "This account isn't allowed to sign in. Ask the President to check your membership.",
 };
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; callbackUrl?: string }> }) {

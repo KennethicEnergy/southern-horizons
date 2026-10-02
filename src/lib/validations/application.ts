@@ -1,8 +1,6 @@
 import { z } from "zod";
-import { ROLE_LABELS } from "@/lib/rbac";
-import type { Role } from "@/db/schema";
+import { ROLE_KEYS } from "@/config/roles";
 
-const roles = Object.keys(ROLE_LABELS) as [Role, ...Role[]];
 
 export const applicationSchema = z.object({
   name: z.string().trim().min(2, "Add your name.").max(120),
@@ -22,7 +20,7 @@ export const applicationSchema = z.object({
 export type ApplicationValues = z.infer<typeof applicationSchema>;
 
 export const applicationReviewSchema = z.discriminatedUnion("decision", [
-  z.object({ applicationId: z.uuid(), decision: z.literal("approved"), role: z.enum(roles) }),
+  z.object({ applicationId: z.uuid(), decision: z.literal("approved"), role: z.enum(ROLE_KEYS) }),
   z.object({ applicationId: z.uuid(), decision: z.literal("rejected") }),
 ]);
 

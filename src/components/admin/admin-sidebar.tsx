@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
+  CheckmarkBadge01Icon,
   DashboardSquare01Icon,
   Home01Icon,
   Idea01Icon,
@@ -16,21 +17,24 @@ import {
   News01Icon,
   UserGroupIcon,
 } from "@hugeicons/core-free-icons";
-import { can, ROLE_LABELS, type Permission } from "@/lib/rbac";
-import type { Role } from "@/db/schema";
+import { can, canPerformAction, isApprover, roleLabel } from "@/lib/rbac";
+import type { Role } from "@/types/rbac";
 import { HorizonMark } from "@/components/site/horizon-mark";
 import { useAdminUi } from "@/stores/admin-ui-store";
 import { logout } from "@/actions/auth";
 
-const nav: { href: string; label: string; icon: typeof Home01Icon; permission: Permission }[] = [
-  { href: "/admin", label: "Dashboard", icon: DashboardSquare01Icon, permission: "admin:access" },
-  { href: "/admin/posts", label: "Posts", icon: News01Icon, permission: "post:create" },
-  { href: "/admin/media", label: "Media", icon: Image01Icon, permission: "media:upload" },
-  { href: "/admin/donations", label: "Donations", icon: MoneyReceiveSquareIcon, permission: "donation:view" },
-  { href: "/admin/messages", label: "Messages", icon: Mail01Icon, permission: "message:view" },
-  { href: "/admin/users", label: "Members", icon: UserGroupIcon, permission: "admin:access" },
+const canAdd = (role: Role) => canPerformAction(role, "add");
+
+const nav: { href: string; label: string; icon: typeof Home01Icon; visible: (role: Role) => boolean }[] = [
+  { href: "/admin", label: "Dashboard", icon: DashboardSquare01Icon, visible: (role) => can(role, "admin:access") },
+  { href: "/admin/posts", label: "Posts", icon: News01Icon, visible: canAdd },
+  { href: "/admin/approvals", label: "Approvals", icon: CheckmarkBadge01Icon, visible: (role) => isApprover(role) || canAdd(role) },
+  { href: "/admin/media", label: "Media", icon: Image01Icon, visible: canAdd },
+  { href: "/admin/donations", label: "Donations", icon: MoneyReceiveSquareIcon, visible: (role) => can(role, "donation:view") },
+  { href: "/admin/messages", label: "Messages", icon: Mail01Icon, visible: (role) => can(role, "message:view") },
+  { href: "/admin/users", label: "Members", icon: UserGroupIcon, visible: (role) => can(role, "admin:access") },
   // TEMPORARY: see the note on `suggestions` in src/db/schema.ts.
-  { href: "/admin/suggestions", label: "Suggestions", icon: Idea01Icon, permission: "admin:access" },
+  { href: "/admin/suggestions", label: "Suggestions", icon: Idea01Icon, visible: (role) => can(role, "admin:access") },
 ];
 
 /**
@@ -47,7 +51,7 @@ function parentOf(pathname: string): { href: string; label: string } | null {
 export function AdminSidebar({ user, badges = {} }: { user: { name?: string | null; role: Role }; badges?: Record<string, number> }) {
   const pathname = usePathname();
   const { sidebarOpen, toggleSidebar, closeSidebar } = useAdminUi();
-  const items = nav.filter((n) => can(user.role, n.permission)); // Layer 3: cosmetic only.
+  const items = nav.filter(({ visible }) => visible(user.role)); // Layer 3: cosmetic only.
   const totalBadges = Object.values(badges).reduce((a, n) => a + n, 0);
   const parent = parentOf(pathname);
 
@@ -119,7 +123,7 @@ export function AdminSidebar({ user, badges = {} }: { user: { name?: string | nu
           </nav>
           <div className="border-t border-line px-2 pt-4">
             <p className="truncate font-medium">{user.name}</p>
-            <p className="text-sm text-ink-soft">{ROLE_LABELS[user.role]}</p>
+            <p className="text-sm text-ink-soft">{roleLabel(user.role)}</p>
             <form action={logout}>
               <button type="submit" className="mt-3 flex items-center gap-2 text-sm text-ink-soft hover:text-danger">
                 <HugeiconsIcon icon={Logout01Icon} size={18} />

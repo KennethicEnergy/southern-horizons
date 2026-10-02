@@ -14,7 +14,7 @@ Ask the project owner to add you to these before you start:
 | Cloudflare (R2) | Only if you'll work on uploads or media |
 | Google Cloud OAuth client | Only if you'll work on Google sign-in |
 
-You also need a backoffice account. Either an admin invites your Google email under **Backoffice → Members**, or you use the seed admin you create in step 5.
+You also need a backoffice account. Either the President invites your Google email under **Backoffice → Members**, or you use the seed account (a President) you create in step 5.
 
 ## 2. Install the tools
 
@@ -134,7 +134,7 @@ drizzle/          generated SQL migrations (committed)
 
 Start with these files:
 
-- [src/lib/rbac.ts](src/lib/rbac.ts): who can do what. Code checks permissions, never role names.
+- [src/config/roles.ts](src/config/roles.ts) and [src/lib/rbac.ts](src/lib/rbac.ts): positions, what each may do, and who approves their changes. Code checks permissions, never position names.
 - [src/db/schema.ts](src/db/schema.ts): every table and enum.
 - [src/lib/session.ts](src/lib/session.ts): `requirePermission()`, the server-side permission check.
 - [src/actions/_helpers.ts](src/actions/_helpers.ts): `runAction()`, which turns errors thrown in server actions into messages forms can show.

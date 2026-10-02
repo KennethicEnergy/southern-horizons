@@ -8,7 +8,8 @@ const optionalText = (max: number) => z.string().trim().max(max, `Keep this unde
 const optionalId = z.union([z.uuid(), z.literal("")]).optional();
 
 export const POST_TYPES = ["news", "event", "update", "story"] as const;
-export const POST_INTENTS = ["save_draft", "submit", "publish"] as const;
+/** `publish` goes live immediately, or waits for approval when the position requires it. */
+export const POST_INTENTS = ["save_draft", "publish"] as const;
 
 export const postFormSchema = z
   .object({

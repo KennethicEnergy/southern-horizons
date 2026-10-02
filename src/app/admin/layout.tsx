@@ -4,6 +4,7 @@ import { count, eq } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { getCurrentUser } from "@/lib/session";
 import { can } from "@/lib/rbac";
+import { countPendingFor } from "@/lib/approvals/queries";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 
 export const metadata: Metadata = { title: "Backoffice", robots: { index: false } };
@@ -15,6 +16,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   // Counts for the sidebar badges, only for roles that can act on them.
   const badges: Record<string, number> = {};
+  const approvals = await countPendingFor(user.role);
+  if (approvals) badges["/admin/approvals"] = approvals;
   if (can(user.role, "user:manage")) {
     const [row] = await getDb()
       .select({ n: count() })

@@ -1,5 +1,5 @@
 /**
- * Creates the first admin and a sample campaign.
+ * Creates the first President (the seed admin) and a sample campaign.
  * Run once after `pnpm db:migrate`:  pnpm db:seed
  */
 import { neon } from "@neondatabase/serverless";
@@ -29,11 +29,11 @@ async function main() {
   if (!admin) {
     [admin] = await db
       .insert(schema.users)
-      .values({ email, name, role: "admin", passwordHash: await bcrypt.hash(password, 12) })
+      .values({ email, name, role: "president", passwordHash: await bcrypt.hash(password, 12) })
       .returning();
-    console.log(`Created admin ${email}`);
+    console.log(`Created President ${email}`);
   } else {
-    console.log(`Admin ${email} already exists`);
+    console.log(`${email} already exists`);
   }
 
   const [existing] = await db.select().from(schema.campaigns).where(eq(schema.campaigns.slug, "school-bag-drive-2026")).limit(1);

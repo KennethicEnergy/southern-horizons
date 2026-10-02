@@ -25,7 +25,7 @@ export async function addSuggestion(values: SuggestionValues): Promise<ActionRes
   });
 }
 
-/** Only the person who wrote it, or an admin, can tick it off or delete it. */
+/** Only the person who wrote it, or the President, can tick it off or delete it. */
 async function ownSuggestion(suggestionId: string) {
   const user = await requirePermission("admin:access");
   const id = idSchema.parse(suggestionId);
@@ -36,7 +36,7 @@ async function ownSuggestion(suggestionId: string) {
     .limit(1);
   if (!row) return { id, allowed: false as const, message: "That suggestion no longer exists." };
   if (row.createdById !== user.id && !can(user.role, "user:manage")) {
-    return { id, allowed: false as const, message: "Only the person who added it, or an admin, can change it." };
+    return { id, allowed: false as const, message: "Only the person who added it, or the President, can change it." };
   }
   return { id, allowed: true as const };
 }

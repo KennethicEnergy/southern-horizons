@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { and, eq, isNull } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { deleteObject, headObject, readObjectBytes } from "@/lib/r2";
-import { requirePermission } from "@/lib/session";
+import { requireAction } from "@/lib/session";
 import { ForbiddenError } from "@/lib/errors";
 import { matchesSignature } from "@/lib/file-signature";
 import { finalizeSchema, type AllowedMimeType } from "@/lib/validations/upload";
@@ -10,7 +10,7 @@ import { withErrors } from "@/lib/route-handler";
 import { audit } from "@/lib/audit";
 
 export const POST = withErrors(async (req: Request) => {
-  const user = await requirePermission("media:upload");
+  const user = await requireAction("add");
   const body = finalizeSchema.parse(await req.json());
   const db = getDb();
 

@@ -13,12 +13,14 @@ import {
   uuid,
   type AnyPgColumn,
 } from "drizzle-orm/pg-core";
+import { APPROVAL_STATUSES, CONTENT_ACTIONS, DEFAULT_ROLE, ROLE_KEYS } from "../config/roles";
 
 /* ------------------------------------------------------------------ */
 /* Enums                                                               */
 /* ------------------------------------------------------------------ */
 
-export const roleEnum = pgEnum("role", ["admin", "editor", "creator", "treasurer", "member"]);
+/** Organisational positions; see src/config/roles.ts for what each may do. */
+export const roleEnum = pgEnum("role", ROLE_KEYS);
 export const postTypeEnum = pgEnum("post_type", ["news", "event", "update", "story"]);
 export const postStatusEnum = pgEnum("post_status", ["draft", "in_review", "published", "archived"]);
 export const mediaKindEnum = pgEnum("media_kind", ["image", "video", "document"]);
@@ -27,6 +29,8 @@ export const donationChannelEnum = pgEnum("donation_channel", ["qrph_static", "g
 export const donationStatusEnum = pgEnum("donation_status", ["pending", "confirmed", "rejected"]);
 export const ledgerKindEnum = pgEnum("ledger_kind", ["income", "expense"]);
 export const applicationStatusEnum = pgEnum("application_status", ["pending", "approved", "rejected"]);
+export const approvalActionEnum = pgEnum("approval_action", CONTENT_ACTIONS);
+export const approvalStatusEnum = pgEnum("approval_status", APPROVAL_STATUSES);
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -53,7 +57,7 @@ export const users = pgTable(
     email: text("email").notNull(),
     /** Null for invited members who sign in with Google only. */
     passwordHash: text("password_hash"),
-    role: roleEnum("role").notNull().default("member"),
+    role: roleEnum("role").notNull().default(DEFAULT_ROLE),
     avatarMediaId: uuid("avatar_media_id"),
     isActive: boolean("is_active").notNull().default(true),
     lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
@@ -295,6 +299,40 @@ export const suggestionsRelations = relations(suggestions, ({ one }) => ({
   author: one(users, { fields: [suggestions.createdById], references: [users.id] }),
 }));
 
+/**
+ * A change that waits for an approver before it takes effect. The row is also its audit record:
+ * who asked, in which position, who could approve, and who decided, when and why.
+ */
+export const approvalRequests = pgTable(
+  "approval_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** An ApprovalResource, e.g. "post". */
+    resourceType: text("resource_type").notNull(),
+    resourceId: uuid("resource_id").notNull(),
+    action: approvalActionEnum("action").notNull(),
+    /** What to apply on approval, e.g. the edited post form. Null for add and delete. */
+    payload: jsonb("payload").$type<Record<string, unknown>>(),
+    status: approvalStatusEnum("status").notNull().default("pending"),
+    requestedById: uuid("requested_by_id")
+      .notNull()
+      .references(() => users.id),
+    /** The requester's position when they asked. */
+    requestedRole: roleEnum("requested_role").notNull(),
+    /** Positions allowed to approve when it was requested. */
+    approverRoles: roleEnum("approver_roles").array().notNull(),
+    reviewedById: uuid("reviewed_by_id").references(() => users.id),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    /** Why it was rejected. */
+    reason: text("reason"),
+    ...timestamps,
+  },
+  (t) => [
+    index("approval_requests_status_idx").on(t.status, t.createdAt),
+    index("approval_requests_resource_idx").on(t.resourceType, t.resourceId),
+  ],
+);
+
 export const auditLogs = pgTable(
   "audit_logs",
   {
@@ -354,10 +392,11 @@ export const ledgerEntriesRelations = relations(ledgerEntries, ({ one }) => ({
   receipt: one(media, { fields: [ledgerEntries.receiptMediaId], references: [media.id] }),
 }));
 
-export type Role = (typeof roleEnum.enumValues)[number];
+export type { Role } from "../types/rbac";
 export type PostType = (typeof postTypeEnum.enumValues)[number];
 export type PostStatus = (typeof postStatusEnum.enumValues)[number];
 export type MediaKind = (typeof mediaKindEnum.enumValues)[number];
 export type User = typeof users.$inferSelect;
 export type Post = typeof posts.$inferSelect;
 export type Media = typeof media.$inferSelect;
+export type ApprovalRequest = typeof approvalRequests.$inferSelect;

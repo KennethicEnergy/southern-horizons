@@ -1,12 +1,12 @@
-import { requirePermission } from "@/lib/session";
-import { can } from "@/lib/rbac";
+import { requireAction } from "@/lib/session";
+import { getPostAccess } from "@/lib/posts/access";
 import { getEventsForSelect } from "@/lib/queries";
 import { emptyDoc } from "@/lib/validations/post";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { PostForm } from "@/components/admin/post-form";
 
 export default async function NewPostPage() {
-  const user = await requirePermission("post:create");
+  const user = await requireAction("add");
   const events = await getEventsForSelect();
 
   return (
@@ -32,7 +32,7 @@ export default async function NewPostPage() {
         initialCover={null}
         initialAttachments={[]}
         events={events}
-        permissions={{ canPublish: can(user.role, "post:publish"), canSubmit: can(user.role, "post:submit"), canDelete: false }}
+        access={getPostAccess(user)}
       />
     </>
   );

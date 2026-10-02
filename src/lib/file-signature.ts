@@ -29,7 +29,7 @@ export function matchesSignature(type: AllowedMimeType, head: Uint8Array): boole
 }
 
 /**
- * SVGs are XML and can carry scripts. Uploads are limited to admins, and anything
+ * SVGs are XML and can carry scripts. Uploads are limited to the President, and anything
  * with scripting, event handlers, external references, or embedded HTML is rejected outright.
  */
 export function isSafeSvg(text: string): boolean {

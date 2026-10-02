@@ -6,6 +6,7 @@ import { and, eq, isNull, sql } from "drizzle-orm";
 import { authConfig } from "@/auth.config";
 import { getDb, schema } from "@/db";
 import { loginSchema } from "@/lib/validations/auth";
+import { isRole } from "@/lib/rbac";
 
 const ROLE_REFRESH_MS = 5 * 60 * 1000;
 
@@ -74,7 +75,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.roleCheckedAt = Date.now();
         return token;
       }
-      const stale = !token.roleCheckedAt || Date.now() - token.roleCheckedAt > ROLE_REFRESH_MS;
+      // An unknown role (e.g. issued before positions were renamed) is re-read right away.
+      const stale = !token.roleCheckedAt || Date.now() - token.roleCheckedAt > ROLE_REFRESH_MS || !isRole(token.role);
       if (token.id && stale && !params.user) {
         const [fresh] = await getDb()
           .select({ role: schema.users.role, isActive: schema.users.isActive, deletedAt: schema.users.deletedAt })

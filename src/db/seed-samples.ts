@@ -6,7 +6,7 @@
  *   pnpm db:seed:samples            add the samples (skips ones that exist)
  *   pnpm db:seed:samples --remove   delete every sample again
  *
- * Run `pnpm db:seed` first; samples are authored by the first admin.
+ * Run `pnpm db:seed` first; samples are authored by the President.
  */
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
@@ -89,8 +89,8 @@ const samplePosts: SamplePost[] = [
 ];
 
 async function addSamples() {
-  const admin = await db.query.users.findFirst({ where: eq(schema.users.role, "admin") });
-  if (!admin) throw new Error("No admin found. Run `pnpm db:seed` first.");
+  const admin = await db.query.users.findFirst({ where: eq(schema.users.role, "president") });
+  if (!admin) throw new Error("No President found. Run `pnpm db:seed` first.");
 
   const existing = new Set(
     (await db.select({ slug: schema.posts.slug }).from(schema.posts).where(like(schema.posts.slug, `${PREFIX}%`))).map((r) => r.slug),

@@ -5,15 +5,15 @@ import { eq, sql } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { requirePermission } from "@/lib/session";
 import { audit } from "@/lib/audit";
-import { ROLE_LABELS } from "@/lib/rbac";
+import { roleLabel } from "@/lib/rbac";
 import { inviteSchema, setActiveSchema, setRoleSchema, type InviteValues } from "@/lib/validations/user";
-import type { Role } from "@/db/schema";
+import type { Role } from "@/types/rbac";
 import type { ActionResult } from "@/lib/errors";
 import { runAction } from "./_helpers";
 
 /**
  * Adds someone to the members list so their Google account can sign in.
- * No email is sent; the admin tells them to sign in with Google.
+ * No email is sent; the President tells them to sign in with Google.
  */
 export async function inviteUser(values: InviteValues): Promise<ActionResult> {
   return runAction(async () => {
@@ -44,14 +44,14 @@ export async function inviteUser(values: InviteValues): Promise<ActionResult> {
 }
 
 /**
- * Changes a member's role. Takes effect within 5 minutes (the role refresh in auth.ts).
- * Admins can't change their own role, so there is always at least one admin left.
+ * Changes a member's position. Takes effect within 5 minutes (the role refresh in auth.ts).
+ * Nobody can change their own position, so the President can never lock themselves out.
  */
 export async function setUserRole(input: { userId: string; role: Role }): Promise<ActionResult> {
   return runAction(async () => {
     const actor = await requirePermission("user:manage");
     const data = setRoleSchema.parse(input);
-    if (data.userId === actor.id) return { ok: false, message: "You can't change your own role. Ask another admin." };
+    if (data.userId === actor.id) return { ok: false, message: "You can't change your own position." };
 
     const db = getDb();
     const [before] = await db
@@ -60,7 +60,7 @@ export async function setUserRole(input: { userId: string; role: Role }): Promis
       .where(eq(schema.users.id, data.userId))
       .limit(1);
     if (!before) return { ok: false, message: "That member no longer exists." };
-    if (before.role === data.role) return { ok: true, message: `${before.name} is already ${ROLE_LABELS[data.role]}.` };
+    if (before.role === data.role) return { ok: true, message: `${before.name} is already ${roleLabel(data.role)}.` };
 
     await db.update(schema.users).set({ role: data.role }).where(eq(schema.users.id, data.userId));
     await audit({
@@ -71,7 +71,7 @@ export async function setUserRole(input: { userId: string; role: Role }): Promis
       changes: { from: before.role, to: data.role },
     });
     revalidatePath("/admin/users");
-    return { ok: true, message: `${before.name} is now ${ROLE_LABELS[data.role]}. It applies within 5 minutes.` };
+    return { ok: true, message: `${before.name} is now ${roleLabel(data.role)}. It applies within 5 minutes.` };
   });
 }
 

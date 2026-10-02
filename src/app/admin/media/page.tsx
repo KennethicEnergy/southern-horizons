@@ -1,13 +1,13 @@
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { getDb, schema } from "@/db";
-import { requirePermission } from "@/lib/session";
+import { requireAction } from "@/lib/session";
 import { formatDate } from "@/lib/dates";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { MediaThumb } from "@/components/admin/media-thumb";
 import { MediaUploadPanel } from "@/components/admin/media-upload-panel";
 
 export default async function MediaPage() {
-  await requirePermission("media:upload");
+  await requireAction("add");
   const items = await getDb()
     .select()
     .from(schema.media)

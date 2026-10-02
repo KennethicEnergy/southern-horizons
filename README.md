@@ -12,7 +12,7 @@ New to the project? Follow [ONBOARDING.md](ONBOARDING.md) for the full step-by-s
 pnpm install
 cp .env.example .env.local      # fill in the values (see below)
 pnpm db:migrate                 # create tables
-pnpm db:seed                    # first admin + sample campaign + sample post
+pnpm db:seed                    # first President + sample campaign + sample post
 pnpm dev
 ```
 
@@ -54,24 +54,42 @@ Run migrations against production from your machine with the production `DATABAS
 1. In Google Cloud Console, create an **OAuth consent screen** (External), then **Credentials → Create OAuth client ID → Web application**.
 2. Authorized redirect URIs: `https://www.southern-horizons.org/api/auth/callback/google` and `http://localhost:3000/api/auth/callback/google`.
 3. Put the client ID and secret in `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` (`.env.local` and Vercel). The button appears once both are set.
-4. Admins invite people under **Backoffice → Members**. A Google account can sign in only if its email is on that list and active; anyone else is sent back to `/login` with a "not invited" message. Google doesn't accept preview-deployment URLs, so use email and password there.
+4. The President invites people under **Backoffice → Members**. A Google account can sign in only if its email is on that list and active; anyone else is sent back to `/login` with a "not invited" message. Google doesn't accept preview-deployment URLs, so use email and password there.
 
-## Roles and permissions
+## Positions, permissions, and approvals
 
-Code checks permissions, never role names. The map lives in `src/lib/rbac.ts`.
+Positions, their permission levels, and who approves what live in `src/config/roles.ts`. Code checks permissions through `src/lib/rbac.ts`, never position names, so positions can change without hunting through components.
 
-| Role | Posts | Publish | Media | Donations | Ledger | Users |
-|---|---|---|---|---|---|---|
-| Admin | all | ✓ | ✓ incl. SVG | review | ✓ | ✓ |
-| Editor | all | ✓ | ✓ | view | — | — |
-| Content creator | own drafts and in-review | submits for review | ✓ | — | — | — |
-| Treasurer | — | — | ✓ (receipts) | review | ✓ | — |
-| Member | — | — | — | view | — | — |
+Two separate questions are answered separately:
+- **Permission:** may this position add, edit, or delete at all? (`canPerformAction`)
+- **Approval:** does the change wait for an approver before it takes effect? (`requiresApproval`)
+
+| Position | Add | Edit | Delete | Approval required |
+|---|---|---|---|---|
+| President | ✓ | ✓ | ✓ | No |
+| VP External | ✓ | ✓ | — | Yes |
+| VP Internal | ✓ | ✓ | — | Yes |
+| Communications | ✓ | ✓ | ✓ | Yes |
+| Creatives Team | ✓ | ✓ | ✓ | Yes |
+| Org Development | ✓ | ✓ | ✓ | Yes |
+| Donor & Sponsor Relations | ✓ | ✓ | — | Yes |
+| Bookkeeper | ✓ | ✓ | — | Yes |
+| Member | — | — | — | View only |
+
+Outside content, the President manages members and uploads SVGs, the Bookkeeper confirms donations, and the VPs, Communications, and Donor & Sponsor Relations read contact messages (the `permissions` list on each position).
+
+**Approval workflow (posts).** For a position that requires approval:
+- Drafts are private and save immediately. **Publish** sends the post to Approvals (status *Awaiting approval*) and locks it until someone decides.
+- Editing a live post sends the proposed changes to Approvals; the live post stays as it is until they're approved.
+- Delete sends a delete request.
+- An approver approves (the change is applied) or rejects with a reason (nothing changes, and a rejected new post returns to drafts).
+
+Every request is a row in `approval_requests`: who asked, in which position, who could approve, who decided, when, and why. Decisions are also written to `audit_logs`. Approvers come from `APPROVAL_RULES`, which defaults to the President and can be set per resource and action. To route another resource through approvals, add it to `ApprovalResource` and register a handler in `src/lib/approvals/handlers.ts`.
 
 Checks run in three layers:
 1. `src/proxy.ts` keeps signed-out users out of `/admin`.
-2. **Every server action and API route calls `requirePermission()`.** This is the real check.
-3. The UI hides controls a role can't use. This is cosmetic only.
+2. **Every server action and API route calls `requirePermission()` or `requireAction()`,** and post actions decide permission and approval on the server. This is the real check.
+3. The UI hides controls a position can't use. This is cosmetic only.
 
 Deletes are soft (`deleted_at`), and changes are written to `audit_logs`.
 
@@ -84,14 +102,14 @@ Deletes are soft (`deleted_at`), and changes are written to `audit_logs`.
 2. The browser uploads straight to R2, so files never pass through Vercel.
 3. The browser calls `/api/uploads/finalize`, which checks the file's real bytes against its declared type. Only then is the media marked `verified`.
 
-JPEG and PNG are converted to WebP in the browser before upload, which also strips EXIF data such as GPS location. SVG uploads are admin-only, and any SVG containing scripts or external links is rejected.
+JPEG and PNG are converted to WebP in the browser before upload, which also strips EXIF data such as GPS location. SVG uploads are President-only, and any SVG containing scripts or external links is rejected.
 
 Limits: images 10 MB, SVG 512 KB, video 250 MB, PDF/DOCX 25 MB (see `src/lib/validations/upload.ts`).
 
 **Donations (static QR Ph).**
 1. The donor picks an item and quantity, pays with the campaign's QR code, and submits their reference number.
 2. The server computes the amount from the item price. The client never sends a total.
-3. The treasurer confirms or rejects each donation in `/admin/donations`.
+3. The Bookkeeper confirms or rejects each donation in `/admin/donations`.
 4. Only confirmed donations count toward progress bars and the transparency page.
 
 To add a payment gateway later (PayMongo, Xendit, or Maya), create donations with `channel: "gateway"` and `external_id`, then confirm them from the gateway's webhook.

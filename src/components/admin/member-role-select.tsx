@@ -3,11 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { setUserRole } from "@/actions/users";
-import { ROLE_LABELS } from "@/lib/rbac";
-import type { Role } from "@/db/schema";
+import type { Role } from "@/types/rbac";
 import { Button } from "@/components/ui/button";
+import { RoleSelect } from "./role-select";
 
-export function MemberRoleSelect({ userId, name, role }: { userId: string; name: string; role: Role }) {
+export const MemberRoleSelect = ({ userId, name, role }: { userId: string; name: string; role: Role }) => {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [selected, setSelected] = useState<Role>(role);
@@ -29,25 +29,16 @@ export function MemberRoleSelect({ userId, name, role }: { userId: string; name:
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <label className="sr-only" htmlFor={`member-role-${userId}`}>
-        Role for {name}
-      </label>
-      <select
+      <RoleSelect
         id={`member-role-${userId}`}
+        label={`Position for ${name}`}
         value={selected}
-        onChange={(e) => {
-          setSelected(e.target.value as Role);
+        disabled={pending}
+        onChange={(next) => {
+          setSelected(next);
           setNotice(null);
         }}
-        disabled={pending}
-        className="h-8 rounded-full border border-line bg-white px-3 text-sm text-ink focus:border-sea focus:outline-none"
-      >
-        {Object.entries(ROLE_LABELS).map(([value, label]) => (
-          <option key={value} value={value}>
-            {label}
-          </option>
-        ))}
-      </select>
+      />
       {changed ? (
         <>
           <Button size="sm" disabled={pending} onClick={save}>
@@ -65,4 +56,4 @@ export function MemberRoleSelect({ userId, name, role }: { userId: string; name:
       ) : null}
     </div>
   );
-}
+};

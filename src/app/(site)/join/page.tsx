@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Become a member" };
 
 const steps = [
   { title: "Apply", body: "Tell us who you are and how you'd like to help." },
-  { title: "We review it", body: "An admin reads every application, usually within a week." },
+  { title: "We review it", body: "The President reads every application, usually within a week." },
   { title: "Sign in with Google", body: "Once approved, choose Continue with Google on the sign-in page." },
 ];
 
@@ -16,7 +16,7 @@ export default function JoinPage() {
     <>
       <PageHeader
         title="Become a member"
-        lead="Members write our stories, run drives, and keep the donation ledger honest. Apply below and an admin will get back to you."
+        lead="Members write our stories, run drives, and keep the donation ledger honest. Apply below and the President will get back to you."
       />
       <div className="mx-auto grid max-w-6xl gap-14 px-5 py-14 md:grid-cols-[1.5fr_1fr]">
         <ApplicationForm />

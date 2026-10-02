@@ -5,7 +5,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { requirePermission } from "@/lib/session";
 import { audit } from "@/lib/audit";
-import { ROLE_LABELS } from "@/lib/rbac";
+import { roleLabel } from "@/lib/rbac";
 import {
   applicationReviewSchema,
   applicationSchema,
@@ -15,7 +15,7 @@ import {
 import type { ActionResult } from "@/lib/errors";
 import { runAction } from "./_helpers";
 
-const THANKS = "Thanks for applying! An admin will review it. Once approved, sign in with Google using the email you gave us.";
+const THANKS = "Thanks for applying! The President will review it. Once approved, sign in with Google using the email you gave us.";
 
 /** Public: anyone can apply. The reply never reveals whether the email is already a member or has applied. */
 export async function submitApplication(values: ApplicationValues): Promise<ActionResult> {
@@ -50,14 +50,14 @@ export async function submitApplication(values: ApplicationValues): Promise<Acti
   });
 }
 
-/** Admin: approving invites the applicant with the chosen role; rejecting just closes it. */
+/** President: approving invites the applicant with the chosen position; rejecting just closes it. */
 export async function reviewApplication(input: ApplicationReview): Promise<ActionResult> {
   return runAction(async () => {
     const actor = await requirePermission("user:manage");
     const data = applicationReviewSchema.parse(input);
     const db = getDb();
 
-    // Claim it first so two admins can't review the same application twice.
+    // Claim it first so two reviewers can't review the same application twice.
     const [application] = await db
       .update(schema.memberApplications)
       .set({ status: data.decision, reviewedById: actor.id, reviewedAt: new Date() })
@@ -86,7 +86,7 @@ export async function reviewApplication(input: ApplicationReview): Promise<Actio
           entityId: user!.id,
           changes: { email: application.email, role: data.role, fromApplication: data.applicationId },
         });
-        message = `${application.name} was added as ${ROLE_LABELS[data.role]} and can sign in with Google using ${application.email}.`;
+        message = `${application.name} was added as ${roleLabel(data.role)} and can sign in with Google using ${application.email}.`;
       }
     }
 

@@ -16,7 +16,7 @@ export function SuggestionDoneToggle({ suggestionId, title, done, canChange }: {
       checked={done}
       disabled={!canChange || pending}
       aria-label={done ? `Mark "${title}" as not done` : `Mark "${title}" as done`}
-      title={canChange ? undefined : "Only the person who added it, or an admin, can tick it off"}
+      title={canChange ? undefined : "Only the person who added it, or the President, can tick it off"}
       onChange={(e) =>
         start(async () => {
           const res = await setSuggestionDone({ suggestionId, done: e.target.checked });

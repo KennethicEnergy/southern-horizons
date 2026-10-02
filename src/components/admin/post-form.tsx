@@ -7,6 +7,7 @@ import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import type { Media } from "@/db/schema";
+import type { PostAccess } from "@/types/rbac";
 import { postFormSchema, type PostFormValues } from "@/lib/validations/post";
 import { savePost } from "@/actions/posts";
 import { slugify } from "@/lib/slug";
@@ -18,6 +19,7 @@ import { UploadQueue } from "./upload-queue";
 import { MediaThumb } from "./media-thumb";
 import { CoverPositioner } from "./cover-positioner";
 import { DeletePostButton } from "./delete-post-button";
+import { StatusBadge } from "./status-badge";
 
 type MediaLite = Pick<Media, "id" | "kind" | "url" | "mimeType" | "alt" | "filename">;
 
@@ -27,7 +29,8 @@ type Props = {
   initialCover: MediaLite | null;
   initialAttachments: MediaLite[];
   events: { id: string; title: string }[];
-  permissions: { canPublish: boolean; canSubmit: boolean; canDelete: boolean };
+  /** What each change turns into for this user and post; see src/lib/posts/access.ts. */
+  access: PostAccess;
   currentStatus?: string;
 };
 
@@ -50,7 +53,7 @@ function BodyField() {
   );
 }
 
-export function PostForm({ postId, initialValues, initialCover, initialAttachments, events, permissions, currentStatus }: Props) {
+export function PostForm({ postId, initialValues, initialCover, initialAttachments, events, access, currentStatus }: Props) {
   const router = useRouter();
   const [cover, setCover] = useState<MediaLite | null>(initialCover);
   const [attachments, setAttachments] = useState<MediaLite[]>(initialAttachments);
@@ -128,28 +131,38 @@ export function PostForm({ postId, initialValues, initialCover, initialAttachmen
               <aside className="space-y-6">
                 <div className="space-y-4 rounded-xl bg-white p-5">
                   {currentStatus ? (
-                    <p className="text-sm text-ink-soft">
-                      Current status: <span className="font-medium text-ink">{currentStatus.replace("_", " ")}</span>
+                    <p className="flex items-center gap-2 text-sm text-ink-soft">
+                      Current status: <StatusBadge status={currentStatus} />
                     </p>
                   ) : null}
                   {notice ? <FormAlert tone={notice.tone}>{notice.text}</FormAlert> : null}
-                  <div className="grid gap-2">
-                    {permissions.canPublish ? (
+                  {access.edit === "approval" ? (
+                    <div className="grid gap-2">
+                      <p className="text-sm text-ink-soft">This post is live. Your changes go live once they&apos;re approved.</p>
                       <Button type="button" variant="primary" disabled={isSubmitting} onClick={() => submitWith("publish")}>
-                        {currentStatus === "published" ? "Update post" : "Publish"}
+                        Request changes
                       </Button>
-                    ) : permissions.canSubmit ? (
-                      <Button type="button" variant="primary" disabled={isSubmitting} onClick={() => submitWith("submit")}>
-                        Submit for review
+                    </div>
+                  ) : (
+                    <div className="grid gap-2">
+                      {access.publish !== "denied" ? (
+                        <Button type="button" variant="primary" disabled={isSubmitting} onClick={() => submitWith("publish")}>
+                          {access.publish === "approval" ? "Submit for approval" : currentStatus === "published" ? "Update post" : "Publish"}
+                        </Button>
+                      ) : null}
+                      <Button type="button" variant="outline" disabled={isSubmitting} onClick={() => submitWith("save_draft")}>
+                        {currentStatus === "published" ? "Unpublish and save as draft" : "Save draft"}
                       </Button>
-                    ) : null}
-                    <Button type="button" variant="outline" disabled={isSubmitting} onClick={() => submitWith("save_draft")}>
-                      {currentStatus === "published" ? "Unpublish and save as draft" : "Save draft"}
-                    </Button>
-                  </div>
-                  {postId && permissions.canDelete ? (
+                    </div>
+                  )}
+                  {postId && access.delete !== "denied" ? (
                     <div className="border-t border-line pt-3">
-                      <DeletePostButton postId={postId} title={values.title || "this post"} afterDelete="/admin/posts" />
+                      <DeletePostButton
+                        postId={postId}
+                        title={values.title || "this post"}
+                        afterDelete="/admin/posts"
+                        needsApproval={access.delete === "approval"}
+                      />
                     </div>
                   ) : null}
                 </div>

@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import { getDb, schema } from "@/db";
 import { presignPut, publicUrlFor } from "@/lib/r2";
-import { requirePermission } from "@/lib/session";
+import { requireAction } from "@/lib/session";
 import { can } from "@/lib/rbac";
 import { ForbiddenError } from "@/lib/errors";
 import { presignSchema, UPLOAD_RULES } from "@/lib/validations/upload";
 import { withErrors } from "@/lib/route-handler";
 
 export const POST = withErrors(async (req: Request) => {
-  const user = await requirePermission("media:upload");
+  const user = await requireAction("add");
   const body = presignSchema.parse(await req.json());
 
   if (body.contentType === "image/svg+xml" && !can(user.role, "media:upload:svg")) {
-    throw new ForbiddenError("Only admins can upload SVG files.");
+    throw new ForbiddenError("Only the President can upload SVG files.");
   }
 
   const rule = UPLOAD_RULES[body.contentType];

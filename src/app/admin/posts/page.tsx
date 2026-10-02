@@ -1,9 +1,12 @@
 import Link from "next/link";
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, isNull, ne, or } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import type { PostStatus } from "@/db/schema";
-import { requirePermission } from "@/lib/session";
-import { can, canOnPost } from "@/lib/rbac";
+import { requireAction } from "@/lib/session";
+import { decidePostDelete, decidePostEdit, seesAllPosts } from "@/lib/posts/access";
+import { pendingActionsFor } from "@/lib/approvals/queries";
+import type { ContentAction } from "@/types/rbac";
+import { CONTENT_ACTION_LABELS } from "@/config/roles";
 import { formatDate } from "@/lib/dates";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { StatusBadge } from "@/components/admin/status-badge";
@@ -13,32 +16,34 @@ import { ButtonLink } from "@/components/ui/button";
 const statuses: { value?: PostStatus; label: string }[] = [
   { label: "All" },
   { value: "draft", label: "Drafts" },
-  { value: "in_review", label: "In review" },
+  { value: "in_review", label: "Awaiting approval" },
   { value: "published", label: "Published" },
 ];
 
 export default async function PostsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
-  const user = await requirePermission("post:create");
+  const user = await requireAction("add");
   const { status: raw } = await searchParams;
   const status = statuses.find((s) => s.value === raw)?.value;
-  const seesAll = can(user.role, "post:edit:any");
+  const seesAll = seesAllPosts(user.role);
+  const deleteDecision = decidePostDelete(user);
 
   const rows = await getDb().query.posts.findMany({
     where: and(
       isNull(schema.posts.deletedAt),
-      seesAll ? undefined : eq(schema.posts.authorId, user.id),
+      seesAll ? undefined : or(eq(schema.posts.authorId, user.id), ne(schema.posts.status, "draft")),
       status ? eq(schema.posts.status, status) : undefined,
     ),
     orderBy: [desc(schema.posts.updatedAt)],
     limit: 100,
     with: { author: { columns: { name: true } } },
   });
+  const pending = await pendingActionsFor("post", rows.map(({ id }) => id));
 
   return (
     <>
       <AdminPageHeader
         title="Posts"
-        description={seesAll ? "News, events, updates, and stories from every volunteer." : "Posts you've written."}
+        description={seesAll ? "News, events, updates, and stories from every volunteer." : "Live posts, posts awaiting approval, and your own drafts. Changes to live posts wait for approval."}
         actions={<ButtonLink href="/admin/posts/new">Write a post</ButtonLink>}
       />
       <nav aria-label="Filter by status" className="mb-4 flex flex-wrap gap-2">
@@ -69,16 +74,19 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                 <th scope="col" className="px-5 py-3 font-medium">Title</th>
                 <th scope="col" className="px-5 py-3 font-medium">Type</th>
                 <th scope="col" className="px-5 py-3 font-medium">Status</th>
-                {seesAll ? <th scope="col" className="px-5 py-3 font-medium">Author</th> : null}
+                <th scope="col" className="px-5 py-3 font-medium">Author</th>
                 <th scope="col" className="px-5 py-3 font-medium">Updated</th>
                 <th scope="col" className="px-5 py-3"><span className="sr-only">Actions</span></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {rows.map((p) => (
+              {rows.map((p) => {
+                const canEdit = decidePostEdit(user, p) !== "denied";
+                const pendingChips = (pending.get(p.id) ?? []).filter((action): action is Exclude<ContentAction, "add"> => action !== "add");
+                return (
                 <tr key={p.id}>
                   <td className="max-w-xs px-5 py-3.5">
-                    {canOnPost(user, "edit", p) ? (
+                    {canEdit ? (
                       <Link href={`/admin/posts/${p.id}/edit`} className="font-medium hover:text-sea">
                         {p.title}
                       </Link>
@@ -88,13 +96,18 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                   </td>
                   <td className="px-5 py-3.5 capitalize text-ink-soft">{p.type}</td>
                   <td className="px-5 py-3.5">
-                    <StatusBadge status={p.status} />
+                    <div className="flex flex-wrap gap-1.5">
+                      <StatusBadge status={p.status} />
+                      {pendingChips.map((action) => (
+                        <StatusBadge key={action} status="pending" label={`${CONTENT_ACTION_LABELS[action]} pending`} />
+                      ))}
+                    </div>
                   </td>
-                  {seesAll ? <td className="px-5 py-3.5 text-ink-soft">{p.author.name}</td> : null}
+                  <td className="px-5 py-3.5 text-ink-soft">{p.author.name}</td>
                   <td className="whitespace-nowrap px-5 py-3.5 text-ink-soft">{formatDate(p.updatedAt)}</td>
                   <td className="px-5 py-3.5 text-right">
                     <div className="flex justify-end gap-3">
-                      {canOnPost(user, "edit", p) ? (
+                      {canEdit ? (
                         <Link href={`/admin/posts/${p.id}/edit`} className="text-sm font-medium text-sea hover:underline">
                           Edit<span className="sr-only"> {p.title}</span>
                         </Link>
@@ -104,11 +117,14 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                           View
                         </Link>
                       ) : null}
-                      {canOnPost(user, "delete", p) ? <DeletePostButton postId={p.id} title={p.title} /> : null}
+                      {deleteDecision !== "denied" ? (
+                        <DeletePostButton postId={p.id} title={p.title} needsApproval={deleteDecision === "approval"} />
+                      ) : null}
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>

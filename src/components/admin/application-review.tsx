@@ -3,14 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { reviewApplication } from "@/actions/applications";
-import { ROLE_LABELS } from "@/lib/rbac";
-import type { Role } from "@/db/schema";
+import { DEFAULT_ROLE } from "@/config/roles";
+import type { Role } from "@/types/rbac";
 import { Button } from "@/components/ui/button";
+import { RoleSelect } from "./role-select";
 
-export function ApplicationReviewButtons({ applicationId, name }: { applicationId: string; name: string }) {
+export const ApplicationReviewButtons = ({ applicationId, name }: { applicationId: string; name: string }) => {
   const router = useRouter();
   const [pending, start] = useTransition();
-  const [role, setRole] = useState<Role>("creator");
+  const [role, setRole] = useState<Role>(DEFAULT_ROLE);
 
   const act = (decision: "approved" | "rejected") =>
     start(async () => {
@@ -22,22 +23,7 @@ export function ApplicationReviewButtons({ applicationId, name }: { applicationI
 
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
-      <label className="sr-only" htmlFor={`role-${applicationId}`}>
-        Role for {name}
-      </label>
-      <select
-        id={`role-${applicationId}`}
-        value={role}
-        onChange={(e) => setRole(e.target.value as Role)}
-        disabled={pending}
-        className="h-8 rounded-full border border-line bg-white px-3 text-sm text-ink focus:border-sea focus:outline-none"
-      >
-        {Object.entries(ROLE_LABELS).map(([value, label]) => (
-          <option key={value} value={value}>
-            {label}
-          </option>
-        ))}
-      </select>
+      <RoleSelect id={`role-${applicationId}`} label={`Position for ${name}`} value={role} onChange={setRole} disabled={pending} />
       <Button size="sm" disabled={pending} onClick={() => act("approved")}>
         Approve
       </Button>
@@ -46,4 +32,4 @@ export function ApplicationReviewButtons({ applicationId, name }: { applicationI
       </Button>
     </div>
   );
-}
+};

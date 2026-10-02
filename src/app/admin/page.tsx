@@ -2,7 +2,8 @@ import Link from "next/link";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { requireUser } from "@/lib/session";
-import { can } from "@/lib/rbac";
+import { can, canPerformAction, isApprover, requiresApproval } from "@/lib/rbac";
+import { countPendingBy, countPendingFor } from "@/lib/approvals/queries";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { ButtonLink } from "@/components/ui/button";
 
@@ -19,7 +20,9 @@ export default async function DashboardPage() {
 
   const cards: { label: string; value: number; href: string; hint: string }[] = [];
 
-  if (can(user.role, "post:create")) {
+  const canAdd = canPerformAction(user.role, "add");
+
+  if (canAdd) {
     cards.push({
       label: "Your drafts",
       value: await countWhere(schema.posts, and(eq(schema.posts.authorId, user.id), eq(schema.posts.status, "draft"), isNull(schema.posts.deletedAt))),
@@ -27,12 +30,20 @@ export default async function DashboardPage() {
       hint: "Posts you haven't submitted yet",
     });
   }
-  if (can(user.role, "post:publish")) {
+  if (canAdd && requiresApproval(user.role)) {
     cards.push({
-      label: "Waiting for review",
-      value: await countWhere(schema.posts, and(eq(schema.posts.status, "in_review"), isNull(schema.posts.deletedAt))),
-      href: "/admin/posts?status=in_review",
-      hint: "Submitted by content creators",
+      label: "Your requests waiting",
+      value: await countPendingBy(user.id),
+      href: "/admin/approvals",
+      hint: "Changes waiting for approval",
+    });
+  }
+  if (isApprover(user.role)) {
+    cards.push({
+      label: "Waiting for your approval",
+      value: await countPendingFor(user.role),
+      href: "/admin/approvals",
+      hint: "New posts, edits, and deletes from officers",
     });
   }
   if (can(user.role, "donation:review")) {
@@ -65,7 +76,7 @@ export default async function DashboardPage() {
       <AdminPageHeader
         title={`Hi, ${user.name?.split(" ")[0] ?? "there"}`}
         description="Here's what needs your attention."
-        actions={can(user.role, "post:create") ? <ButtonLink href="/admin/posts/new">Write a post</ButtonLink> : null}
+        actions={canAdd ? <ButtonLink href="/admin/posts/new">Write a post</ButtonLink> : null}
       />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (

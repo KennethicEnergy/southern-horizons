@@ -5,23 +5,24 @@ const styles: Record<string, string> = {
   archived: "bg-sky text-ink-soft",
   pending: "bg-sun-mist text-sun-ink ring-1 ring-inset ring-sun-deep",
   confirmed: "bg-leaf-mist text-leaf",
+  approved: "bg-leaf-mist text-leaf",
   rejected: "bg-danger-mist text-danger",
 };
 
 const labels: Record<string, string> = {
   draft: "Draft",
-  in_review: "In review",
+  in_review: "Awaiting approval",
   published: "Published",
   archived: "Archived",
   pending: "Pending",
   confirmed: "Confirmed",
+  approved: "Approved",
   rejected: "Rejected",
 };
 
-export function StatusBadge({ status }: { status: string }) {
-  return (
-    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-sm font-medium ${styles[status] ?? "bg-sky"}`}>
-      {labels[status] ?? status}
-    </span>
-  );
-}
+/** `label` overrides the default text, e.g. "Delete pending". */
+export const StatusBadge = ({ status, label }: { status: string; label?: string }) => (
+  <span className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-sm font-medium ${styles[status] ?? "bg-sky"}`}>
+    {label ?? labels[status] ?? status}
+  </span>
+);

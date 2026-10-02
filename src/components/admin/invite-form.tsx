@@ -6,11 +6,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { inviteSchema, type InviteValues } from "@/lib/validations/user";
 import { inviteUser } from "@/actions/users";
-import { ROLE_LABELS } from "@/lib/rbac";
+import { DEFAULT_ROLE, ROLE_OPTIONS } from "@/config/roles";
 import { FormAlert, SelectField, TextField } from "@/components/ui/form-fields";
 import { Button } from "@/components/ui/button";
-
-const roleOptions = Object.entries(ROLE_LABELS).map(([value, label]) => ({ value, label }));
 
 export function InviteForm() {
   const router = useRouter();
@@ -18,7 +16,7 @@ export function InviteForm() {
 
   return (
     <Formik<InviteValues>
-      initialValues={{ name: "", email: "", role: "creator" }}
+      initialValues={{ name: "", email: "", role: DEFAULT_ROLE }}
       validationSchema={toFormikValidationSchema(inviteSchema)}
       onSubmit={async (values, { resetForm, setErrors }) => {
         setStatus(null);
@@ -38,7 +36,7 @@ export function InviteForm() {
           <div className="grid gap-5 md:grid-cols-[1fr_1.3fr_0.8fr]">
             <TextField name="name" label="Name" autoComplete="off" />
             <TextField name="email" label="Google email" type="email" autoComplete="off" hint="The address they sign in to Google with." />
-            <SelectField name="role" label="Role" options={roleOptions} />
+            <SelectField name="role" label="Position" options={ROLE_OPTIONS} />
           </div>
           {status ? <FormAlert tone={status.tone}>{status.text}</FormAlert> : null}
           <Button type="submit" disabled={isSubmitting}>

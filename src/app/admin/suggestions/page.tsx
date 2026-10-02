@@ -11,7 +11,7 @@ import { SuggestionDeleteButton, SuggestionDoneToggle } from "@/components/admin
 
 export default async function SuggestionsPage() {
   const user = await requireUser();
-  const isAdmin = can(user.role, "user:manage");
+  const isPresident = can(user.role, "user:manage");
   const items = await getDb().query.suggestions.findMany({
     orderBy: [asc(schema.suggestions.isDone), desc(schema.suggestions.createdAt)],
     with: { author: { columns: { name: true } } },
@@ -22,7 +22,7 @@ export default async function SuggestionsPage() {
     <>
       <AdminPageHeader
         title="Suggestions"
-        description="Ideas and fixes for the site. Anyone can add one; the person who added it, or an admin, can tick it off."
+        description="Ideas and fixes for the site. Anyone can add one; the person who added it, or the President, can tick it off."
       />
 
       <section className="rounded-xl bg-white p-6">
@@ -41,7 +41,7 @@ export default async function SuggestionsPage() {
         ) : (
           <ul className="mt-4 divide-y divide-line overflow-hidden rounded-xl bg-white">
             {items.map((s) => {
-              const canChange = isAdmin || s.createdById === user.id;
+              const canChange = isPresident || s.createdById === user.id;
               return (
                 <li key={s.id} className="flex gap-4 px-5 py-4">
                   <SuggestionDoneToggle suggestionId={s.id} title={s.title} done={s.isDone} canChange={canChange} />

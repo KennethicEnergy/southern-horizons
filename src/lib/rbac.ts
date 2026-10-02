@@ -1,78 +1,54 @@
-import type { Role } from "@/db/schema";
+import { APPROVAL_RULES, PERMISSION_LEVELS, ROLE_KEYS, ROLES } from "@/config/roles";
+import type {
+  AccessDecision,
+  ApprovalResource,
+  ApprovalRules,
+  ContentAction,
+  Permission,
+  PermissionLevel,
+  Role,
+} from "@/types/rbac";
 
 /**
- * Every protected action in the app is a permission string.
- * Code checks permissions, never role names, so roles can be reshaped
- * without hunting through components and actions.
+ * Two separate questions, answered separately:
+ * - Permission: may this position do the action at all? (`canPerformAction`, `can`)
+ * - Approval: does the action wait for an approver before it takes effect? (`requiresApproval`)
+ * Code checks these, never role names, so positions can be reshaped in src/config/roles.ts.
  */
-export const PERMISSIONS = [
-  "admin:access",
-  "post:create",
-  "post:edit:own",
-  "post:edit:any",
-  "post:submit",
-  "post:publish",
-  "post:delete:own",
-  "post:delete:any",
-  "media:upload",
-  "media:upload:svg",
-  "media:delete",
-  "campaign:manage",
-  "donation:view",
-  "donation:review",
-  "ledger:manage",
-  "message:view",
-  "user:manage",
-  "audit:view",
-] as const;
 
-export type Permission = (typeof PERMISSIONS)[number];
+type MaybeRole = Role | null | undefined;
 
-const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
-  admin: PERMISSIONS,
-  editor: [
-    "admin:access",
-    "post:create",
-    "post:edit:own",
-    "post:edit:any",
-    "post:submit",
-    "post:publish",
-    "post:delete:own",
-    "post:delete:any",
-    "media:upload",
-    "media:delete",
-    "campaign:manage",
-    "donation:view",
-    "message:view",
-  ],
-  creator: ["admin:access", "post:create", "post:edit:own", "post:submit", "post:delete:own", "media:upload"],
-  treasurer: ["admin:access", "donation:view", "donation:review", "ledger:manage", "media:upload"],
-  member: ["admin:access", "donation:view"],
+export const isRole = (value: unknown): value is Role => (ROLE_KEYS as readonly unknown[]).includes(value);
+
+/** Unknown roles (e.g. a session issued before positions were renamed) get no access. */
+export const getPermissionLevel = (role: MaybeRole): PermissionLevel =>
+  isRole(role) ? PERMISSION_LEVELS[ROLES[role].permissionLevel] : PERMISSION_LEVELS.viewOnly;
+
+const ACTION_FLAGS = { add: "canAdd", edit: "canEdit", delete: "canDelete" } as const satisfies Record<ContentAction, keyof PermissionLevel>;
+
+export const canPerformAction = (role: MaybeRole, action: ContentAction): boolean => getPermissionLevel(role)[ACTION_FLAGS[action]];
+
+export const requiresApproval = (role: MaybeRole): boolean => getPermissionLevel(role).requiresApproval;
+
+export const authorizeAction = (role: MaybeRole, action: ContentAction): AccessDecision => {
+  if (!canPerformAction(role, action)) return "denied";
+  return requiresApproval(role) ? "approval" : "immediate";
 };
 
-export const ROLE_LABELS: Record<Role, string> = {
-  admin: "Admin",
-  editor: "Editor",
-  creator: "Content creator",
-  treasurer: "Treasurer",
-  member: "Member",
+export const can = (role: MaybeRole, permission: Permission): boolean => isRole(role) && ROLES[role].permissions.includes(permission);
+
+export const roleLabel = (role: MaybeRole): string => (isRole(role) ? ROLES[role].label : "Unknown role");
+
+export const getApprovers = (resource: ApprovalResource, action: ContentAction, rules: ApprovalRules = APPROVAL_RULES): readonly Role[] =>
+  (rules[resource]?.[action] ?? rules.default).approvers;
+
+export const canApprove = (role: MaybeRole, resource: ApprovalResource, action: ContentAction, rules: ApprovalRules = APPROVAL_RULES): boolean =>
+  isRole(role) && getApprovers(resource, action, rules).includes(role);
+
+/** True when any rule names this role, i.e. they should see the approvals queue. */
+export const isApprover = (role: MaybeRole, rules: ApprovalRules = APPROVAL_RULES): boolean => {
+  if (!isRole(role)) return false;
+  const { default: fallback, ...byResource } = rules;
+  const all = [fallback, ...Object.values(byResource).flatMap((byAction) => Object.values(byAction ?? {}))];
+  return all.some((rule) => rule?.approvers.includes(role));
 };
-
-export function can(role: Role | undefined | null, permission: Permission): boolean {
-  if (!role) return false;
-  return ROLE_PERMISSIONS[role].includes(permission);
-}
-
-/** Ownership-aware check for editing/deleting a specific post. */
-export function canOnPost(
-  user: { id: string; role: Role } | null | undefined,
-  action: "edit" | "delete",
-  post: { authorId: string; status: string },
-): boolean {
-  if (!user) return false;
-  if (can(user.role, `post:${action}:any`)) return true;
-  const isOwner = post.authorId === user.id;
-  if (!isOwner || !can(user.role, `post:${action}:own`)) return false;
-  // Creators can only change their own work before it goes live.
-  return post.status === "draft" || post.status === "in_review";
-}
