@@ -39,8 +39,7 @@ export default async function HomePage() {
             Rising Together, Giving Back With Purpose.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-ink-soft">
-            We run drives for kids and communities, and we publish every peso that comes in and every peso that goes
-            out.
+            A Batangas-based volunteer group uplifting underserved communities through heart-led outreach, compassion, and unity.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <ButtonLink href={campaign ? `/campaigns/${campaign.slug}` : "/transparency"} variant="give" size="lg">
