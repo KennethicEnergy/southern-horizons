@@ -17,7 +17,8 @@ Give every officer and member one page that answers "who did what, and when" in 
 
 - "Everyone" means every signed-in backoffice position, including plain Members. The public can't see the log.
 - "Every action" means every change: adds, edits, deletes, approvals, reviews, uploads, and sign-ins. Page views aren't logged.
-- The log holds nothing more sensitive than what every position can already see elsewhere: member emails, donation amounts, and rejection reasons. It never holds passwords or donor contact details.
+- The log never holds passwords, donor names or emails, contact-message content, or the names of rejected applicants.
+- A few things become visible to every position that some couldn't see before: draft post titles, approval rejection reasons, and uploaded file names. That's accepted, since openness is the point of the page.
 - Public visitors' contact messages and membership applications aren't logged. They aren't member actions, and they're already kept in their own tables.
 - The Super Admin also has database access through the Neon console. So the rules below are enforced in app code, not with database triggers.
 
@@ -79,20 +80,20 @@ Shared types (`AuditAction`, `AuditKind`, `AuditEntry`) go in `src/types/audit.t
 | --- | --- |
 | Posts | Post title |
 | Members | Member name |
-| Applications | Applicant name |
+| Applications | Applicant name on approval only. A rejected applicant stays unnamed, since only the President sees applications. |
 | Donations | Formatted amount, never the donor's name |
 | Uploads | File name |
 | Approval requests | Title of the post concerned |
 
 - **Sign-ins:** a new `recordSignIn(userId, method)` sets `lastLoginAt` and writes `auth.sign_in` with `{ method: "google" | "password" }`. Both sign-in paths in `src/auth.ts` call it in place of their own `lastLoginAt` updates. Sign-outs aren't logged.
 - **Suggestions:** `addSuggestion`, `setSuggestionDone`, and `deleteSuggestion` write their codes. The label is the suggestion title.
-- **Messages:** `setMessageRead` writes `message.read` or `message.unread`. The label is the message subject.
+- **Messages:** `setMessageRead` writes `message.read` or `message.unread`, with no label, because not every position can read messages.
 
 ### Reading entries (`src/lib/audit/queries.ts`, `src/lib/audit/describe.ts`)
 
 - `listAuditEntries({ page, actorId, kind, includeHidden })` returns 50 entries per page, newest first, joined to the actor's name and avatar. Deactivated or deleted actors still resolve, because users are soft-deleted. It also returns `totalPages`.
 - Hidden entries are excluded unless `includeHidden` is true. The page passes `true` only when the viewer has `audit:manage` and `?hidden=1` is set.
-- `kindToActionPrefixes(kind)` maps a Kind filter value to the action prefixes it covers.
+- `actionsOfKind(kind)` returns the exact action codes a Kind filter value covers.
 - `describeAuditEntry(entry)` is a pure function that returns `{ sentence, details? }`. Examples:
   - *Ana Cruz published the post "Bags of Hope"*
   - *Ken changed Mark Reyes from Member to Bookkeeper*
@@ -140,7 +141,7 @@ Only rendered when the viewer has `audit:manage`. Each server action checks `aud
 Write each test before the code it covers.
 
 - **`describeAuditEntry`:** every action code produces a sentence; there are label and no-label fallbacks; an entry with no actor works; details appear for reasons and notes.
-- **Action-code config:** every code has a label and a kind. The `kindToActionPrefixes` mapping is covered.
+- **Action-code config:** every code has a label and a kind. `actionsOfKind` is covered.
 - **`summarizeDeletion`:** the count and the oldest and newest dates, including a single entry.
 - **Validation:** hide and delete inputs, covering the ID count limits, malformed IDs, and an empty or too-long reason.
 - **RBAC (`src/lib/rbac.test.ts`):** every position has `audit:view`, and only Super Admin has `audit:manage`.
