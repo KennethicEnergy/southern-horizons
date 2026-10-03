@@ -4,7 +4,8 @@ import { can, canPerformAction } from "@/lib/rbac";
 import { AuthError, ForbiddenError } from "@/lib/errors";
 import type { ContentAction, Permission, Role } from "@/types/rbac";
 
-export type SessionUser = { id: string; role: Role; name?: string | null; email?: string | null };
+/** `image` is the Google profile photo; Auth.js carries it in the token as `picture`. Password accounts have none. */
+export type SessionUser = { id: string; role: Role; name?: string | null; email?: string | null; image?: string | null };
 
 export const getCurrentUser = async (): Promise<SessionUser | null> => {
   const session = await auth();

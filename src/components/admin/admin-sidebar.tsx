@@ -20,6 +20,7 @@ import {
 import { can, canPerformAction, isApprover, roleLabel } from "@/lib/rbac";
 import type { Role } from "@/types/rbac";
 import { HorizonMark } from "@/components/site/horizon-mark";
+import { Avatar } from "@/components/ui/avatar";
 import { useAdminUi } from "@/stores/admin-ui-store";
 import { logout } from "@/actions/auth";
 
@@ -41,14 +42,20 @@ const nav: { href: string; label: string; icon: typeof Home01Icon; visible: (rol
  * Where the mobile back button goes: the section list for a page inside it
  * (e.g. /admin/posts/123/edit → Posts), or the dashboard for a section list itself.
  */
-function parentOf(pathname: string): { href: string; label: string } | null {
+const parentOf = (pathname: string): { href: string; label: string } | null => {
   if (pathname === "/admin") return null;
   const section = nav.find((n) => n.href !== "/admin" && pathname.startsWith(`${n.href}/`));
   return section ? { href: section.href, label: section.label } : { href: "/admin", label: "Dashboard" };
-}
+};
 
-/** `badges` maps a nav href to a count shown beside it, e.g. pending member applications. */
-export function AdminSidebar({ user, badges = {} }: { user: { name?: string | null; role: Role }; badges?: Record<string, number> }) {
+type AdminSidebarProps = {
+  /** `image` is the Google profile photo, shown as the avatar; password accounts get initials instead. */
+  user: { name?: string | null; role: Role; image?: string | null };
+  /** Maps a nav href to a count shown beside it, e.g. pending member applications. */
+  badges?: Record<string, number>;
+};
+
+export const AdminSidebar = ({ user, badges = {} }: AdminSidebarProps) => {
   const pathname = usePathname();
   const { sidebarOpen, toggleSidebar, closeSidebar } = useAdminUi();
   const items = nav.filter(({ visible }) => visible(user.role)); // Layer 3: cosmetic only.
@@ -73,15 +80,17 @@ export function AdminSidebar({ user, badges = {} }: { user: { name?: string | nu
             <HorizonMark className="size-6" /> Backoffice
           </Link>
         </div>
+        {/* Phones: your avatar and the menu icon share one tap target that opens the menu. */}
         <button
           type="button"
           onClick={toggleSidebar}
           aria-label={totalBadges > 0 ? `Toggle menu, ${totalBadges} waiting` : "Toggle menu"}
           aria-expanded={sidebarOpen}
-          className="relative p-2"
+          className="relative flex items-center gap-1.5 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-sky"
         >
+          <Avatar name={user.name} src={user.image} size="sm" />
           <HugeiconsIcon icon={Menu01Icon} size={22} />
-          {totalBadges > 0 ? <span aria-hidden="true" className="absolute right-1 top-1 size-2.5 rounded-full bg-sea" /> : null}
+          {totalBadges > 0 ? <span aria-hidden="true" className="absolute right-1 top-1 size-2.5 rounded-full bg-sea ring-2 ring-white" /> : null}
         </button>
       </div>
       <aside
@@ -122,8 +131,13 @@ export function AdminSidebar({ user, badges = {} }: { user: { name?: string | nu
             </Link>
           </nav>
           <div className="border-t border-line px-2 pt-4">
-            <p className="truncate font-medium">{user.name}</p>
-            <p className="text-sm text-ink-soft">{roleLabel(user.role)}</p>
+            <div className="flex items-center gap-3">
+              <Avatar name={user.name} src={user.image} />
+              <div className="min-w-0">
+                <p className="truncate font-medium">{user.name}</p>
+                <p className="truncate text-sm text-ink-soft">{roleLabel(user.role)}</p>
+              </div>
+            </div>
             <form action={logout}>
               <button type="submit" className="mt-3 flex items-center gap-2 text-sm text-ink-soft hover:text-danger">
                 <HugeiconsIcon icon={Logout01Icon} size={18} />
@@ -135,4 +149,4 @@ export function AdminSidebar({ user, badges = {} }: { user: { name?: string | nu
       </aside>
     </>
   );
-}
+};

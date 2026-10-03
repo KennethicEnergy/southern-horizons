@@ -113,3 +113,8 @@ export const posts = {
     location: "Batangas City",
   }),
 };
+
+/** A drawn placeholder portrait for the Avatar showcase, so no real person's photo is used. */
+export const avatarPhoto = `data:image/svg+xml;utf8,${encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#94dfa7"/><circle cx="40" cy="31" r="14" fill="#023d54"/><path d="M12 80c3-17 15-26 28-26s25 9 28 26z" fill="#0c6980"/></svg>`,
+)}`;

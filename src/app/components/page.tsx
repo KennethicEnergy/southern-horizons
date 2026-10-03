@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Button, ButtonLink, type ButtonSize, type ButtonVariant } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
+import { Avatar } from "@/components/ui/avatar";
 import { Icon } from "@/components/ui/icon";
 import { TextLink } from "@/components/ui/text-link";
 import { FormAlert } from "@/components/ui/form-fields";
@@ -25,8 +26,9 @@ import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { actionIcons } from "@/config/icons";
 import { FormFieldsDemo } from "./form-fields-demo";
 import { ToastDemo } from "./toast-demo";
+import { RoleSelectDemo } from "./role-select-demo";
 import { Section, Specimen } from "./showcase";
-import { documents, images, posts, video } from "./samples";
+import { avatarPhoto, documents, images, posts, video } from "./samples";
 
 export const metadata: Metadata = {
   title: "Components",
@@ -43,11 +45,13 @@ const sections = [
   { id: "icon-button", title: "IconButton" },
   { id: "button-link", title: "ButtonLink" },
   { id: "text-link", title: "TextLink" },
+  { id: "avatar", title: "Avatar" },
   { id: "toast", title: "Toast" },
   { id: "motion", title: "Motion" },
   { id: "form-fields", title: "Form fields" },
   { id: "form-alert", title: "FormAlert" },
   { id: "status-badge", title: "StatusBadge" },
+  { id: "role-select", title: "RoleSelect" },
   { id: "section-heading", title: "SectionHeading" },
   { id: "step-list", title: "StepList" },
   { id: "stat-grid", title: "StatGrid" },
@@ -313,6 +317,41 @@ const ComponentsPage = () => (
         </Section>
 
         <Section
+          id="avatar"
+          title="Avatar"
+          source="components/ui/avatar.tsx"
+          description="The signed-in member's Google photo in the backoffice sidebar and the phone menu button. Password accounts, and photos that fail to load, fall back to initials; no name shows a person icon."
+        >
+          <Specimen label="Photo — sm / md / lg">
+            <div className="flex items-end gap-4">
+              <Avatar name="Maria Santos" src={avatarPhoto} size="sm" />
+              <Avatar name="Maria Santos" src={avatarPhoto} />
+              <Avatar name="Maria Santos" src={avatarPhoto} size="lg" />
+            </div>
+          </Specimen>
+          <div className="grid gap-6 md:grid-cols-3">
+            <Specimen label="No photo (password account)">
+              <Avatar name="Juan dela Cruz" />
+            </Specimen>
+            <Specimen label="Photo fails to load">
+              <Avatar name="Ana Reyes" src="https://invalid.example/avatar.jpg" />
+            </Specimen>
+            <Specimen label="No name">
+              <Avatar />
+            </Specimen>
+          </div>
+          <Specimen label="As the sidebar shows it">
+            <div className="flex items-center gap-3">
+              <Avatar name="Maria Santos" src={avatarPhoto} />
+              <div className="min-w-0">
+                <p className="truncate font-medium">Maria Santos</p>
+                <p className="truncate text-sm text-ink-soft">President</p>
+              </div>
+            </div>
+          </Specimen>
+        </Section>
+
+        <Section
           id="toast"
           title="Toast"
           source="components/ui/toaster.tsx · stores/toast-store.ts"
@@ -385,6 +424,15 @@ const ComponentsPage = () => (
               <StatusBadge status="unknown_status" />
             </div>
           </Specimen>
+        </Section>
+
+        <Section
+          id="role-select"
+          title="RoleSelect"
+          source="components/admin/role-select.tsx · components/ui/native-select.tsx"
+          description="Both selects (this and SelectField) use NativeSelect: the browser's arrow is turned off and a chevron is drawn with room reserved on the right, so text never runs under it."
+        >
+          <RoleSelectDemo />
         </Section>
 
         <Section id="section-heading" title="SectionHeading" source="components/site/section-heading.tsx · components/site/eyebrow.tsx">

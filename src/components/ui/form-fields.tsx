@@ -5,10 +5,13 @@ import type { ComponentProps, ReactNode } from "react";
 import { toastIcons } from "@/config/icons";
 import { useFieldState } from "@/hooks/useFieldState";
 import { Icon } from "./icon";
+import { NativeSelect } from "./native-select";
 
-// min-h-11 keeps every field a comfortable 44px tap target on phones.
-const inputClass =
-  "min-h-11 w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-base text-ink shadow-[inset_0_1px_2px_rgb(2_61_84/0.04)] transition-[border-color,box-shadow] duration-200 placeholder:text-ink-soft/60 hover:border-ink/25 focus:border-sea focus:outline-none focus:ring-4 focus:ring-sea/15 disabled:cursor-not-allowed disabled:bg-sky disabled:text-ink-soft aria-invalid:border-danger aria-invalid:focus:ring-danger/15 sm:text-[0.95rem]";
+// leading-6 pins every field to 46px (24px line + padding + border), so inputs and selects line up in a row.
+// Horizontal padding is left to each control: selects keep extra room on the right for their chevron.
+const fieldClass =
+  "min-h-11 w-full rounded-xl border border-line bg-white py-2.5 text-base leading-6 text-ink shadow-[inset_0_1px_2px_rgb(2_61_84/0.04)] transition-[border-color,box-shadow] duration-200 placeholder:text-ink-soft/60 hover:border-ink/25 focus:border-sea focus:outline-none focus:ring-4 focus:ring-sea/15 disabled:cursor-not-allowed disabled:bg-sky disabled:text-ink-soft aria-invalid:border-danger aria-invalid:focus:ring-danger/15 sm:text-[0.95rem]";
+const inputClass = `${fieldClass} px-3.5`;
 
 type FieldShellProps = { id: string; label: string; hint?: ReactNode; error?: string; children: ReactNode };
 
@@ -75,9 +78,9 @@ export const SelectField = ({ name, label, hint, options, placeholder, ...props 
   const { field, error } = useFieldState(name);
   return (
     <FieldShell id={name} label={label} hint={hint} error={error}>
-      <select
+      <NativeSelect
         id={name}
-        className={inputClass}
+        className={`${fieldClass} pl-3.5`}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${name}-error` : hint ? `${name}-hint` : undefined}
         {...field}
@@ -90,7 +93,7 @@ export const SelectField = ({ name, label, hint, options, placeholder, ...props 
             {optionLabel}
           </option>
         ))}
-      </select>
+      </NativeSelect>
     </FieldShell>
   );
 };
