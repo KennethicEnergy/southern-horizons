@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ApprovalRules, Role } from "@/types/rbac";
+import { PERMISSIONS } from "@/config/roles";
 import {
   authorizeAction,
   can,
@@ -13,6 +14,7 @@ import {
 } from "@/lib/rbac";
 
 const OFFICERS: Role[] = [
+  "superAdmin",
   "president",
   "vpExternal",
   "vpInternal",
@@ -26,6 +28,7 @@ const OFFICERS: Role[] = [
 describe("permission matrix", () => {
   // [role, add, edit, delete, approval required]
   const matrix: [Role, boolean, boolean, boolean, boolean][] = [
+    ["superAdmin", true, true, true, false],
     ["president", true, true, true, false],
     ["vpExternal", true, true, false, true],
     ["vpInternal", true, true, false, true],
@@ -73,9 +76,14 @@ describe("can", () => {
     for (const role of [...OFFICERS, "member" as const]) expect(can(role, "admin:access")).toBe(true);
   });
 
-  it("keeps member management with the President", () => {
+  it("keeps member management with the Super Admin and the President", () => {
+    expect(can("superAdmin", "user:manage")).toBe(true);
     expect(can("president", "user:manage")).toBe(true);
-    for (const role of OFFICERS.filter((r) => r !== "president")) expect(can(role, "user:manage")).toBe(false);
+    for (const role of OFFICERS.filter((r) => r !== "president" && r !== "superAdmin")) expect(can(role, "user:manage")).toBe(false);
+  });
+
+  it("gives the Super Admin every permission", () => {
+    for (const permission of PERMISSIONS) expect(can("superAdmin", permission)).toBe(true);
   });
 
   it("lets the Bookkeeper confirm donations", () => {
@@ -90,10 +98,12 @@ describe("can", () => {
 });
 
 describe("approval rules", () => {
-  it("defaults to the President as the only approver", () => {
-    expect(getApprovers("post", "edit")).toEqual(["president"]);
+  it("defaults to the Super Admin and the President as approvers", () => {
+    expect(getApprovers("post", "edit")).toEqual(["superAdmin", "president"]);
+    expect(canApprove("superAdmin", "post", "delete")).toBe(true);
     expect(canApprove("president", "post", "delete")).toBe(true);
     expect(canApprove("vpInternal", "post", "delete")).toBe(false);
+    expect(isApprover("superAdmin")).toBe(true);
   });
 
   it("uses a per-resource, per-action rule when one is configured", () => {
@@ -124,6 +134,7 @@ describe("isRole and roleLabel", () => {
   });
 
   it("labels roles for display", () => {
+    expect(roleLabel("superAdmin")).toBe("Super Admin");
     expect(roleLabel("donorSponsorRelations")).toBe("Donor & Sponsor Relations");
     expect(roleLabel("vpExternal")).toBe("VP External");
     expect(roleLabel("admin" as Role)).toBe("Unknown role");

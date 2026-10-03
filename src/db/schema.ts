@@ -64,7 +64,15 @@ export const users = pgTable(
     ...timestamps,
     ...softDelete,
   },
-  (t) => [uniqueIndex("users_email_idx").on(sql`lower(${t.email})`)],
+  (t) => [
+    uniqueIndex("users_email_idx").on(sql`lower(${t.email})`),
+    // One Super Admin and one President at a time; deactivated members keep their seat until moved.
+    // role_is_single_holder() is a database function (created in drizzle/0006_super_admin.sql) listing
+    // SINGLE_HOLDER_ROLES; keep the two in step. See that migration for why it's a function.
+    uniqueIndex("users_single_holder_idx")
+      .on(t.role)
+      .where(sql`role_is_single_holder(${t.role}) and ${t.deletedAt} is null`),
+  ],
 );
 
 /* ------------------------------------------------------------------ */

@@ -4,6 +4,7 @@ import type { Role } from "@/types/rbac";
 import { getDb, schema } from "@/db";
 import { requireUser } from "@/lib/session";
 import { can, roleLabel } from "@/lib/rbac";
+import { checkDeactivation, isAssignableRole } from "@/lib/positions";
 import { formatDateTime } from "@/lib/dates";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { InviteForm } from "@/components/admin/invite-form";
@@ -97,7 +98,12 @@ export default async function MembersPage() {
                   <span className="block text-sm text-ink-soft">{m.email}</span>
                 </td>
                 <td className="px-5 py-3.5">
-                  {m.id === actor.id ? roleLabel(m.role) : <MemberRoleSelect userId={m.id} name={m.name} role={m.role} />}
+                  {/* Your own row and the Super Admin's are read-only; the server actions refuse them too. */}
+                  {m.id !== actor.id && isAssignableRole(m.role) ? (
+                    <MemberRoleSelect userId={m.id} name={m.name} role={m.role} />
+                  ) : (
+                    roleLabel(m.role)
+                  )}
                 </td>
                 <td className="px-5 py-3.5 text-sm">
                   {!m.isActive ? (
@@ -111,7 +117,11 @@ export default async function MembersPage() {
                   )}
                 </td>
                 <td className="px-5 py-3.5 text-right">
-                  {m.id === actor.id ? <span className="text-sm text-ink-soft">You</span> : <MemberActiveToggle userId={m.id} name={m.name} active={m.isActive} />}
+                  {checkDeactivation({ actorId: actor.id, target: m }) === null ? (
+                    <MemberActiveToggle userId={m.id} name={m.name} active={m.isActive} />
+                  ) : (
+                    <span className="text-sm text-ink-soft">{m.id === actor.id ? "You" : "Protected"}</span>
+                  )}
                 </td>
               </tr>
             ))}

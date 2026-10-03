@@ -3,6 +3,9 @@ import type { APPROVAL_STATUSES, CONTENT_ACTIONS, PERMISSION_LEVELS, PERMISSIONS
 /** An organisational position. Stored in the `role` column of `users`. */
 export type Role = (typeof ROLE_KEYS)[number];
 
+/** A position the backoffice can hand out; Super Admin is set only from the command line. */
+export type AssignableRole = Exclude<Role, "superAdmin">;
+
 /** Content changes that go through permission levels (and approval, where required). */
 export type ContentAction = (typeof CONTENT_ACTIONS)[number];
 

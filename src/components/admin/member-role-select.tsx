@@ -3,16 +3,16 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { setUserRole } from "@/actions/users";
-import type { Role } from "@/types/rbac";
+import type { AssignableRole } from "@/types/rbac";
 import { actionIcons } from "@/config/icons";
 import { toastResult } from "@/stores/toast-store";
 import { Button } from "@/components/ui/button";
 import { RoleSelect } from "./role-select";
 
-export const MemberRoleSelect = ({ userId, name, role }: { userId: string; name: string; role: Role }) => {
+export const MemberRoleSelect = ({ userId, name, role }: { userId: string; name: string; role: AssignableRole }) => {
   const router = useRouter();
   const [pending, start] = useTransition();
-  const [selected, setSelected] = useState<Role>(role);
+  const [selected, setSelected] = useState<AssignableRole>(role);
   const changed = selected !== role;
 
   const save = () =>

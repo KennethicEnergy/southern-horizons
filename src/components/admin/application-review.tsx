@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { reviewApplication } from "@/actions/applications";
 import { DEFAULT_ROLE } from "@/config/roles";
 import { actionIcons } from "@/config/icons";
-import type { Role } from "@/types/rbac";
+import type { AssignableRole } from "@/types/rbac";
 import { toastResult } from "@/stores/toast-store";
 import { Button } from "@/components/ui/button";
 import { RoleSelect } from "./role-select";
@@ -13,7 +13,7 @@ import { RoleSelect } from "./role-select";
 export const ApplicationReviewButtons = ({ applicationId, name }: { applicationId: string; name: string }) => {
   const router = useRouter();
   const [pending, start] = useTransition();
-  const [role, setRole] = useState<Role>(DEFAULT_ROLE);
+  const [role, setRole] = useState<AssignableRole>(DEFAULT_ROLE);
 
   const act = (decision: "approved" | "rejected") =>
     start(async () => {

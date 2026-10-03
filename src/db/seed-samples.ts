@@ -12,6 +12,7 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import { eq, inArray, like } from "drizzle-orm";
 import * as schema from "./schema";
+import { SINGLE_HOLDER_ROLES } from "../config/roles";
 
 const url = process.env.DATABASE_URL;
 if (!url) throw new Error("DATABASE_URL is not set");
@@ -89,8 +90,9 @@ const samplePosts: SamplePost[] = [
 ];
 
 async function addSamples() {
-  const admin = await db.query.users.findFirst({ where: eq(schema.users.role, "president") });
-  if (!admin) throw new Error("No President found. Run `pnpm db:seed` first.");
+  // Either one-person seat can author samples; the President's may be empty right after a Super Admin hand-over.
+  const admin = await db.query.users.findFirst({ where: inArray(schema.users.role, [...SINGLE_HOLDER_ROLES]) });
+  if (!admin) throw new Error("No Super Admin or President found. Run `pnpm db:seed` first.");
 
   const existing = new Set(
     (await db.select({ slug: schema.posts.slug }).from(schema.posts).where(like(schema.posts.slug, `${PREFIX}%`))).map((r) => r.slug),

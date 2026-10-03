@@ -6,6 +6,8 @@ import { getDb, schema } from "@/db";
 import { requirePermission } from "@/lib/session";
 import { audit } from "@/lib/audit";
 import { roleLabel } from "@/lib/rbac";
+import { checkNewMember } from "@/lib/positions";
+import { findPositionHolder, guardPositionWrite } from "@/lib/position-holders";
 import {
   applicationReviewSchema,
   applicationSchema,
@@ -57,6 +59,12 @@ export async function reviewApplication(input: ApplicationReview): Promise<Actio
     const data = applicationReviewSchema.parse(input);
     const db = getDb();
 
+    // Check the position before claiming, so a refusal leaves the application pending.
+    if (data.decision === "approved") {
+      const refusal = checkNewMember({ role: data.role, holder: await findPositionHolder(data.role) });
+      if (refusal) return { ok: false, message: refusal };
+    }
+
     // Claim it first so two reviewers can't review the same application twice.
     const [application] = await db
       .update(schema.memberApplications)
@@ -75,10 +83,21 @@ export async function reviewApplication(input: ApplicationReview): Promise<Actio
       if (existing) {
         message = `${application.email} is already on the members list, so no new account was needed.`;
       } else {
-        const [user] = await db
-          .insert(schema.users)
-          .values({ name: application.name, email: application.email, role: data.role, passwordHash: null })
-          .returning({ id: schema.users.id });
+        const inserted = await guardPositionWrite(data.role, () =>
+          db
+            .insert(schema.users)
+            .values({ name: application.name, email: application.email, role: data.role, passwordHash: null })
+            .returning({ id: schema.users.id }),
+        );
+        if (!inserted.ok) {
+          // Someone took the seat between the check and the insert: put the application back for another try.
+          await db
+            .update(schema.memberApplications)
+            .set({ status: "pending", reviewedById: null, reviewedAt: null })
+            .where(eq(schema.memberApplications.id, data.applicationId));
+          return { ok: false, message: inserted.message };
+        }
+        const [user] = inserted.value;
         await audit({
           actorId: actor.id,
           action: "user.invite",

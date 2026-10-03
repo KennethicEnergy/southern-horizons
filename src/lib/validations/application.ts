@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ROLE_KEYS } from "@/config/roles";
+import { assignableRoleSchema } from "./user";
 
 
 export const applicationSchema = z.object({
@@ -20,7 +20,7 @@ export const applicationSchema = z.object({
 export type ApplicationValues = z.infer<typeof applicationSchema>;
 
 export const applicationReviewSchema = z.discriminatedUnion("decision", [
-  z.object({ applicationId: z.uuid(), decision: z.literal("approved"), role: z.enum(ROLE_KEYS) }),
+  z.object({ applicationId: z.uuid(), decision: z.literal("approved"), role: assignableRoleSchema }),
   z.object({ applicationId: z.uuid(), decision: z.literal("rejected") }),
 ]);
 

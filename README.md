@@ -48,7 +48,7 @@ Sign in at `http://localhost:3000/login` with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_P
 3. Set `AUTH_URL` and `SITE_URL` to your production domain.
 4. **Domains:** add your domain, then create the DNS records Vercel shows you in Cloudflare. Set those records to **DNS only** (grey cloud) so Vercel can issue the SSL certificate.
 
-Run migrations against production from your machine with the production `DATABASE_URL`: `pnpm db:migrate`.
+Run migrations against production from your machine with the production `DATABASE_URL`: `pnpm db:migrate`. On Node 20, prefix it with `NODE_OPTIONS=--experimental-websocket`: drizzle-kit connects through the Neon driver's WebSocket, which Node 20 doesn't provide by default, and without the flag it fails silently.
 
 ### 4. Google sign-in (invite-only)
 1. In Google Cloud Console, create an **OAuth consent screen** (External), then **Credentials → Create OAuth client ID → Web application**.
@@ -66,6 +66,7 @@ Two separate questions are answered separately:
 
 | Position | Add | Edit | Delete | Approval required |
 |---|---|---|---|---|
+| Super Admin | ✓ | ✓ | ✓ | No |
 | President | ✓ | ✓ | ✓ | No |
 | VP External | ✓ | ✓ | — | Yes |
 | VP Internal | ✓ | ✓ | — | Yes |
@@ -75,6 +76,14 @@ Two separate questions are answered separately:
 | Donor & Sponsor Relations | ✓ | ✓ | — | Yes |
 | Bookkeeper | ✓ | ✓ | — | Yes |
 | Member | — | — | — | View only |
+
+**Super Admin and President.** Both have every permission, and both approve requests. Only one person may hold each, enforced in the server actions and by the `users_single_holder_idx` unique index. To change the President, the Super Admin first moves the current one to another position, then appoints the new one. The Super Admin can't be assigned, changed, or deactivated from the backoffice, so nobody can lock them out. Set it from the command line instead:
+
+```bash
+pnpm db:super-admin you@example.com            # your dev branch (.env.local)
+pnpm db:super-admin you@example.com --replace  # moves the current Super Admin to Member first
+pnpm tsx --env-file=<file with the production DATABASE_URL> src/db/super-admin.ts you@example.com
+```
 
 Outside content, the President manages members and uploads SVGs, the Bookkeeper confirms donations, and the VPs, Communications, and Donor & Sponsor Relations read contact messages (the `permissions` list on each position).
 
