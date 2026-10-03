@@ -2,7 +2,8 @@
 
 import { Form, Formik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { useState } from "react";
 import { loginSchema, type LoginValues } from "@/lib/validations/auth";
 import { login } from "@/actions/auth";

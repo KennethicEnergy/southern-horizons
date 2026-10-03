@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { useEffect, useRef, useTransition } from "react";
 import { setMessageRead } from "@/actions/messages";
 import { actionIcons } from "@/config/icons";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { useTransition } from "react";
 import { deletePost } from "@/actions/posts";
 import { actionIcons } from "@/config/icons";
