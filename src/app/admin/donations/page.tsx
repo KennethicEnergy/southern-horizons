@@ -1,13 +1,16 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { desc, eq } from "drizzle-orm";
 import { getDb, schema } from "@/db";
-import { requirePermission } from "@/lib/session";
+import { requireUser } from "@/lib/session";
 import { can } from "@/lib/rbac";
 import { formatDateTime } from "@/lib/dates";
 import { formatPeso } from "@/lib/money";
+import { toDonorView } from "@/lib/donations/donor-view";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { DonationReviewButtons } from "@/components/admin/donation-review-buttons";
+import { DonorCell } from "@/components/admin/donor-cell";
 
 const tabs = [
   { value: "pending", label: "To confirm" },
@@ -15,11 +18,13 @@ const tabs = [
   { value: "rejected", label: "Rejected" },
 ] as const;
 
-export default async function DonationsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
-  const user = await requirePermission("donation:view");
+const DonationsPage = async ({ searchParams }: { searchParams: Promise<{ status?: string }> }) => {
+  const user = await requireUser();
+  if (!can(user.role, "donation:view")) redirect("/admin");
   const { status: raw } = await searchParams;
   const status = tabs.find((t) => t.value === raw)?.value ?? "pending";
   const canReview = can(user.role, "donation:review");
+  const canSeeDonor = can(user.role, "donation:view:donor");
 
   const rows = await getDb().query.donations.findMany({
     where: eq(schema.donations.status, status),
@@ -70,8 +75,7 @@ export default async function DonationsPage({ searchParams }: { searchParams: Pr
                 <tr key={d.id}>
                   <td className="whitespace-nowrap px-5 py-3.5 text-ink-soft">{formatDateTime(d.createdAt)}</td>
                   <td className="px-5 py-3.5">
-                    {d.isAnonymous ? <span className="text-ink-soft">Anonymous</span> : d.donorName}
-                    {d.donorEmail ? <span className="block text-sm text-ink-soft">{d.donorEmail}</span> : null}
+                    <DonorCell donor={toDonorView(d, canSeeDonor)} />
                   </td>
                   <td className="px-5 py-3.5">
                     {d.campaign.title}
@@ -97,4 +101,6 @@ export default async function DonationsPage({ searchParams }: { searchParams: Pr
       )}
     </>
   );
-}
+};
+
+export default DonationsPage;

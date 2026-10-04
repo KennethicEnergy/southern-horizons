@@ -91,8 +91,11 @@ What each position may do is set in [src/config/roles.ts](../src/config/roles.ts
 - A donation can be reviewed only once. If two people try at the same time, the second is told it was already reviewed.
 - The decision is written to the audit log, and the public totals update right away.
 
-**DON-05 See donations as an officer.** As any signed-in position, I want to see the donations list, so that I know how campaigns are doing.
-- Every position can view donations. Only positions with `donation:review` (Bookkeeper and President) see the confirm and reject buttons.
+**DON-05 See donations as an officer.** As an officer who handles donations, I want to see the donations list, so that I can follow and confirm gifts.
+- Positions in `DONATION_LIST_VIEWERS` (`src/config/roles.ts`) see the list. By default: Super Admin, President, Bookkeeper, and Donor & Sponsor Relations.
+- Positions in `DONOR_DETAILS_VIEWERS` also see each donor's name, email, and message. Others on the list see "Hidden".
+- Only positions with `donation:review` (Super Admin, President, and Bookkeeper) see the confirm and reject buttons.
+- Anyone else who opens `/admin/donations` is sent to the dashboard.
 
 **DON-06 See where the money goes.** As a visitor, I want a public ledger, so that I can trust the group with my money.
 - `/transparency` shows, for each campaign: money received, money spent, balance on hand (or shortfall), and the number of confirmed donations.
@@ -130,8 +133,9 @@ What each position may do is set in [src/config/roles.ts](../src/config/roles.ts
 **MEM-07 See what each position can do.** As the President, I want a table of positions and their permissions, so that I can pick the right one when inviting.
 - The Members page shows a permission matrix. Other positions see a read-only members list.
 
-**MEM-08 Look around as a member.** As a member, I want to sign in and see the dashboard, donations, and members list, so that I can follow what's going on.
+**MEM-08 Look around as a member.** As a member, I want to sign in and see the dashboard and members list, so that I can follow what's going on.
 - Members can't add, edit, or delete content, and the UI hides those controls.
+- Members don't see donations (DON-05).
 
 ## Publishing and approvals (POST)
 
