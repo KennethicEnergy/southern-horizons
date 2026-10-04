@@ -407,4 +407,5 @@ export type MediaKind = (typeof mediaKindEnum.enumValues)[number];
 export type User = typeof users.$inferSelect;
 export type Post = typeof posts.$inferSelect;
 export type Media = typeof media.$inferSelect;
+export type Donation = typeof donations.$inferSelect;
 export type ApprovalRequest = typeof approvalRequests.$inferSelect;
