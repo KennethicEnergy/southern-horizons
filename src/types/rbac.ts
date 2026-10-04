@@ -1,4 +1,4 @@
-import type { APPROVAL_STATUSES, CONTENT_ACTIONS, PERMISSION_LEVELS, PERMISSIONS, ROLE_KEYS } from "../config/roles";
+import type { APPROVAL_STATUSES, CONTENT_ACTIONS, LISTED_PERMISSIONS, PERMISSION_LEVELS, PERMISSIONS, ROLE_KEYS } from "../config/roles";
 
 /** An organisational position. Stored in the `role` column of `users`. */
 export type Role = (typeof ROLE_KEYS)[number];
@@ -9,8 +9,14 @@ export type AssignableRole = Exclude<Role, "superAdmin">;
 /** Content changes that go through permission levels (and approval, where required). */
 export type ContentAction = (typeof CONTENT_ACTIONS)[number];
 
-/** Capabilities outside add/edit/delete, e.g. managing members or confirming donations. */
-export type Permission = (typeof PERMISSIONS)[number];
+/** A capability granted through each position's own `permissions`, e.g. managing members or confirming donations. */
+export type RolePermission = (typeof PERMISSIONS)[number];
+
+/** A capability granted by a list of positions (LISTED_PERMISSIONS in src/config/roles.ts), e.g. seeing donor details. */
+export type ListedPermission = keyof typeof LISTED_PERMISSIONS;
+
+/** Capabilities outside add/edit/delete. Check them with `can()`, which knows where each one comes from. */
+export type Permission = RolePermission | ListedPermission;
 
 export type PermissionLevel = {
   canAdd: boolean;
@@ -24,7 +30,7 @@ export type PermissionLevelKey = keyof typeof PERMISSION_LEVELS;
 export type RoleConfig = {
   label: string;
   permissionLevel: PermissionLevelKey;
-  permissions: readonly Permission[];
+  permissions: readonly RolePermission[];
 };
 
 /** What a user's attempt at an action turns into: refused, applied now, or queued for an approver. */

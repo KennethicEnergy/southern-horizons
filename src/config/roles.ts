@@ -12,7 +12,6 @@ export const PERMISSIONS = [
   "admin:access",
   "media:upload:svg",
   "campaign:manage",
-  "donation:view",
   "donation:review",
   "ledger:manage",
   "message:view",
@@ -42,7 +41,7 @@ export const ROLE_KEYS = [
   "member",
 ] as const;
 
-const BASE = ["admin:access", "donation:view"] as const;
+const BASE = ["admin:access"] as const;
 
 export const ROLES: Record<Role, RoleConfig> = {
   /** Everything the President can do, held by one person and set only from the command line (pnpm db:super-admin). */
@@ -57,6 +56,18 @@ export const ROLES: Record<Role, RoleConfig> = {
   bookkeeper: { label: "Bookkeeper", permissionLevel: "managed", permissions: [...BASE, "donation:review", "ledger:manage"] },
   member: { label: "Member", permissionLevel: "viewOnly", permissions: BASE },
 };
+
+/** Who can open the Donations page. Anyone who confirms donations must be on it. */
+export const DONATION_LIST_VIEWERS = ["superAdmin", "president", "bookkeeper", "donorSponsorRelations"] as const satisfies readonly Role[];
+
+/** Who sees donors' names, emails, and messages. RA 10173: only positions that need it. */
+export const DONOR_DETAILS_VIEWERS = ["superAdmin", "president", "bookkeeper", "donorSponsorRelations"] as const satisfies readonly Role[];
+
+/** Permissions granted by a list of positions, not by each position's own permissions. */
+export const LISTED_PERMISSIONS = {
+  "donation:view": DONATION_LIST_VIEWERS,
+  "donation:view:donor": DONOR_DETAILS_VIEWERS,
+} as const satisfies Record<string, readonly Role[]>;
 
 /**
  * Positions only one person may hold at a time. Backed by the users_single_holder_idx unique index,

@@ -1,9 +1,10 @@
-import { APPROVAL_RULES, PERMISSION_LEVELS, ROLE_KEYS, ROLES } from "@/config/roles";
+import { APPROVAL_RULES, LISTED_PERMISSIONS, PERMISSION_LEVELS, ROLE_KEYS, ROLES } from "@/config/roles";
 import type {
   AccessDecision,
   ApprovalResource,
   ApprovalRules,
   ContentAction,
+  ListedPermission,
   Permission,
   PermissionLevel,
   Role,
@@ -35,7 +36,16 @@ export const authorizeAction = (role: MaybeRole, action: ContentAction): AccessD
   return requiresApproval(role) ? "approval" : "immediate";
 };
 
-export const can = (role: MaybeRole, permission: Permission): boolean => isRole(role) && ROLES[role].permissions.includes(permission);
+/** The listed permissions, widened so `.includes()` accepts any role. */
+const LIST_HOLDERS: Readonly<Record<ListedPermission, readonly Role[]>> = LISTED_PERMISSIONS;
+
+export const isListedPermission = (permission: Permission): permission is ListedPermission => Object.hasOwn(LISTED_PERMISSIONS, permission);
+
+/** Listed permissions come from their list; every other permission comes from the position's own `permissions`. */
+export const can = (role: MaybeRole, permission: Permission): boolean => {
+  if (!isRole(role)) return false;
+  return isListedPermission(permission) ? LIST_HOLDERS[permission].includes(role) : ROLES[role].permissions.includes(permission);
+};
 
 export const roleLabel = (role: MaybeRole): string => (isRole(role) ? ROLES[role].label : "Unknown role");
 

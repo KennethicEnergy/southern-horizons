@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { ApprovalRules, Role } from "@/types/rbac";
-import { PERMISSIONS } from "@/config/roles";
+import type { ApprovalRules, ListedPermission, Role } from "@/types/rbac";
+import { DONATION_LIST_VIEWERS, DONOR_DETAILS_VIEWERS, LISTED_PERMISSIONS, PERMISSIONS, ROLE_KEYS, ROLES } from "@/config/roles";
 import {
   authorizeAction,
   can,
@@ -83,7 +83,8 @@ describe("can", () => {
   });
 
   it("gives the Super Admin every permission", () => {
-    for (const permission of PERMISSIONS) expect(can("superAdmin", permission)).toBe(true);
+    const listed = Object.keys(LISTED_PERMISSIONS) as ListedPermission[];
+    for (const permission of [...PERMISSIONS, ...listed]) expect(can("superAdmin", permission)).toBe(true);
   });
 
   it("lets the Bookkeeper confirm donations", () => {
@@ -94,6 +95,43 @@ describe("can", () => {
   it("returns false for a missing or unknown role", () => {
     expect(can(undefined, "admin:access")).toBe(false);
     expect(can("admin" as Role, "admin:access")).toBe(false);
+  });
+});
+
+describe("listed permissions", () => {
+  const DONATION_STAFF: Role[] = ["superAdmin", "president", "bookkeeper", "donorSponsorRelations"];
+  const EVERYONE_ELSE: Role[] = ["vpExternal", "vpInternal", "communications", "creativesTeam", "orgDevelopment", "member"];
+
+  it("lets donation staff see donations and donor details", () => {
+    for (const role of DONATION_STAFF) {
+      expect(can(role, "donation:view")).toBe(true);
+      expect(can(role, "donation:view:donor")).toBe(true);
+    }
+  });
+
+  it("keeps donations from every other position", () => {
+    for (const role of EVERYONE_ELSE) {
+      expect(can(role, "donation:view")).toBe(false);
+      expect(can(role, "donation:view:donor")).toBe(false);
+    }
+  });
+
+  it("lists everyone who confirms donations as a donation list viewer", () => {
+    for (const role of ROLE_KEYS.filter((r) => can(r, "donation:review"))) expect(DONATION_LIST_VIEWERS).toContain(role);
+  });
+
+  it("only shows donor details to positions that can open the list", () => {
+    for (const role of DONOR_DETAILS_VIEWERS) expect(DONATION_LIST_VIEWERS).toContain(role);
+  });
+
+  it("never grants a listed permission through a position's own permissions", () => {
+    const listed: string[] = Object.keys(LISTED_PERMISSIONS);
+    for (const role of ROLE_KEYS) for (const permission of ROLES[role].permissions) expect(listed).not.toContain(permission);
+  });
+
+  it("refuses listed permissions to a missing or unknown role", () => {
+    expect(can(undefined, "donation:view")).toBe(false);
+    expect(can("admin" as Role, "donation:view:donor")).toBe(false);
   });
 });
 
