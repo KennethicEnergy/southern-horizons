@@ -28,7 +28,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const errorMessage = error ? (errorMessages[error] ?? "Sign-in didn't work. Try again, or use your email and password.") : null;
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-panel px-5">
+    <div className="flex min-h-dvh items-center justify-center bg-page-panel px-5">
       <div className="w-full max-w-sm">
         <Link href="/" className="flex items-center gap-2.5">
           <HorizonMark />

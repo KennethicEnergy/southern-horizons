@@ -234,6 +234,17 @@
     linear-gradient(180deg, var(--panel) 0%, var(--canvas) 100%);
 }
 
+/*
+ * A whole page on the panel ground (login, the backoffice). It also paints <html>, because the reserved
+ * scrollbar gutter shows the root's background: without this, short pages get a canvas-coloured strip.
+ */
+@utility bg-page-panel {
+  background: var(--panel);
+}
+:root:has(.bg-page-panel) {
+  background: var(--panel);
+}
+
 /* Deep water: ink into sea. Calls to action on a dark ground, in either theme. */
 @utility bg-tide {
   background: linear-gradient(135deg, var(--color-ink) 0%, var(--color-sea) 100%);
