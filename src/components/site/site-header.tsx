@@ -12,7 +12,17 @@ import { HorizonMark } from "./horizon-mark";
 
 const isActive = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
-export const SiteHeader = ({ donateHref }: { donateHref: string }) => {
+/** The header's main button, set in site.headerCta. */
+const HeaderCta = ({ className, onClick }: { className?: string; onClick?: () => void }) => {
+  const { label, href, icon } = site.headerCta;
+  return (
+    <ButtonLink href={href} variant="give" size="sm" icon={actionIcons[icon]} className={className} onClick={onClick}>
+      {label}
+    </ButtonLink>
+  );
+};
+
+export const SiteHeader = () => {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
@@ -41,16 +51,12 @@ export const SiteHeader = ({ donateHref }: { donateHref: string }) => {
               </Link>
             );
           })}
-          <ButtonLink href={donateHref} variant="give" size="sm" icon={actionIcons.donate} className="ml-3">
-            Donate
-          </ButtonLink>
+          <HeaderCta className="ml-3" />
         </nav>
 
-        {/* Phones: Donate stays one tap away; everything else lives in the menu. */}
+        {/* Phones: the main button stays one tap away; everything else lives in the menu. */}
         <div className="flex shrink-0 items-center gap-1 md:hidden">
-          <ButtonLink href={donateHref} variant="give" size="sm" icon={actionIcons.donate} onClick={close}>
-            Donate
-          </ButtonLink>
+          <HeaderCta onClick={close} />
           <IconButton
             icon={open ? actionIcons.close : actionIcons.menu}
             label={open ? "Close menu" : "Open menu"}

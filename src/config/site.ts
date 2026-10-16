@@ -24,4 +24,10 @@ export const site = {
     { href: "/privacy", label: "Privacy policy" },
     { href: "/terms", label: "Terms and conditions" },
   ],
+  /**
+   * The header's main button, on every public page. It says "Get involved" rather than "Donate" until the
+   * DSWD solicitation permit arrives (PD 1564): asking the public for money needs a permit, whatever the
+   * button says. `icon` is a key of actionIcons in src/config/icons.ts.
+   */
+  headerCta: { label: "Get involved", href: "/join", icon: "join" },
 } as const;

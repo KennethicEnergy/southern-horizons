@@ -666,7 +666,7 @@ const ComponentsPage = () => (
           description="The active link follows the current URL, so none is highlighted here. Below 768px, Donate stays in the bar beside the menu button, and the menu lists each page with its icon."
         >
           <Specimen label="Default" bleed>
-            <SiteHeader donateHref="#site-header" />
+            <SiteHeader />
           </Specimen>
         </Section>
 
