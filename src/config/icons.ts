@@ -7,6 +7,7 @@ import {
   Call02Icon,
   Cancel01Icon,
   CheckmarkCircle02Icon,
+  ComputerIcon,
   Delete02Icon,
   Download01Icon,
   Facebook01Icon,
@@ -21,14 +22,17 @@ import {
   Mail01Icon,
   MailReply01Icon,
   Menu01Icon,
+  Moon02Icon,
   News01Icon,
   PencilEdit02Icon,
   SentIcon,
+  Sun03Icon,
   Tick02Icon,
   UserAdd01Icon,
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 import type { ToastTone } from "@/types/toast";
+import type { ThemeChoice } from "@/types/theme";
 
 /**
  * One icon per action, everywhere. On a phone the icon is often what people read first,
@@ -68,4 +72,10 @@ export const toastIcons: Record<ToastTone, IconSvgElement> = {
   success: CheckmarkCircle02Icon,
   error: AlertCircleIcon,
   info: InformationCircleIcon,
+};
+
+export const themeIcons: Record<ThemeChoice, IconSvgElement> = {
+  light: Sun03Icon,
+  dark: Moon02Icon,
+  system: ComputerIcon,
 };
