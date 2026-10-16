@@ -65,6 +65,7 @@ Whichever option you use, check these values afterwards:
 | `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | Your email and a password of **at least 12 characters** |
 | `R2_*` | Needed only to upload media. Without them, the rest of the site still works. |
 | `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | Optional. If either is empty, the Google button is hidden. |
+| `FACEBOOK_APP_ID` | Leave empty. It's set only in production, where it adds the `fb:app_id` tag to every page. |
 
 ### Create your own database branch
 
@@ -103,13 +104,15 @@ pnpm dev
 
 ### Test as another position
 
-Every position except President sends its changes to **Backoffice → Approvals**, so you need a second account to test that flow:
+Every position except Super Admin and President sends its changes to **Backoffice → Approvals**, so you need a second account to test that flow:
 
 1. Set `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` in `.env.local`. Invited members have no password and can only sign in with Google.
 2. As the President, invite a second Google account under **Backoffice → Members** and give it a position, such as Communications.
 3. Sign in with that account in a private window. Its publish, edit, and delete actions now show up in Approvals for the President to decide.
 
 A position change takes effect within 5 minutes, or immediately if that person signs out and back in. The positions and the approval rules are explained in [README → Positions, permissions, and approvals](README.md#positions-permissions-and-approvals).
+
+Donations work differently. Only the positions in `DONATION_LIST_VIEWERS` see **Backoffice → Donations**, and only those in `DONOR_DETAILS_VIEWERS` see donors' names, emails, and messages. Everyone else on the list sees "Hidden". Both lists are in [src/config/roles.ts](src/config/roles.ts). By default they hold Super Admin, President, Bookkeeper, and Donor & Sponsor Relations, so test donations with one of those.
 
 ## 7. Check that everything passes
 
@@ -132,16 +135,17 @@ src/
   app/api/        route handlers (auth, upload presign and finalize)
   actions/        server actions; each one calls requirePermission() or requireAction()
   components/     UI, grouped as ui/ (shared building blocks), site/, admin/, forms/, og/
-  config/         constants and static config (roles.ts, icons.ts, site.ts, posts.ts, …)
+  config/         constants and static config (roles.ts, icons.ts, site.ts, og.ts, theme.ts, …)
   db/             Drizzle schema, client, and seed scripts
   hooks/          custom React hooks (useXxx.ts), each with a test next to it
   lib/            pure helpers and wrappers
     approvals/    approval requests: create, query, and apply once approved
+    donations/    what each officer may see about a donor
     posts/        post access rules, change diffs, and writes
     validations/  Zod schemas shared by forms and server actions
   stores/         Zustand stores (including the toast store)
   test/           test-only helpers, such as renderHook
-  types/          shared types (rbac.ts, approvals.ts, toast.ts, …)
+  types/          shared types (rbac.ts, approvals.ts, donations.ts, theme.ts, …)
   auth.ts         Auth.js setup (credentials and Google)
   proxy.ts        keeps signed-out users out of /admin
 drizzle/          generated SQL migrations (committed)
@@ -150,7 +154,7 @@ docs/             design specs written before larger features
 
 Start with these files:
 
-- [src/config/roles.ts](src/config/roles.ts) and [src/lib/rbac.ts](src/lib/rbac.ts): positions, what each may do, and who approves their changes. Code checks permissions, never position names.
+- [src/config/roles.ts](src/config/roles.ts) and [src/lib/rbac.ts](src/lib/rbac.ts): positions, what each may do, and who approves their changes. Most permissions sit on each position. A few, such as seeing donations, come from a list of positions instead (`LISTED_PERMISSIONS`). Either way, code checks permissions with `can()`, never position names.
 - [src/db/schema.ts](src/db/schema.ts): every table and enum.
 - [src/lib/session.ts](src/lib/session.ts): `requirePermission()` and `requireAction()`, the server-side checks.
 - [src/lib/approvals/](src/lib/approvals/): how a change waits for approval and is applied once approved. Post changes go through [src/lib/posts/approval-handler.ts](src/lib/posts/approval-handler.ts).
@@ -195,6 +199,8 @@ The full rules are in [CLAUDE.md](CLAUDE.md). In short:
 - Show feedback with toasts, never `alert()`. Use `toastResult(result)` for a server action's result, or `toast.success()`, `toast.error()` and `toast.info()` from [src/stores/toast-store.ts](src/stores/toast-store.ts). Form validation errors stay inline next to the fields.
 - Motion (`.reveal`, and `.parallax` layers inside a `.parallax-scope`) and the brand surfaces (`bg-horizon`, `bg-tide`, …) are plain CSS in [src/app/globals.css](src/app/globals.css), with usage notes in the comments there. Motion switches off on its own for people who prefer reduced motion.
 - Keep tap targets at least 44px tall. The shared buttons and fields already do this.
+- Use the role colours, so dark mode works: `bg-canvas`, `bg-surface`, `bg-panel`, `text-fg`, `text-fg-soft`, `text-accent`, and `border-line`. Use a brand colour (`sea`, `sun`, `ink`, `mint`) only where you mean that exact colour in both themes. The full list is in the comments at the top of [src/app/globals.css](src/app/globals.css). Check new UI in both themes with the switcher in the footer.
+- Give every public page its own share metadata with `openGraph: pageOpenGraph("/its-path")` from [src/lib/og.ts](src/lib/og.ts). That sets `og:url` and the share image. A page with its own `opengraph-image.tsx` passes `{ hasOwnCard: true }`. Don't write `openGraph` by hand: a page that sets it loses the site-wide share image. To preview a card, open its address, for example http://localhost:3000/opengraph-image.
 
 ### Commit
 
@@ -215,6 +221,8 @@ DATABASE_URL_UNPOOLED="<production direct URL>" pnpm db:migrate
 
 Variables already set in your shell take priority over `.env.local`. Set the production URL for this one command only, not in your `.env.local`.
 
+In Vercel, production's `SITE_URL` and `AUTH_URL` are `https://www.southern-horizons.org`, with the `www`. Share images and `og:url` are built from `SITE_URL`, so a wrong value breaks every link preview without any error. A changed variable only applies after a redeploy. After a deploy that changes share images, open the [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) and click **Scrape Again** so Facebook drops its cached preview.
+
 ## 10. Troubleshooting
 
 | Symptom | Fix |
@@ -227,7 +235,10 @@ Variables already set in your shell take priority over `.env.local`. Set the pro
 | Google sign-in sends you back with "not invited" | Your email isn't an active member. Ask the President to invite you. |
 | `column … does not exist` or `relation … does not exist` | Your database branch is behind. Run `pnpm db:migrate`. |
 | A new position doesn't apply yet | Positions refresh every 5 minutes. Sign out and back in to apply it now. |
-| Your change went to Approvals instead of going live | Expected for every position except President. The President approves it under **Backoffice → Approvals**. |
+| Your change went to Approvals instead of going live | Expected for every position except Super Admin and President. Either of them approves it under **Backoffice → Approvals**. |
+| **Backoffice → Donations** is missing from the sidebar | Your position isn't in `DONATION_LIST_VIEWERS` in [src/config/roles.ts](src/config/roles.ts). |
+| `pnpm build` says "Another next build process is already running" | A `pnpm dev` is running in the same folder. Stop it, then build. |
+| A Facebook preview is missing its image or shows an old one | Check that `SITE_URL` in Vercel is `https://www.southern-horizons.org` and redeploy. Then click **Scrape Again** in the Sharing Debugger, twice if it still says "Inferred Property". |
 | Google sign-in fails on a preview deployment | Expected: Google rejects preview URLs. Use email and password there. |
 | Images from R2 don't load through `next/image` | Set `R2_PUBLIC_URL` and restart `pnpm dev`. `next.config.ts` reads it at startup. |
 
