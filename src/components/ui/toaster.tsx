@@ -12,7 +12,7 @@ import { IconButton } from "./icon-button";
 const toneStyles: Record<ToastTone, { chip: string; bar: string }> = {
   success: { chip: "bg-leaf-mist text-leaf", bar: "bg-mint" },
   error: { chip: "bg-danger-mist text-danger", bar: "bg-danger" },
-  info: { chip: "bg-sea-mist text-sea", bar: "bg-sea" },
+  info: { chip: "bg-sea-mist text-accent", bar: "bg-sea" },
 };
 
 const ToastItem = ({ toast: { id, tone, message, duration } }: { toast: Toast }) => {
@@ -43,15 +43,15 @@ const ToastItem = ({ toast: { id, tone, message, duration } }: { toast: Toast })
       onPointerLeave={() => setHovered(false)}
       onFocus={() => setFocused(true)}
       onBlur={onBlur}
-      className={`pointer-events-auto relative flex items-start gap-3 overflow-hidden rounded-2xl bg-white/95 p-2.5 pl-3 shadow-lift ring-1 ring-line backdrop-blur transition-[opacity,translate,scale] duration-300 ease-out-soft starting:-translate-y-4 starting:scale-95 starting:opacity-0 ${
+      className={`pointer-events-auto relative flex items-start gap-3 overflow-hidden rounded-2xl bg-surface/95 p-2.5 pl-3 shadow-lift ring-1 ring-line backdrop-blur transition-[opacity,translate,scale] duration-300 ease-out-soft starting:-translate-y-4 starting:scale-95 starting:opacity-0 ${
         leaving ? "-translate-y-2 scale-95 opacity-0" : ""
       }`}
     >
       <span className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full ${chip}`}>
         <Icon icon={toastIcons[tone]} size={18} />
       </span>
-      <p className="min-w-0 flex-1 self-center py-1 text-[0.95rem] leading-snug text-ink">{message}</p>
-      <IconButton icon={actionIcons.close} label="Dismiss notification" size="sm" className="-my-0.5 text-ink-soft" onClick={close} />
+      <p className="min-w-0 flex-1 self-center py-1 text-[0.95rem] leading-snug text-fg">{message}</p>
+      <IconButton icon={actionIcons.close} label="Dismiss notification" size="sm" className="-my-0.5 text-fg-soft" onClick={close} />
       {/* Time left before it closes itself; holds while hovered or focused. */}
       <span
         aria-hidden="true"

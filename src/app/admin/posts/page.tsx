@@ -12,6 +12,7 @@ import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { DeletePostButton } from "@/components/admin/delete-post-button";
 import { ButtonLink } from "@/components/ui/button";
+import { filterChipClass } from "@/components/ui/filter-chip";
 
 const statuses: { value?: PostStatus; label: string }[] = [
   { label: "All" },
@@ -52,7 +53,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
             key={s.label}
             href={s.value ? `/admin/posts?status=${s.value}` : "/admin/posts"}
             aria-current={s.value === status ? "page" : undefined}
-            className={`rounded-full px-3.5 py-1.5 text-sm ${s.value === status ? "bg-ink text-white" : "bg-white text-ink-soft hover:text-ink"}`}
+            className={filterChipClass(s.value === status)}
           >
             {s.label}
           </Link>
@@ -60,16 +61,16 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
       </nav>
 
       {rows.length === 0 ? (
-        <div className="rounded-xl bg-white p-10 text-center">
+        <div className="rounded-xl bg-surface p-10 text-center">
           <p className="text-lg">No posts here yet.</p>
           <ButtonLink href="/admin/posts/new" className="mt-4">
             Write your first post
           </ButtonLink>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl bg-white">
+        <div className="overflow-x-auto rounded-xl bg-surface">
           <table className="w-full min-w-[44rem] text-left text-[0.95rem]">
-            <thead className="border-b border-line text-sm text-ink-soft">
+            <thead className="border-b border-line text-sm text-fg-soft">
               <tr>
                 <th scope="col" className="px-5 py-3 font-medium">Title</th>
                 <th scope="col" className="px-5 py-3 font-medium">Type</th>
@@ -87,14 +88,14 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                 <tr key={p.id}>
                   <td className="max-w-xs px-5 py-3.5">
                     {canEdit ? (
-                      <Link href={`/admin/posts/${p.id}/edit`} className="font-medium hover:text-sea">
+                      <Link href={`/admin/posts/${p.id}/edit`} className="font-medium hover:text-accent">
                         {p.title}
                       </Link>
                     ) : (
                       <span className="font-medium">{p.title}</span>
                     )}
                   </td>
-                  <td className="px-5 py-3.5 capitalize text-ink-soft">{p.type}</td>
+                  <td className="px-5 py-3.5 capitalize text-fg-soft">{p.type}</td>
                   <td className="px-5 py-3.5">
                     <div className="flex flex-wrap gap-1.5">
                       <StatusBadge status={p.status} />
@@ -103,17 +104,17 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                       ))}
                     </div>
                   </td>
-                  <td className="px-5 py-3.5 text-ink-soft">{p.author.name}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-ink-soft">{formatDate(p.updatedAt)}</td>
+                  <td className="px-5 py-3.5 text-fg-soft">{p.author.name}</td>
+                  <td className="whitespace-nowrap px-5 py-3.5 text-fg-soft">{formatDate(p.updatedAt)}</td>
                   <td className="px-5 py-3.5 text-right">
                     <div className="flex justify-end gap-3">
                       {canEdit ? (
-                        <Link href={`/admin/posts/${p.id}/edit`} className="text-sm font-medium text-sea hover:underline">
+                        <Link href={`/admin/posts/${p.id}/edit`} className="text-sm font-medium text-accent hover:underline">
                           Edit<span className="sr-only"> {p.title}</span>
                         </Link>
                       ) : null}
                       {p.status === "published" ? (
-                        <Link href={`/news/${p.slug}`} className="text-sm text-sea hover:underline" target="_blank">
+                        <Link href={`/news/${p.slug}`} className="text-sm text-accent hover:underline" target="_blank">
                           View
                         </Link>
                       ) : null}

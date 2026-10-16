@@ -20,18 +20,18 @@ export default async function MediaPage() {
       <AdminPageHeader title="Media" description="Photos, videos, and documents shared across posts and campaigns." />
       <MediaUploadPanel />
       {items.length === 0 ? (
-        <p className="mt-8 text-ink-soft">Nothing uploaded yet.</p>
+        <p className="mt-8 text-fg-soft">Nothing uploaded yet.</p>
       ) : (
         <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {items.map((m) => (
-            <li key={m.id} className="rounded-xl bg-white p-2">
+            <li key={m.id} className="rounded-xl bg-surface p-2">
               <a href={m.url} target="_blank" rel="noopener noreferrer">
                 <MediaThumb media={m} className="aspect-square w-full" />
               </a>
               <p className="mt-2 truncate px-1 text-sm" title={m.filename}>
                 {m.filename}
               </p>
-              <p className="px-1 text-xs text-ink-soft">{formatDate(m.createdAt)}</p>
+              <p className="px-1 text-xs text-fg-soft">{formatDate(m.createdAt)}</p>
             </li>
           ))}
         </ul>

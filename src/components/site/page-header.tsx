@@ -13,7 +13,7 @@ export const PageHeader = ({ title, lead, eyebrow }: PageHeaderProps) => (
     <div className="relative mx-auto max-w-6xl px-5 pb-12 pt-12 md:pb-16 md:pt-20">
       {eyebrow ? <Eyebrow className="mb-4">{eyebrow}</Eyebrow> : null}
       <h1 className="max-w-3xl text-4xl font-semibold md:text-6xl lg:max-w-2xl">{title}</h1>
-      {lead ? <p className="mt-5 max-w-2xl text-lg text-ink-soft lg:max-w-xl">{lead}</p> : null}
+      {lead ? <p className="mt-5 max-w-2xl text-lg text-fg-soft lg:max-w-xl">{lead}</p> : null}
     </div>
   </header>
 );

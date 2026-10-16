@@ -54,7 +54,7 @@ const PostPage = async ({ params }: Props) => {
       {/* Banner: 16:9 at the top, framed on the point chosen in the editor (cards use the same point at 3:2). */}
       {post.cover ? (
         <div className="mx-auto mt-4 max-w-6xl px-5">
-          <div className="relative aspect-[16/9] overflow-hidden rounded-3xl bg-sky shadow-soft">
+          <div className="relative aspect-[16/9] overflow-hidden rounded-3xl bg-panel shadow-soft">
             <Image
               src={post.cover.url}
               alt={post.cover.alt ?? ""}
@@ -70,26 +70,26 @@ const PostPage = async ({ params }: Props) => {
 
       <header className={`mx-auto max-w-4xl px-5 ${post.cover ? "pt-10" : "pt-2"}`}>
         {post.parent ? (
-          <p className="mt-6 text-sea">
+          <p className="mt-6 text-accent">
             Update on <Link href={`/news/${post.parent.slug}`} className="underline">{post.parent.title}</Link>
           </p>
         ) : phase ? (
-          <p className="mt-6 font-medium text-sea">{phaseText[phase]}</p>
+          <p className="mt-6 font-medium text-accent">{phaseText[phase]}</p>
         ) : null}
         <h1 className="mt-3 text-4xl font-semibold md:text-6xl">{post.title}</h1>
-        {post.excerpt ? <p className="mt-5 text-xl text-ink-soft">{post.excerpt}</p> : null}
+        {post.excerpt ? <p className="mt-5 text-xl text-fg-soft">{post.excerpt}</p> : null}
 
-        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[0.95rem] text-ink-soft">
+        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[0.95rem] text-fg-soft">
           {post.type === "event" && post.eventStartAt ? (
             <span className="flex items-center gap-1.5">
-              <Icon icon={Calendar03Icon} size={18} className="text-sea" />
+              <Icon icon={Calendar03Icon} size={18} className="text-accent" />
               {formatDateTime(post.eventStartAt)}
               {post.eventEndAt ? ` to ${formatDateTime(post.eventEndAt)}` : ""}
             </span>
           ) : null}
           {post.location ? (
             <span className="flex items-center gap-1.5">
-              <Icon icon={Location01Icon} size={18} className="text-sea" />
+              <Icon icon={Location01Icon} size={18} className="text-accent" />
               {post.location}
             </span>
           ) : null}
@@ -103,7 +103,7 @@ const PostPage = async ({ params }: Props) => {
 
       <div className="mx-auto max-w-4xl px-5 py-12">
         <div
-          className="article prose prose-lg prose-a:text-sea prose-headings:font-semibold"
+          className="article prose prose-lg prose-a:text-accent prose-headings:font-semibold"
           dangerouslySetInnerHTML={{ __html: renderContent(post.content) }}
         />
         {attachments.length > 0 ? (
@@ -117,7 +117,7 @@ const PostPage = async ({ params }: Props) => {
       </div>
 
       {post.updates.length > 0 ? (
-        <section className="border-t border-line bg-sky" aria-labelledby="updates-heading">
+        <section className="border-t border-line bg-panel" aria-labelledby="updates-heading">
           <div className="mx-auto max-w-4xl px-5 py-14">
             <h2 id="updates-heading" className="text-3xl font-semibold">
               Updates
@@ -126,16 +126,16 @@ const PostPage = async ({ params }: Props) => {
               {post.updates.map((u) => (
                 <li key={u.id} className="relative">
                   <span className="absolute -left-[2.45rem] top-1.5 size-3.5 rounded-full border-2 border-sky bg-sea" aria-hidden="true" />
-                  <time className="text-sm text-ink-soft" dateTime={u.publishedAt?.toISOString()}>
+                  <time className="text-sm text-fg-soft" dateTime={u.publishedAt?.toISOString()}>
                     {u.publishedAt ? formatDateTime(u.publishedAt) : ""}
                   </time>
                   <h3 className="mt-1 text-2xl font-semibold">
-                    <Link href={`/news/${u.slug}`} className="hover:text-sea">
+                    <Link href={`/news/${u.slug}`} className="hover:text-accent">
                       {u.title}
                     </Link>
                   </h3>
                   <div
-                    className="article prose mt-3 prose-a:text-sea"
+                    className="article prose mt-3 prose-a:text-accent"
                     dangerouslySetInnerHTML={{ __html: renderContent(u.content) }}
                   />
                   <div className="mt-5">

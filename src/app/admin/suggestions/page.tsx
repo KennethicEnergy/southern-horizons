@@ -25,7 +25,7 @@ export default async function SuggestionsPage() {
         description="Ideas and fixes for the site. Anyone can add one; the person who added it, or the President, can tick it off."
       />
 
-      <section className="rounded-xl bg-white p-6">
+      <section className="rounded-xl bg-surface p-6">
         <h2 className="text-xl font-semibold">Add a suggestion</h2>
         <div className="mt-4">
           <SuggestionForm />
@@ -34,21 +34,21 @@ export default async function SuggestionsPage() {
 
       <section className="mt-8">
         <h2 className="text-xl font-semibold">
-          To do <span className="font-normal text-ink-soft">({open} open)</span>
+          To do <span className="font-normal text-fg-soft">({open} open)</span>
         </h2>
         {items.length === 0 ? (
-          <p className="mt-4 rounded-xl bg-white p-8 text-ink-soft">No suggestions yet.</p>
+          <p className="mt-4 rounded-xl bg-surface p-8 text-fg-soft">No suggestions yet.</p>
         ) : (
-          <ul className="mt-4 divide-y divide-line overflow-hidden rounded-xl bg-white">
+          <ul className="mt-4 divide-y divide-line overflow-hidden rounded-xl bg-surface">
             {items.map((s) => {
               const canChange = isPresident || s.createdById === user.id;
               return (
                 <li key={s.id} className="flex gap-4 px-5 py-4">
                   <SuggestionDoneToggle suggestionId={s.id} title={s.title} done={s.isDone} canChange={canChange} />
                   <div className="min-w-0 flex-1">
-                    <p className={`font-semibold ${s.isDone ? "text-ink-soft line-through" : ""}`}>{s.title}</p>
-                    {s.description ? <p className="mt-1 whitespace-pre-line text-[0.95rem] text-ink-soft">{s.description}</p> : null}
-                    <p className="mt-1.5 text-sm text-ink-soft">
+                    <p className={`font-semibold ${s.isDone ? "text-fg-soft line-through" : ""}`}>{s.title}</p>
+                    {s.description ? <p className="mt-1 whitespace-pre-line text-[0.95rem] text-fg-soft">{s.description}</p> : null}
+                    <p className="mt-1.5 text-sm text-fg-soft">
                       {s.author.name} · {formatDate(s.createdAt)}
                     </p>
                   </div>

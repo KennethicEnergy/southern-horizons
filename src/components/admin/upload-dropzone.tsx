@@ -46,15 +46,15 @@ export function UploadDropzone({
         setDragging(false);
         void handle(e.dataTransfer.files);
       }}
-      className={`rounded-xl border-2 border-dashed px-6 py-8 text-center ${dragging ? "border-sea bg-sea-mist" : "border-line bg-white"}`}
+      className={`rounded-xl border-2 border-dashed px-6 py-8 text-center ${dragging ? "border-sea bg-sea-mist" : "border-line bg-surface"}`}
     >
-      <HugeiconsIcon icon={Upload01Icon} size={28} className="mx-auto text-sea" />
+      <HugeiconsIcon icon={Upload01Icon} size={28} className="mx-auto text-accent" />
       <p className="mt-3 font-medium">
-        <button type="button" className="text-sea underline" onClick={() => inputRef.current?.click()}>
+        <button type="button" className="text-accent underline" onClick={() => inputRef.current?.click()}>
           {label}
         </button>
       </p>
-      <p className="mx-auto mt-1 max-w-md text-sm text-ink-soft">{hint}</p>
+      <p className="mx-auto mt-1 max-w-md text-sm text-fg-soft">{hint}</p>
       <input
         ref={inputRef}
         type="file"

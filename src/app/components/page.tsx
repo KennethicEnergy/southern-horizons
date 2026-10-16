@@ -5,6 +5,7 @@ import { IconButton } from "@/components/ui/icon-button";
 import { Avatar } from "@/components/ui/avatar";
 import { Icon } from "@/components/ui/icon";
 import { TextLink } from "@/components/ui/text-link";
+import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { FormAlert } from "@/components/ui/form-fields";
 import { BrandOrbs } from "@/components/site/brand-orbs";
 import { ContactList } from "@/components/site/contact-list";
@@ -40,6 +41,7 @@ export const revalidate = 86400;
 
 const sections = [
   { id: "brand", title: "Brand" },
+  { id: "theme-switcher", title: "ThemeSwitcher" },
   { id: "icons", title: "Icons" },
   { id: "button", title: "Button" },
   { id: "icon-button", title: "IconButton" },
@@ -67,29 +69,41 @@ const sections = [
   { id: "legal-page", title: "LegalPage" },
 ];
 
-// Literal class names so Tailwind generates them.
-const colors = [
+// Literal class names so Tailwind generates them. Brand hexes mirror @theme in globals.css.
+const brandSwatches = [
   { name: "ink", className: "bg-ink", hex: "#023d54" },
-  { name: "ink-soft", className: "bg-ink-soft", hex: "#4a6671" },
   { name: "sea", className: "bg-sea", hex: "#0c6980" },
-  { name: "sea-mist", className: "bg-sea-mist", hex: "#d4eaef" },
-  { name: "sky", className: "bg-sky", hex: "#eff7f8" },
   { name: "sun", className: "bg-sun", hex: "#fdfd68" },
   { name: "sun-deep", className: "bg-sun-deep", hex: "#ecea3f" },
-  { name: "sun-ink", className: "bg-sun-ink", hex: "#5c5800" },
-  { name: "sun-mist", className: "bg-sun-mist", hex: "#fefed8" },
   { name: "mint", className: "bg-mint", hex: "#94dfa7" },
-  { name: "leaf", className: "bg-leaf", hex: "#1f7446" },
-  { name: "leaf-mist", className: "bg-leaf-mist", hex: "#e1f6e7" },
-  { name: "danger", className: "bg-danger", hex: "#b3261e" },
-  { name: "danger-mist", className: "bg-danger-mist", hex: "#fbe4e2" },
-  { name: "line", className: "bg-line", hex: "#d3e1e5" },
+];
+
+// Values live only in globals.css (:root and :root[data-theme="dark"]); these swatches show whichever theme is on.
+const roleSwatches = [
+  { name: "canvas", className: "bg-canvas", use: "Page background" },
+  { name: "surface", className: "bg-surface", use: "Cards, header, fields" },
+  { name: "panel", className: "bg-panel", use: "Quiet panels" },
+  { name: "fg", className: "bg-fg", use: "Body text" },
+  { name: "fg-soft", className: "bg-fg-soft", use: "Secondary text" },
+  { name: "line", className: "bg-line", use: "Borders" },
+  { name: "accent", className: "bg-accent", use: "Links, accent text" },
+  { name: "deep", className: "bg-deep", use: "Footer ground" },
+  { name: "on-sun", className: "bg-on-sun", use: "Text on sun" },
+  { name: "danger-solid", className: "bg-danger-solid", use: "Solid danger buttons" },
+  { name: "sea-mist", className: "bg-sea-mist", use: "Info panel" },
+  { name: "sea-deep", className: "bg-sea-deep", use: "Text on info" },
+  { name: "leaf-mist", className: "bg-leaf-mist", use: "Success panel" },
+  { name: "leaf", className: "bg-leaf", use: "Text on success" },
+  { name: "sun-mist", className: "bg-sun-mist", use: "Waiting panel" },
+  { name: "sun-ink", className: "bg-sun-ink", use: "Text on waiting" },
+  { name: "danger-mist", className: "bg-danger-mist", use: "Error panel" },
+  { name: "danger", className: "bg-danger", use: "Text on error" },
 ];
 
 const surfaces = [
-  { name: "shadow-soft", className: "bg-white shadow-soft" },
-  { name: "shadow-lift", className: "bg-white shadow-lift" },
-  { name: "bg-horizon", className: "bg-horizon ring-1 ring-inset ring-ink/10" },
+  { name: "shadow-soft", className: "bg-surface shadow-soft" },
+  { name: "shadow-lift", className: "bg-surface shadow-lift" },
+  { name: "bg-horizon", className: "bg-horizon ring-1 ring-inset ring-fg/10" },
   { name: "bg-tide", className: "bg-tide" },
   { name: "bg-brand-stripe", className: "bg-brand-stripe" },
 ];
@@ -113,13 +127,16 @@ const sampleSteps = [
 
 const ComponentsPage = () => (
   <>
-    <header className="header-elevate sticky top-0 z-40 border-b border-line bg-white/85 backdrop-blur-md">
+    <header className="header-elevate sticky top-0 z-40 border-b border-line bg-surface/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-5">
         <Link href="/" className="flex items-center gap-2.5">
           <HorizonMark />
           <span className="font-display text-lg font-semibold tracking-tight">Components</span>
         </Link>
-        <p className="hidden text-sm text-ink-soft sm:block">Shared building blocks and their states</p>
+        <div className="flex items-center gap-4">
+          <p className="hidden text-sm text-fg-soft sm:block">Shared building blocks and their states</p>
+          <ThemeSwitcher />
+        </div>
       </div>
     </header>
 
@@ -130,7 +147,7 @@ const ComponentsPage = () => (
         <ul className="-mx-5 flex gap-x-4 gap-y-1.5 overflow-x-auto px-5 pb-2 text-sm [scrollbar-width:none] lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0">
           {sections.map(({ id, title }) => (
             <li key={id} className="shrink-0">
-              <a href={`#${id}`} className="text-ink-soft transition-colors hover:text-ink">
+              <a href={`#${id}`} className="text-fg-soft transition-colors hover:text-fg">
                 {title}
               </a>
             </li>
@@ -154,18 +171,29 @@ const ComponentsPage = () => (
               <span className="font-display text-lg font-semibold">Southern Horizons</span>
             </div>
           </Specimen>
-          <Specimen label="Color tokens">
+          <Specimen label="Brand colours (fixed in both themes)">
             <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
-              {colors.map(({ name, className, hex }) => (
+              {brandSwatches.map(({ name, className, hex }) => (
                 <li key={name}>
-                  <div className={`h-14 rounded-xl ring-1 ring-inset ring-ink/10 ${className}`} />
+                  <div className={`h-14 rounded-xl ring-1 ring-inset ring-fg/10 ${className}`} />
                   <p className="mt-1.5 text-sm font-medium">{name}</p>
-                  <p className="text-xs tabular-nums text-ink-soft">{hex}</p>
+                  <p className="text-xs tabular-nums text-fg-soft">{hex}</p>
                 </li>
               ))}
             </ul>
           </Specimen>
-          <Specimen label="Shadows and surfaces" className="bg-sky!">
+          <Specimen label="Role colours (change with the theme; flip the switcher in the header to compare)">
+            <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+              {roleSwatches.map(({ name, className, use }) => (
+                <li key={name}>
+                  <div className={`h-14 rounded-xl ring-1 ring-inset ring-fg/10 ${className}`} />
+                  <p className="mt-1.5 text-sm font-medium">{name}</p>
+                  <p className="text-xs text-fg-soft">{use}</p>
+                </li>
+              ))}
+            </ul>
+          </Specimen>
+          <Specimen label="Shadows and surfaces" className="bg-panel!">
             <ul className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-5">
               {surfaces.map(({ name, className }) => (
                 <li key={name}>
@@ -183,6 +211,22 @@ const ComponentsPage = () => (
         </Section>
 
         <Section
+          id="theme-switcher"
+          title="ThemeSwitcher"
+          source="components/ui/theme-switcher.tsx · stores/theme-store.ts · lib/theme.ts"
+          description="Light, Dark, or Match device (the default). The choice is saved in a theme cookie in this browser, read by an inline script before the first paint, so pages stay cached and never flash. Every switcher on the page stays in step."
+        >
+          <div className="grid gap-6 md:grid-cols-2">
+            <Specimen label="tone=&quot;panel&quot; (sidebar, this header)">
+              <ThemeSwitcher />
+            </Specimen>
+            <Specimen label="tone=&quot;deep&quot; (footer)" className="bg-deep!">
+              <ThemeSwitcher tone="deep" />
+            </Specimen>
+          </div>
+        </Section>
+
+        <Section
           id="icons"
           title="Icons"
           source="config/icons.ts · components/ui/icon.tsx"
@@ -191,9 +235,9 @@ const ComponentsPage = () => (
           <Specimen label="actionIcons">
             <ul className="grid grid-cols-3 gap-3 sm:grid-cols-5 md:grid-cols-6">
               {Object.entries(actionIcons).map(([name, icon]) => (
-                <li key={name} className="flex flex-col items-center gap-2 rounded-xl bg-sky px-2 py-3 text-center">
-                  <Icon icon={icon} size={24} className="text-sea" />
-                  <code className="text-xs text-ink-soft">{name}</code>
+                <li key={name} className="flex flex-col items-center gap-2 rounded-xl bg-panel px-2 py-3 text-center">
+                  <Icon icon={icon} size={24} className="text-accent" />
+                  <code className="text-xs text-fg-soft">{name}</code>
                 </li>
               ))}
             </ul>
@@ -215,7 +259,7 @@ const ComponentsPage = () => (
             <div className="space-y-4">
               {sizes.map((size) => (
                 <div key={size} className="flex flex-wrap items-center gap-3">
-                  <span className="w-8 text-sm text-ink-soft">{size}</span>
+                  <span className="w-8 text-sm text-fg-soft">{size}</span>
                   {variants.map((variant) => (
                     <Button key={variant} variant={variant} size={size}>
                       {variantLabels[variant]}
@@ -268,7 +312,7 @@ const ComponentsPage = () => (
             <div className="space-y-4">
               {sizes.map((size) => (
                 <div key={size} className="flex flex-wrap items-center gap-3">
-                  <span className="w-8 text-sm text-ink-soft">{size}</span>
+                  <span className="w-8 text-sm text-fg-soft">{size}</span>
                   <IconButton icon={actionIcons.menu} label="Open menu" size={size} />
                   <IconButton icon={actionIcons.edit} label="Edit" variant="outline" size={size} />
                   <IconButton icon={actionIcons.add} label="Add" variant="primary" size={size} />
@@ -345,7 +389,7 @@ const ComponentsPage = () => (
               <Avatar name="Maria Santos" src={avatarPhoto} />
               <div className="min-w-0">
                 <p className="truncate font-medium">Maria Santos</p>
-                <p className="truncate text-sm text-ink-soft">President</p>
+                <p className="truncate text-sm text-fg-soft">President</p>
               </div>
             </div>
           </Specimen>
@@ -387,7 +431,7 @@ const ComponentsPage = () => (
           <Specimen label=".reveal — fades up on entry">
             <div className="grid gap-4 sm:grid-cols-3">
               {["Show up", "Show the receipts", "Ask first"].map((title) => (
-                <div key={title} className="reveal rounded-2xl bg-sky p-5 font-display text-lg font-semibold">
+                <div key={title} className="reveal rounded-2xl bg-panel p-5 font-display text-lg font-semibold">
                   {title}
                 </div>
               ))}
@@ -571,7 +615,7 @@ const ComponentsPage = () => (
           </Specimen>
           <Specimen label="Empty">
             <AttachmentList items={[]} />
-            <p className="text-sm text-ink-soft">(renders nothing)</p>
+            <p className="text-sm text-fg-soft">(renders nothing)</p>
           </Specimen>
         </Section>
 

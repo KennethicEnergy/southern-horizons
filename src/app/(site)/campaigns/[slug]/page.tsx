@@ -36,10 +36,10 @@ const CampaignPage = async ({ params }: Props) => {
       <div>
         <Eyebrow>{isOpen ? "Open for donations" : "This campaign has closed"}</Eyebrow>
         <h1 className="mt-3 text-4xl font-semibold md:text-5xl">{campaign.title}</h1>
-        <p className="mt-5 text-xl text-ink-soft">{campaign.summary}</p>
+        <p className="mt-5 text-xl text-fg-soft">{campaign.summary}</p>
 
         {campaign.cover ? (
-          <div className="relative mt-8 aspect-[4/3] overflow-hidden rounded-2xl bg-sky">
+          <div className="relative mt-8 aspect-[4/3] overflow-hidden rounded-2xl bg-panel">
             <Image src={campaign.cover.url} alt={campaign.cover.alt ?? ""} fill sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
           </div>
         ) : null}
@@ -50,7 +50,7 @@ const CampaignPage = async ({ params }: Props) => {
               <ProgressHorizon given={item.given} goal={item.goalQuantity} unit={item.name.toLowerCase()} />
               <div className="mt-6 flex flex-col gap-6 sm:flex-row">
                 {item.image ? (
-                  <div className="relative aspect-square w-40 shrink-0 overflow-hidden rounded-xl bg-sky">
+                  <div className="relative aspect-square w-40 shrink-0 overflow-hidden rounded-xl bg-panel">
                     <Image src={item.image.url} alt={item.image.alt ?? item.name} fill sizes="160px" className="object-cover" />
                   </div>
                 ) : null}
@@ -58,9 +58,9 @@ const CampaignPage = async ({ params }: Props) => {
                   <h2 className="text-2xl font-semibold">
                     {formatPeso(item.unitAmount)} gives one {item.name.toLowerCase()}
                   </h2>
-                  {item.description ? <p className="mt-2 text-ink-soft">{item.description}</p> : null}
+                  {item.description ? <p className="mt-2 text-fg-soft">{item.description}</p> : null}
                   {item.contents.length > 0 ? (
-                    <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-1 text-ink-soft">
+                    <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-1 text-fg-soft">
                       {item.contents.map((c) => (
                         <li key={c}>{c}</li>
                       ))}
@@ -73,12 +73,12 @@ const CampaignPage = async ({ params }: Props) => {
         </div>
 
         {campaign.content ? (
-          <div className="article prose prose-lg mt-12 prose-a:text-sea" dangerouslySetInnerHTML={{ __html: renderContent(campaign.content) }} />
+          <div className="article prose prose-lg mt-12 prose-a:text-accent" dangerouslySetInnerHTML={{ __html: renderContent(campaign.content) }} />
         ) : null}
 
-        <p className="mt-10 text-ink-soft">
+        <p className="mt-10 text-fg-soft">
           Every confirmed donation and every expense for this campaign appears on our{" "}
-          <Link href="/transparency" className="text-sea underline">
+          <Link href="/transparency" className="text-accent underline">
             transparency page
           </Link>
           .
@@ -86,7 +86,7 @@ const CampaignPage = async ({ params }: Props) => {
             <>
               {" "}
               Follow the distribution at{" "}
-              <Link href={`/news/${campaign.event.slug}`} className="text-sea underline">
+              <Link href={`/news/${campaign.event.slug}`} className="text-accent underline">
                 {campaign.event.title}
               </Link>
               .
@@ -96,7 +96,7 @@ const CampaignPage = async ({ params }: Props) => {
       </div>
 
       <aside className="lg:sticky lg:top-24 lg:self-start">
-        <div className="rounded-3xl bg-white p-6 shadow-lift ring-1 ring-line md:p-8">
+        <div className="rounded-3xl bg-surface p-6 shadow-lift ring-1 ring-line md:p-8">
           {isOpen ? (
             <DonationForm
               campaignId={campaign.id}
@@ -104,7 +104,7 @@ const CampaignPage = async ({ params }: Props) => {
               qr={campaign.qr ? { url: campaign.qr.url, accountName: campaign.qrAccountName } : null}
             />
           ) : (
-            <p className="text-lg text-ink-soft">
+            <p className="text-lg text-fg-soft">
               Thank you to everyone who gave. See what the campaign achieved on the transparency page.
             </p>
           )}

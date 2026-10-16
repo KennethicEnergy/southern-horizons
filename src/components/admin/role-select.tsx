@@ -24,7 +24,7 @@ export const RoleSelect = ({ id, label, value, onChange, disabled }: RoleSelectP
       value={value}
       onChange={({ target }) => onChange(target.value as AssignableRole)}
       disabled={disabled}
-      className="h-9 rounded-full border border-line bg-white pl-3.5 text-sm text-ink transition-colors hover:border-ink/25 focus:border-sea focus:outline-none focus:ring-4 focus:ring-sea/15 disabled:opacity-50"
+      className="h-9 rounded-full border border-line bg-surface pl-3.5 text-sm text-fg transition-colors hover:border-fg/25 focus:border-sea focus:outline-none focus:ring-4 focus:ring-sea/15 disabled:opacity-50"
     >
       {ROLE_OPTIONS.map(({ value: option, label: optionLabel }) => (
         <option key={option} value={option}>

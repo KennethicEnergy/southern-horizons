@@ -17,7 +17,7 @@ type ApprovalListProps = {
 
 /** Requests with their state: pending, approved, or rejected (with the reason). */
 export const ApprovalList = ({ items, empty, hideTitle = false, renderActions }: ApprovalListProps) => {
-  if (items.length === 0) return <p className="text-ink-soft">{empty}</p>;
+  if (items.length === 0) return <p className="text-fg-soft">{empty}</p>;
   return (
     <ul className="divide-y divide-line border-y border-line">
       {items.map((item) => {
@@ -27,9 +27,9 @@ export const ApprovalList = ({ items, empty, hideTitle = false, renderActions }:
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <StatusBadge status={status} />
-                <span className="text-sm font-medium uppercase tracking-wide text-ink-soft">{CONTENT_ACTION_LABELS[action]}</span>
+                <span className="text-sm font-medium uppercase tracking-wide text-fg-soft">{CONTENT_ACTION_LABELS[action]}</span>
                 {hideTitle ? null : summary.href ? (
-                  <Link href={summary.href} className="font-semibold hover:text-sea">
+                  <Link href={summary.href} className="font-semibold hover:text-accent">
                     {summary.title}
                   </Link>
                 ) : (
@@ -37,11 +37,11 @@ export const ApprovalList = ({ items, empty, hideTitle = false, renderActions }:
                 )}
               </div>
               {summary.details.length > 0 ? <p className="text-[0.95rem]">Changes: {summary.details.join(", ")}</p> : null}
-              <p className="text-sm text-ink-soft">
+              <p className="text-sm text-fg-soft">
                 Requested by {requesterName} ({roleLabel(requestedRole)}) · {formatDateTime(createdAt)}
               </p>
               {reviewedAt ? (
-                <p className="text-sm text-ink-soft">
+                <p className="text-sm text-fg-soft">
                   {status === "approved" ? "Approved" : "Rejected"} by {reviewerName ?? "someone"} · {formatDateTime(reviewedAt)}
                 </p>
               ) : null}

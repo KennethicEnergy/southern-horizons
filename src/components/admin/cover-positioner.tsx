@@ -64,7 +64,7 @@ export function CoverPositioner({
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         onKeyDown={onKeyDown}
-        className={`relative aspect-[16/9] touch-none select-none overflow-hidden rounded-lg bg-sky ring-sea focus-visible:ring-2 ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
+        className={`relative aspect-[16/9] touch-none select-none overflow-hidden rounded-lg bg-panel ring-sea focus-visible:ring-2 ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- local preview; next/image adds nothing here */}
         <img src={src} alt={alt} draggable={false} className="pointer-events-none size-full object-cover" style={{ objectPosition: position }} />
@@ -74,16 +74,16 @@ export function CoverPositioner({
       </div>
       <div className="flex items-end gap-3">
         <div className="w-28 shrink-0">
-          <div className="relative aspect-[3/2] overflow-hidden rounded-md bg-sky">
+          <div className="relative aspect-[3/2] overflow-hidden rounded-md bg-panel">
             {/* eslint-disable-next-line @next/next/no-img-element -- local preview */}
             <img src={src} alt="" draggable={false} className="size-full object-cover" style={{ objectPosition: position }} />
           </div>
-          <p className="mt-1 text-xs text-ink-soft">On cards (3:2)</p>
+          <p className="mt-1 text-xs text-fg-soft">On cards (3:2)</p>
         </div>
-        <div className="min-w-0 flex-1 text-xs text-ink-soft">
+        <div className="min-w-0 flex-1 text-xs text-fg-soft">
           <p>Banner above is how it looks at the top of the post (16:9).</p>
           {x !== 50 || y !== 50 ? (
-            <button type="button" onClick={() => onChange(50, 50)} className="mt-1 text-sea hover:underline">
+            <button type="button" onClick={() => onChange(50, 50)} className="mt-1 text-accent hover:underline">
               Reset to centre
             </button>
           ) : null}

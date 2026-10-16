@@ -22,11 +22,11 @@ const JoinPage = () => (
     <div className="mx-auto grid max-w-6xl gap-14 px-5 py-14 md:grid-cols-[1.5fr_1fr]">
       <ApplicationForm />
       <aside className="md:pt-1">
-        <div className="rounded-3xl bg-sky p-6 sm:p-7">
+        <div className="rounded-3xl bg-panel p-6 sm:p-7">
           <h2 className="text-xl font-semibold">How it works</h2>
           <StepList steps={steps} className="mt-6" />
         </div>
-        <p className="mt-6 flex flex-wrap items-center gap-x-2 text-ink-soft">
+        <p className="mt-6 flex flex-wrap items-center gap-x-2 text-fg-soft">
           Already approved? <TextLink href="/login">Sign in</TextLink>
         </p>
       </aside>

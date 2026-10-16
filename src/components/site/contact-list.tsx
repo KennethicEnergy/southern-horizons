@@ -9,7 +9,7 @@ const contacts = [
 ];
 
 const tones = {
-  light: { row: "hover:bg-sky", chip: "bg-sea-mist text-sea", text: "text-ink" },
+  light: { row: "hover:bg-panel", chip: "bg-sea-mist text-accent", text: "text-fg" },
   dark: { row: "hover:bg-white/5", chip: "bg-white/10 text-mint", text: "text-white/80 group-hover:text-white" },
 };
 

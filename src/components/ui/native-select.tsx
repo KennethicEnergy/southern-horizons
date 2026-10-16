@@ -14,6 +14,6 @@ export const NativeSelect = ({ className = "", wrapperClassName = "", children, 
     <select className={`w-full cursor-pointer appearance-none pr-10 disabled:cursor-not-allowed ${className}`} {...props}>
       {children}
     </select>
-    <Icon icon={ArrowDown01Icon} size={18} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-ink-soft" />
+    <Icon icon={ArrowDown01Icon} size={18} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-fg-soft" />
   </div>
 );

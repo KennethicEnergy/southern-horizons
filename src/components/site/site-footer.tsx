@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { site } from "@/config/site";
+import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { ContactList } from "./contact-list";
 import { HorizonMark } from "./horizon-mark";
 
 const links = [...site.nav, { href: "/join", label: "Become a member" }, ...site.legal];
 
 export const SiteFooter = () => (
-  <footer className="mt-24 bg-ink text-white/80">
+  <footer className="mt-24 bg-deep text-white/80">
     <div aria-hidden="true" className="bg-brand-stripe h-1" />
     <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-[1.4fr_1fr_1.2fr]">
       <div className="max-w-sm">
@@ -36,6 +37,8 @@ export const SiteFooter = () => (
       <div>
         <h2 className="font-display text-base font-semibold text-white">Reach us</h2>
         <ContactList tone="dark" className="mt-3" />
+        <h2 className="mt-8 font-display text-base font-semibold text-white">Theme</h2>
+        <ThemeSwitcher tone="deep" className="mt-3" />
       </div>
     </div>
     <div className="border-t border-white/10">

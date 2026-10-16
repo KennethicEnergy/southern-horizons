@@ -1,8 +1,8 @@
 const styles: Record<string, string> = {
-  draft: "bg-sky text-ink-soft",
+  draft: "bg-panel text-fg-soft",
   in_review: "bg-sun-mist text-sun-ink ring-1 ring-inset ring-sun-deep",
   published: "bg-leaf-mist text-leaf",
-  archived: "bg-sky text-ink-soft",
+  archived: "bg-panel text-fg-soft",
   pending: "bg-sun-mist text-sun-ink ring-1 ring-inset ring-sun-deep",
   confirmed: "bg-leaf-mist text-leaf",
   approved: "bg-leaf-mist text-leaf",
@@ -22,7 +22,7 @@ const labels: Record<string, string> = {
 
 /** `label` overrides the default text, e.g. "Delete pending". */
 export const StatusBadge = ({ status, label }: { status: string; label?: string }) => (
-  <span className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-sm font-medium ${styles[status] ?? "bg-sky"}`}>
+  <span className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-sm font-medium ${styles[status] ?? "bg-panel"}`}>
     {label ?? labels[status] ?? status}
   </span>
 );

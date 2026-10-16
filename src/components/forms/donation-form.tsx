@@ -31,8 +31,8 @@ export const DonationForm = ({
     return (
       <div className="rounded-2xl bg-leaf-mist p-8 text-leaf">
         <HugeiconsIcon icon={CheckmarkCircle02Icon} size={36} />
-        <h3 className="mt-4 text-2xl font-semibold text-ink">Thank you for giving {formatPeso(done.amount)}</h3>
-        <p className="mt-2 text-ink-soft">{done.message}</p>
+        <h3 className="mt-4 text-2xl font-semibold text-fg">Thank you for giving {formatPeso(done.amount)}</h3>
+        <p className="mt-2 text-fg-soft">{done.message}</p>
       </div>
     );
   }
@@ -75,7 +75,7 @@ export const DonationForm = ({
                   <label
                     key={i.id}
                     className={`flex cursor-pointer items-center justify-between gap-4 rounded-xl border-2 px-4 py-3.5 ${
-                      values.itemId === i.id ? "border-sea bg-sun-mist" : "border-line hover:border-ink/30"
+                      values.itemId === i.id ? "border-sea bg-sun-mist" : "border-line hover:border-fg/30"
                     }`}
                   >
                     <span className="flex items-center gap-3">
@@ -107,22 +107,22 @@ export const DonationForm = ({
               <legend className="font-display text-xl font-semibold">2. Scan and pay {formatPeso(total)}</legend>
               {qr ? (
                 <div className="mt-4 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-                  <div className="relative size-52 shrink-0 overflow-hidden rounded-xl border border-line bg-white">
+                  <div className="relative size-52 shrink-0 overflow-hidden rounded-xl border border-line bg-surface">
                     <Image src={qr.url} alt="QR Ph code for donations" fill sizes="208px" className="object-contain p-2" />
                   </div>
-                  <p className="text-ink-soft">
-                    Open your bank or e-wallet app, choose <strong className="text-ink">Scan QR</strong>, and enter the
+                  <p className="text-fg-soft">
+                    Open your bank or e-wallet app, choose <strong className="text-fg">Scan QR</strong>, and enter the
                     total above.
                     {qr.accountName ? (
                       <>
                         {" "}
-                        The account name should read <strong className="text-ink">{qr.accountName}</strong>.
+                        The account name should read <strong className="text-fg">{qr.accountName}</strong>.
                       </>
                     ) : null}
                   </p>
                 </div>
               ) : (
-                <p className="mt-3 text-ink-soft">The QR code for this campaign is being set up. Check back soon.</p>
+                <p className="mt-3 text-fg-soft">The QR code for this campaign is being set up. Check back soon.</p>
               )}
             </fieldset>
 

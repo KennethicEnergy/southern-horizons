@@ -19,7 +19,7 @@ export const TextLink = ({ direction = "forward", className = "", children, ...p
     />
   );
   return (
-    <Link className={`group inline-flex items-center gap-1.5 font-medium text-sea hover:text-sea-deep ${className}`} {...props}>
+    <Link className={`group inline-flex items-center gap-1.5 font-medium text-accent hover:text-sea-deep ${className}`} {...props}>
       {back ? arrow : null}
       {children}
       {back ? null : arrow}

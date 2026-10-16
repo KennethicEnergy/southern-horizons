@@ -3,35 +3,19 @@
 
 /*
  * Southern Horizons brand palette: #023d54 · #0c6980 · #94dfa7 · #fdfd68 · #ffffff
- * ink   — brand deep teal; text, footer
- * sea   — brand teal; primary, links and structure
- * sun   — brand yellow; reserved for giving. Too light for text or thin lines on
- *         white: use it as a fill with ink on top, and sun-ink for text on sun-mist.
+ * ink   — brand deep teal
+ * sea   — brand teal; primary buttons and fills
+ * sun   — brand yellow; reserved for giving. A fill only, with on-sun text on top.
  * mint  — brand mint; decorative fills
- * leaf  — confirmed, done, growth (a darker mint that passes contrast as text)
- * sky   — quiet panels
+ *
+ * Brand colours are fixed. Components mostly use the role colours below, which change with the theme.
  */
 @theme {
   --color-ink: #023d54;
-  --color-ink-soft: #4a6671;
   --color-sea: #0c6980;
-  --color-sea-deep: #023d54;
-  --color-sea-mist: #d4eaef;
-  --color-sky: #eff7f8;
   --color-sun: #fdfd68;
   --color-sun-deep: #ecea3f;
-  --color-sun-ink: #5c5800;
-  --color-sun-mist: #fefed8;
   --color-mint: #94dfa7;
-  --color-leaf: #1f7446;
-  --color-leaf-mist: #e1f6e7;
-  --color-danger: #b3261e;
-  --color-danger-mist: #fbe4e2;
-  --color-line: #d3e1e5;
-
-  /* Shadows are tinted with ink so they sit in the palette instead of looking grey. */
-  --shadow-soft: 0 1px 2px rgb(2 61 84 / 0.06), 0 6px 20px -8px rgb(2 61 84 / 0.14);
-  --shadow-lift: 0 2px 6px rgb(2 61 84 / 0.06), 0 22px 44px -16px rgb(2 61 84 / 0.28);
 
   /* One curve for every transition: quick start, long gentle settle. */
   --ease-out-soft: cubic-bezier(0.2, 0.7, 0.1, 1);
@@ -52,10 +36,99 @@
   --font-display: var(--font-sans);
 }
 
+/*
+ * Role colours: what a colour is for, not which brand colour it is. Each points at a variable that
+ * :root sets for light and :root[data-theme="dark"] sets for dark (the inline script in the root
+ * layout picks one before the first paint). `inline` makes utilities read these variables directly,
+ * so in raw CSS use var(--canvas) and friends, not var(--color-canvas).
+ *
+ * canvas   page background          fg       body text
+ * surface  cards, header, fields    fg-soft  secondary text
+ * panel    quiet panels             accent   links and accent text
+ * line     borders, dividers        deep     always-dark grounds (footer)
+ * on-sun   text on sun yellow       *-mist + text: tinted panels (info, success, waiting, error)
+ */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-panel: var(--panel);
+  --color-fg: var(--fg);
+  --color-fg-soft: var(--fg-soft);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-deep: var(--deep);
+  --color-on-sun: var(--on-sun);
+  --color-sea-mist: var(--sea-mist);
+  --color-sea-deep: var(--sea-deep);
+  --color-leaf: var(--leaf);
+  --color-leaf-mist: var(--leaf-mist);
+  --color-sun-ink: var(--sun-ink);
+  --color-sun-mist: var(--sun-mist);
+  --color-danger: var(--danger);
+  --color-danger-mist: var(--danger-mist);
+  --color-danger-solid: var(--danger-solid);
+
+  /* Shadows are tinted with ink in light and go near-black in dark, so they read on both grounds. */
+  --shadow-soft: var(--elevation-soft);
+  --shadow-lift: var(--elevation-lift);
+}
+
+/* Light. src/app/theme-contrast.test.ts checks every text colour here against its backgrounds. */
+:root {
+  color-scheme: light;
+  --canvas: #ffffff;
+  --surface: #ffffff;
+  --panel: #eff7f8;
+  --fg: #023d54;
+  --fg-soft: #4a6671;
+  --line: #d3e1e5;
+  --accent: #0c6980;
+  --deep: #023d54;
+  --on-sun: #023d54;
+  --sea-mist: #d4eaef;
+  --sea-deep: #023d54;
+  --leaf: #1f7446;
+  --leaf-mist: #e1f6e7;
+  --sun-ink: #5c5800;
+  --sun-mist: #fefed8;
+  --danger: #b3261e;
+  --danger-mist: #fbe4e2;
+  --danger-solid: #b3261e;
+  --elevation-soft: 0 1px 2px rgb(2 61 84 / 0.06), 0 6px 20px -8px rgb(2 61 84 / 0.14);
+  --elevation-lift: 0 2px 6px rgb(2 61 84 / 0.06), 0 22px 44px -16px rgb(2 61 84 / 0.28);
+  --glow-mint: rgb(148 223 167 / 0.32);
+  --glow-sun: rgb(253 253 104 / 0.22);
+}
+
+/* Dark: a deep-teal night built from the logo's ink. Fixed values (on-sun, danger-solid) carry over from :root. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #01161f;
+  --surface: #052433;
+  --panel: #0a3142;
+  --fg: #e4f2f5;
+  --fg-soft: #9dbcc6;
+  --line: #1a4a5c;
+  --accent: #6fcde0;
+  --deep: #000f16;
+  --sea-mist: #0d3b4c;
+  --sea-deep: #bfe6ef;
+  --leaf: #7fd99a;
+  --leaf-mist: #0e3a2a;
+  --sun-ink: #f0ef7a;
+  --sun-mist: #3a3a10;
+  --danger: #ff8a80;
+  --danger-mist: #3d1513;
+  --elevation-soft: 0 1px 2px rgb(0 0 0 / 0.4), 0 6px 20px -8px rgb(0 0 0 / 0.6);
+  --elevation-lift: 0 2px 6px rgb(0 0 0 / 0.45), 0 22px 44px -16px rgb(0 0 0 / 0.75);
+  --glow-mint: rgb(148 223 167 / 0.1);
+  --glow-sun: rgb(253 253 104 / 0.05);
+}
+
 @layer base {
   html {
-    color: var(--color-ink);
-    background: #ffffff;
+    color: var(--fg);
+    background: var(--canvas);
     /* Reserve the scrollbar's width so centered content doesn't jump between short and long pages. */
     scrollbar-gutter: stable;
     -webkit-font-smoothing: antialiased;
@@ -69,7 +142,7 @@
   }
   ::selection {
     background: var(--color-sun);
-    color: var(--color-ink);
+    color: var(--on-sun);
   }
   body {
     font-family: var(--font-sans);
@@ -89,7 +162,7 @@
     text-wrap: pretty;
   }
   :focus-visible {
-    outline: 3px solid var(--color-sea);
+    outline: 3px solid var(--accent);
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -114,26 +187,54 @@
   /* The horizon: a single line the sun rises from. Used in the hero and progress bars. */
   .horizon-line {
     height: 2px;
-    background: var(--color-ink);
+    background: var(--fg);
   }
 
-  /* A sun-yellow marker behind ink text. Sun is a fill only: it never carries text itself. */
+  /* A sun-yellow marker behind the text. Sun is a fill only: it never carries text itself. */
   .highlight-sun {
     background: linear-gradient(transparent 60%, var(--color-sun) 60%, var(--color-sun) 92%, transparent 92%);
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }
+  /* In dark the text is light, so a full marker would swallow it: draw a sun underline instead. */
+  :root[data-theme="dark"] .highlight-sun {
+    background: linear-gradient(transparent 88%, var(--color-sun) 88%, var(--color-sun) 97%, transparent 97%);
+  }
 }
 
-/* Morning sky: sky fading to white, warmed by faint sun and mint glows. Hero and page headers. */
+/*
+ * Rich text (articles, campaign descriptions, the post editor) takes its colours from the roles, so it
+ * switches with the theme without prose-invert. Unlayered, so it wins over the typography plugin's defaults.
+ */
+.prose {
+  --tw-prose-body: var(--fg);
+  --tw-prose-headings: var(--fg);
+  --tw-prose-lead: var(--fg-soft);
+  --tw-prose-links: var(--accent);
+  --tw-prose-bold: var(--fg);
+  --tw-prose-counters: var(--fg-soft);
+  --tw-prose-bullets: var(--fg-soft);
+  --tw-prose-hr: var(--line);
+  --tw-prose-quotes: var(--fg);
+  --tw-prose-quote-borders: var(--line);
+  --tw-prose-captions: var(--fg-soft);
+  --tw-prose-kbd: var(--fg);
+  --tw-prose-code: var(--fg);
+  --tw-prose-pre-code: var(--fg);
+  --tw-prose-pre-bg: var(--panel);
+  --tw-prose-th-borders: var(--line);
+  --tw-prose-td-borders: var(--line);
+}
+
+/* Morning sky: a quiet panel fading into the page, warmed by faint sun and mint glows. Hero and page headers. */
 @utility bg-horizon {
   background:
-    radial-gradient(55% 60% at 88% 0%, rgb(148 223 167 / 0.32), transparent 70%),
-    radial-gradient(40% 50% at 0% 0%, rgb(253 253 104 / 0.22), transparent 70%),
-    linear-gradient(180deg, var(--color-sky) 0%, #ffffff 100%);
+    radial-gradient(55% 60% at 88% 0%, var(--glow-mint), transparent 70%),
+    radial-gradient(40% 50% at 0% 0%, var(--glow-sun), transparent 70%),
+    linear-gradient(180deg, var(--panel) 0%, var(--canvas) 100%);
 }
 
-/* Deep water: ink into sea. Calls to action on a dark ground. */
+/* Deep water: ink into sea. Calls to action on a dark ground, in either theme. */
 @utility bg-tide {
   background: linear-gradient(135deg, var(--color-ink) 0%, var(--color-sea) 100%);
 }
@@ -175,7 +276,7 @@
 }
 @keyframes header-elevate {
   to {
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--elevation-soft);
     border-color: transparent;
   }
 }
@@ -224,7 +325,7 @@
 }
 .tiptap p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
-  color: var(--color-ink-soft);
+  color: var(--fg-soft);
   opacity: 0.6;
   float: left;
   height: 0;

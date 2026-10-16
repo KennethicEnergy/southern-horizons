@@ -49,7 +49,7 @@ const NewsPage = async ({ searchParams }: { searchParams: Promise<{ type?: strin
                     href={href({ type: value })}
                     aria-current={active ? "page" : undefined}
                     className={`inline-flex h-10 items-center rounded-full border px-4 text-[0.95rem] transition-colors duration-200 ${
-                      active ? "border-sea bg-sea text-white shadow-soft" : "border-line bg-white text-ink-soft hover:border-ink/40 hover:text-ink"
+                      active ? "border-sea bg-sea text-white shadow-soft" : "border-line bg-surface text-fg-soft hover:border-fg/40 hover:text-fg"
                     }`}
                   >
                     {label}
@@ -67,7 +67,7 @@ const NewsPage = async ({ searchParams }: { searchParams: Promise<{ type?: strin
             ))}
           </div>
         ) : (
-          <p className="mt-10 text-ink-soft">Nothing here yet. Check back after our next event.</p>
+          <p className="mt-10 text-fg-soft">Nothing here yet. Check back after our next event.</p>
         )}
 
         {totalPages > 1 ? (
@@ -79,7 +79,7 @@ const NewsPage = async ({ searchParams }: { searchParams: Promise<{ type?: strin
             ) : (
               <span />
             )}
-            <span className="text-sm tabular-nums text-ink-soft">
+            <span className="text-sm tabular-nums text-fg-soft">
               Page {page} of {totalPages}
             </span>
             {page < totalPages ? (

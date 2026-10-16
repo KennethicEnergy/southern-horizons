@@ -80,10 +80,10 @@ export default async function DashboardPage() {
       />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (
-          <Link key={c.label} href={c.href} className="rounded-xl bg-white p-5 hover:ring-2 hover:ring-sea/30">
-            <p className="text-ink-soft">{c.label}</p>
+          <Link key={c.label} href={c.href} className="rounded-xl bg-surface p-5 hover:ring-2 hover:ring-sea/30">
+            <p className="text-fg-soft">{c.label}</p>
             <p className="mt-1 font-display text-4xl font-semibold tabular-nums">{c.value}</p>
-            <p className="mt-2 text-sm text-ink-soft">{c.hint}</p>
+            <p className="mt-2 text-sm text-fg-soft">{c.hint}</p>
           </Link>
         ))}
       </div>

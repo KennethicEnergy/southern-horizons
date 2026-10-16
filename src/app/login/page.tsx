@@ -28,15 +28,15 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const errorMessage = error ? (errorMessages[error] ?? "Sign-in didn't work. Try again, or use your email and password.") : null;
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-sky px-5">
+    <div className="flex min-h-dvh items-center justify-center bg-panel px-5">
       <div className="w-full max-w-sm">
         <Link href="/" className="flex items-center gap-2.5">
           <HorizonMark />
           <span className="font-display text-lg font-semibold">{site.name}</span>
         </Link>
-        <div className="mt-8 rounded-2xl bg-white p-8 shadow-[0_1px_0_var(--color-line)]">
+        <div className="mt-8 rounded-2xl bg-surface p-8 shadow-[0_1px_0_var(--line)]">
           <h1 className="text-2xl font-semibold">Volunteer sign in</h1>
-          <p className="mt-1.5 text-ink-soft">For members managing posts and donations.</p>
+          <p className="mt-1.5 text-fg-soft">For members managing posts and donations.</p>
           {errorMessage ? (
             <div className="mt-6">
               <FormAlert tone="error">{errorMessage}</FormAlert>
@@ -51,7 +51,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
                   Continue with Google
                 </Button>
               </form>
-              <div className="my-6 flex items-center gap-3 text-sm text-ink-soft">
+              <div className="my-6 flex items-center gap-3 text-sm text-fg-soft">
                 <span className="h-px flex-1 bg-line" />
                 or use your password
                 <span className="h-px flex-1 bg-line" />
@@ -64,9 +64,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             </Suspense>
           </div>
         </div>
-        <p className="mt-6 text-center text-sm text-ink-soft">
+        <p className="mt-6 text-center text-sm text-fg-soft">
           Not a member yet?{" "}
-          <Link href="/join" className="text-sea hover:underline">
+          <Link href="/join" className="text-accent hover:underline">
             Apply to join
           </Link>
         </p>

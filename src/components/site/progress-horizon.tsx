@@ -9,9 +9,9 @@ export const ProgressHorizon = ({ given, goal, unit }: { given: number; goal: nu
       <div className="flex items-baseline justify-between gap-4">
         <p className="font-display text-3xl font-semibold tabular-nums tracking-tight">
           {given.toLocaleString("en-PH")}
-          <span className="text-lg font-normal text-ink-soft"> of {goal.toLocaleString("en-PH")} {unit}</span>
+          <span className="text-lg font-normal text-fg-soft"> of {goal.toLocaleString("en-PH")} {unit}</span>
         </p>
-        <p className="text-sm font-medium tabular-nums text-sea">{pct}%</p>
+        <p className="text-sm font-medium tabular-nums text-accent">{pct}%</p>
       </div>
       <div
         className="relative mt-3 h-3 rounded-full bg-sea-mist"
@@ -28,7 +28,7 @@ export const ProgressHorizon = ({ given, goal, unit }: { given: number; goal: nu
         {pct > 0 ? (
           <span
             aria-hidden="true"
-            className="absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sun shadow-soft ring-2 ring-white"
+            className="absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sun shadow-soft ring-2 ring-surface"
             style={{ left: `${pct}%` }}
           />
         ) : null}

@@ -15,7 +15,7 @@ export const SectionHeading = ({ title, eyebrow, lead, action, className = "" }:
     <div className="max-w-2xl">
       {eyebrow ? <Eyebrow className="mb-3">{eyebrow}</Eyebrow> : null}
       <h2 className="text-3xl font-semibold md:text-4xl">{title}</h2>
-      {lead ? <p className="mt-3 text-lg text-ink-soft">{lead}</p> : null}
+      {lead ? <p className="mt-3 text-lg text-fg-soft">{lead}</p> : null}
     </div>
     {action ? <div className="shrink-0">{action}</div> : null}
   </div>

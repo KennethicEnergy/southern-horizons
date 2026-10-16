@@ -40,7 +40,7 @@ export const ApprovalReviewControls = ({ requestId, title }: { requestId: string
           value={reason}
           onChange={({ target }) => setReason(target.value)}
           disabled={pending}
-          className="rounded-xl border border-line bg-white px-3 py-2 text-[0.95rem] focus:border-sea focus:outline-none focus:ring-2 focus:ring-sea/20"
+          className="rounded-xl border border-line bg-surface px-3 py-2 text-[0.95rem] focus:border-sea focus:outline-none focus:ring-2 focus:ring-sea/20"
         />
         <div className="flex gap-2">
           <Button size="sm" variant="outline" icon={actionIcons.reject} disabled={pending} onClick={() => decide({ requestId, decision: "rejected", reason })}>

@@ -18,7 +18,7 @@ export function AttachmentList({ items }: { items: Media[] }) {
       {images.length > 0 ? (
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
           {images.map((m) => (
-            <a key={m.id} href={m.url} className="relative block aspect-square overflow-hidden rounded-lg bg-sky">
+            <a key={m.id} href={m.url} className="relative block aspect-square overflow-hidden rounded-lg bg-panel">
               <Image src={m.url} alt={m.alt ?? ""} fill sizes="(min-width: 768px) 22vw, 50vw" className="object-cover" />
             </a>
           ))}
@@ -39,17 +39,17 @@ export function AttachmentList({ items }: { items: Media[] }) {
                 href={m.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 px-4 py-3.5 hover:bg-sky"
+                className="flex items-center gap-4 px-4 py-3.5 hover:bg-panel"
                 download={m.mimeType !== "application/pdf" ? m.filename : undefined}
               >
-                <HugeiconsIcon icon={m.mimeType === "application/pdf" ? Pdf01Icon : Doc01Icon} size={24} className="text-sea" />
+                <HugeiconsIcon icon={m.mimeType === "application/pdf" ? Pdf01Icon : Doc01Icon} size={24} className="text-accent" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-medium">{m.alt || m.filename}</span>
-                  <span className="text-sm text-ink-soft">
+                  <span className="text-sm text-fg-soft">
                     {m.mimeType === "application/pdf" ? "PDF" : "Word document"}, {fileSize(m.size)}
                   </span>
                 </span>
-                <HugeiconsIcon icon={Download01Icon} size={20} className="text-ink-soft" />
+                <HugeiconsIcon icon={Download01Icon} size={20} className="text-fg-soft" />
               </a>
             </li>
           ))}

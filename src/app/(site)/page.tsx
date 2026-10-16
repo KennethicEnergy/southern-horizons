@@ -45,14 +45,14 @@ const HomePage = async () => {
       <section className="bg-horizon relative overflow-clip">
         <div className="mx-auto grid max-w-6xl items-end gap-6 px-5 pt-10 md:grid-cols-[1.2fr_1fr] md:gap-10 md:pt-20">
           <div className="pb-4 md:pb-24">
-            <p className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-sea-deep shadow-soft ring-1 ring-line backdrop-blur">
-              <Icon icon={Location01Icon} size={16} className="text-sea" />
+            <p className="inline-flex items-center gap-1.5 rounded-full bg-surface/80 px-3 py-1 text-sm font-medium text-sea-deep shadow-soft ring-1 ring-line backdrop-blur">
+              <Icon icon={Location01Icon} size={16} className="text-accent" />
               Volunteers from {site.city}
             </p>
             <h1 className="mt-5 text-[2.6rem] font-semibold leading-[1.04] [text-wrap:pretty] sm:text-6xl md:text-7xl">
               Rising Together, <span className="highlight-sun">Giving Back</span> With Purpose.
             </h1>
-            <p className="mt-6 max-w-xl text-lg text-ink-soft">
+            <p className="mt-6 max-w-xl text-lg text-fg-soft">
               A Batangas-based volunteer group uplifting underserved communities through heart-led outreach, compassion, and unity.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -73,21 +73,21 @@ const HomePage = async () => {
 
       {/* Current campaign */}
       {campaign && item ? (
-        <section className="bg-sky">
+        <section className="bg-panel">
           <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 md:grid-cols-[1.2fr_1fr] md:items-center md:py-20">
             <div className="reveal">
               <Eyebrow>Current campaign</Eyebrow>
               <h2 className="mt-3 text-4xl font-semibold">{campaign.title}</h2>
-              <p className="mt-4 max-w-prose text-lg text-ink-soft">{campaign.summary}</p>
+              <p className="mt-4 max-w-prose text-lg text-fg-soft">{campaign.summary}</p>
               <div className="mt-8 max-w-lg">
                 <ProgressHorizon given={item.given} goal={item.goalQuantity} unit={item.name.toLowerCase()} />
               </div>
             </div>
-            <div className="reveal rounded-3xl bg-white p-6 shadow-lift ring-1 ring-line sm:p-8">
+            <div className="reveal rounded-3xl bg-surface p-6 shadow-lift ring-1 ring-line sm:p-8">
               <p className="font-display text-5xl font-semibold tracking-tight">{formatPeso(item.unitAmount)}</p>
               <p className="mt-1 text-lg">gives one {item.name.toLowerCase()}</p>
               {item.contents.length > 0 ? (
-                <ul className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2 text-[0.95rem] text-ink-soft">
+                <ul className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2 text-[0.95rem] text-fg-soft">
                   {item.contents.map((content) => (
                     <li key={content} className="flex items-start gap-2">
                       <Icon icon={actionIcons.approve} size={16} className="mt-1 shrink-0 text-leaf" />
@@ -124,13 +124,13 @@ const HomePage = async () => {
             ) : null}
           </div>
         ) : (
-          <p className="mt-8 text-ink-soft">Our first stories are on the way. Follow us on Facebook in the meantime.</p>
+          <p className="mt-8 text-fg-soft">Our first stories are on the way. Follow us on Facebook in the meantime.</p>
         )}
       </section>
 
       {/* Upcoming events */}
       {upcoming.length > 0 ? (
-        <section className="border-y border-line bg-sky/60">
+        <section className="border-y border-line bg-panel/60">
           <div className="mx-auto max-w-6xl px-5 py-16">
             <SectionHeading eyebrow="Join us" title="Coming up" className="reveal" />
             <div className="mt-8 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">

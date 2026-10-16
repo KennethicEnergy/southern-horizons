@@ -21,6 +21,7 @@ import { can, canPerformAction, isApprover, roleLabel } from "@/lib/rbac";
 import type { Role } from "@/types/rbac";
 import { HorizonMark } from "@/components/site/horizon-mark";
 import { Avatar } from "@/components/ui/avatar";
+import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { useAdminUi } from "@/stores/admin-ui-store";
 import { logout } from "@/actions/auth";
 
@@ -64,14 +65,14 @@ export const AdminSidebar = ({ user, badges = {} }: AdminSidebarProps) => {
 
   return (
     <>
-      <div className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-white px-2 lg:hidden">
+      <div className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-surface px-2 lg:hidden">
         <div className="flex min-w-0 items-center gap-1">
           {parent ? (
             <Link
               href={parent.href}
               onClick={closeSidebar}
               aria-label={`Back to ${parent.label}`}
-              className="flex size-10 shrink-0 items-center justify-center rounded-full text-ink hover:bg-sky"
+              className="flex size-10 shrink-0 items-center justify-center rounded-full text-fg hover:bg-panel"
             >
               <HugeiconsIcon icon={ArrowLeft01Icon} size={22} />
             </Link>
@@ -86,15 +87,15 @@ export const AdminSidebar = ({ user, badges = {} }: AdminSidebarProps) => {
           onClick={toggleSidebar}
           aria-label={totalBadges > 0 ? `Toggle menu, ${totalBadges} waiting` : "Toggle menu"}
           aria-expanded={sidebarOpen}
-          className="relative flex items-center gap-1.5 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-sky"
+          className="relative flex items-center gap-1.5 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-panel"
         >
           <Avatar name={user.name} src={user.image} size="sm" />
           <HugeiconsIcon icon={Menu01Icon} size={22} />
-          {totalBadges > 0 ? <span aria-hidden="true" className="absolute right-1 top-1 size-2.5 rounded-full bg-sea ring-2 ring-white" /> : null}
+          {totalBadges > 0 ? <span aria-hidden="true" className="absolute right-1 top-1 size-2.5 rounded-full bg-sea ring-2 ring-surface" /> : null}
         </button>
       </div>
       <aside
-        className={`${sidebarOpen ? "block" : "hidden"} border-r border-line bg-white lg:sticky lg:top-0 lg:block lg:h-dvh lg:w-64 lg:shrink-0`}
+        className={`${sidebarOpen ? "block" : "hidden"} border-r border-line bg-surface lg:sticky lg:top-0 lg:block lg:h-dvh lg:w-64 lg:shrink-0`}
       >
         <div className="flex h-full flex-col p-4">
           <Link href="/admin" className="hidden items-center gap-2.5 px-2 py-2 lg:flex">
@@ -111,7 +112,7 @@ export const AdminSidebar = ({ user, badges = {} }: AdminSidebarProps) => {
                   onClick={closeSidebar}
                   aria-current={active ? "page" : undefined}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-[0.95rem] ${
-                    active ? "bg-sea-mist font-medium text-sea-deep" : "text-ink-soft hover:bg-sky hover:text-ink"
+                    active ? "bg-sea-mist font-medium text-sea-deep" : "text-fg-soft hover:bg-panel hover:text-fg"
                   }`}
                 >
                   <HugeiconsIcon icon={item.icon} size={20} />
@@ -125,7 +126,7 @@ export const AdminSidebar = ({ user, badges = {} }: AdminSidebarProps) => {
                 </Link>
               );
             })}
-            <Link href="/" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[0.95rem] text-ink-soft hover:bg-sky hover:text-ink">
+            <Link href="/" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[0.95rem] text-fg-soft hover:bg-panel hover:text-fg">
               <HugeiconsIcon icon={Home01Icon} size={20} />
               View site
             </Link>
@@ -135,15 +136,18 @@ export const AdminSidebar = ({ user, badges = {} }: AdminSidebarProps) => {
               <Avatar name={user.name} src={user.image} />
               <div className="min-w-0">
                 <p className="truncate font-medium">{user.name}</p>
-                <p className="truncate text-sm text-ink-soft">{roleLabel(user.role)}</p>
+                <p className="truncate text-sm text-fg-soft">{roleLabel(user.role)}</p>
               </div>
             </div>
-            <form action={logout}>
-              <button type="submit" className="mt-3 flex items-center gap-2 text-sm text-ink-soft hover:text-danger">
-                <HugeiconsIcon icon={Logout01Icon} size={18} />
-                Sign out
-              </button>
-            </form>
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <form action={logout}>
+                <button type="submit" className="flex items-center gap-2 text-sm text-fg-soft hover:text-danger">
+                  <HugeiconsIcon icon={Logout01Icon} size={18} />
+                  Sign out
+                </button>
+              </form>
+              <ThemeSwitcher />
+            </div>
           </div>
         </div>
       </aside>

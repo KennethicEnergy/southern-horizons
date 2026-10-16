@@ -9,8 +9,8 @@ export const StatGrid = ({ stats, className = "" }: { stats: readonly Stat[]; cl
     className={`grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line shadow-soft [&>*:last-child:nth-child(odd)]:col-span-2 ${className}`}
   >
     {stats.map(({ label, value }) => (
-      <div key={label} className="bg-white p-5">
-        <dt className="text-sm text-ink-soft">{label}</dt>
+      <div key={label} className="bg-surface p-5">
+        <dt className="text-sm text-fg-soft">{label}</dt>
         <dd className="mt-1 font-display text-2xl font-semibold tabular-nums tracking-tight">{value}</dd>
       </div>
     ))}

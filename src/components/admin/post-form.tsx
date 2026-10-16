@@ -99,7 +99,7 @@ export const PostForm = ({ postId, initialValues, initialCover, initialAttachmen
                 <section className="space-y-3">
                   <h2 className="text-lg font-semibold">Files and media</h2>
                   {attachments.length > 0 ? (
-                    <ul className="divide-y divide-line rounded-lg border border-line bg-white">
+                    <ul className="divide-y divide-line rounded-lg border border-line bg-surface">
                       {attachments.map((m) => (
                         <li key={m.id} className="flex items-center gap-3 px-3 py-2.5">
                           <MediaThumb media={m} className="size-12" />
@@ -107,7 +107,7 @@ export const PostForm = ({ postId, initialValues, initialCover, initialAttachmen
                           <button
                             type="button"
                             aria-label={`Remove ${m.filename}`}
-                            className="p-1 text-ink-soft hover:text-danger"
+                            className="p-1 text-fg-soft hover:text-danger"
                             onClick={() => {
                               const next = attachments.filter((a) => a.id !== m.id);
                               setAttachments(next);
@@ -131,16 +131,16 @@ export const PostForm = ({ postId, initialValues, initialCover, initialAttachmen
               </div>
 
               <aside className="space-y-6">
-                <div className="space-y-4 rounded-xl bg-white p-5">
+                <div className="space-y-4 rounded-xl bg-surface p-5">
                   {currentStatus ? (
-                    <p className="flex items-center gap-2 text-sm text-ink-soft">
+                    <p className="flex items-center gap-2 text-sm text-fg-soft">
                       Current status: <StatusBadge status={currentStatus} />
                     </p>
                   ) : null}
                   {error ? <FormAlert tone="error">{error}</FormAlert> : null}
                   {access.edit === "approval" ? (
                     <div className="grid gap-2">
-                      <p className="text-sm text-ink-soft">This post is live. Your changes go live once they&apos;re approved.</p>
+                      <p className="text-sm text-fg-soft">This post is live. Your changes go live once they&apos;re approved.</p>
                       <Button type="button" variant="primary" icon={actionIcons.send} disabled={isSubmitting} onClick={() => submitWith("publish")}>
                         Request changes
                       </Button>
@@ -169,7 +169,7 @@ export const PostForm = ({ postId, initialValues, initialCover, initialAttachmen
                   ) : null}
                 </div>
 
-                <div className="space-y-4 rounded-xl bg-white p-5">
+                <div className="space-y-4 rounded-xl bg-surface p-5">
                   <SelectField
                     name="type"
                     label="Type"
@@ -199,7 +199,7 @@ export const PostForm = ({ postId, initialValues, initialCover, initialAttachmen
                   <TextField name="slug" label="Web address" hint={`/news/${values.slug || "…"}`} />
                 </div>
 
-                <div className="space-y-3 rounded-xl bg-white p-5">
+                <div className="space-y-3 rounded-xl bg-surface p-5">
                   <p className="text-sm font-medium">Cover photo</p>
                   {cover ? (
                     <div className="relative">
@@ -215,7 +215,7 @@ export const PostForm = ({ postId, initialValues, initialCover, initialAttachmen
                       />
                       <button
                         type="button"
-                        className="absolute right-2 top-2 z-10 rounded-full bg-white/90 p-1.5 text-ink hover:text-danger"
+                        className="absolute right-2 top-2 z-10 rounded-full bg-surface/90 p-1.5 text-fg hover:text-danger"
                         aria-label="Remove cover photo"
                         onClick={() => {
                           setCover(null);

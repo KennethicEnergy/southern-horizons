@@ -32,7 +32,7 @@ export default async function ApprovalsPage() {
       />
 
       {approver ? (
-        <section className="mb-8 rounded-xl bg-white p-6">
+        <section className="mb-8 rounded-xl bg-surface p-6">
           <h2 className="text-xl font-semibold">
             Waiting for you{waiting.length > 0 ? ` (${waiting.length})` : ""}
           </h2>
@@ -47,7 +47,7 @@ export default async function ApprovalsPage() {
       ) : null}
 
       {mine.length > 0 || !approver ? (
-        <section className="mb-8 rounded-xl bg-white p-6">
+        <section className="mb-8 rounded-xl bg-surface p-6">
           <h2 className="text-xl font-semibold">Your requests</h2>
           <div className="mt-4">
             <ApprovalList items={mine} empty="You haven't asked for any changes yet." />
@@ -56,9 +56,9 @@ export default async function ApprovalsPage() {
       ) : null}
 
       {approver ? (
-        <section className="rounded-xl bg-white p-6">
+        <section className="rounded-xl bg-surface p-6">
           <h2 className="text-xl font-semibold">Recently decided</h2>
-          <p className="mt-1 text-ink-soft">The latest 50 decisions, kept as the approval audit trail.</p>
+          <p className="mt-1 text-fg-soft">The latest 50 decisions, kept as the approval audit trail.</p>
           <div className="mt-4">
             <ApprovalList items={decided} empty="No decisions yet." />
           </div>

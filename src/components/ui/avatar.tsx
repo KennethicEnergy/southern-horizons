@@ -29,7 +29,7 @@ export const Avatar = ({ name, src, size = "md", className = "" }: AvatarProps) 
   return (
     <span
       aria-hidden="true"
-      className={`relative inline-flex shrink-0 select-none items-center justify-center overflow-clip rounded-full bg-sea font-display font-semibold text-white ring-2 ring-white ${box} ${className}`}
+      className={`relative inline-flex shrink-0 select-none items-center justify-center overflow-clip rounded-full bg-sea font-display font-semibold text-white ring-2 ring-surface ${box} ${className}`}
     >
       {src && !failed ? (
         // Google serves avatars from its own CDN; skip the optimizer and send no referrer, which it sometimes refuses.

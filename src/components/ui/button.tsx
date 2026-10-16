@@ -10,11 +10,11 @@ const base =
   "inline-flex select-none items-center justify-center gap-2 rounded-full font-medium transition-[background-color,border-color,color,box-shadow,scale] duration-200 ease-out-soft active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50";
 
 const variants: Record<ButtonVariant, string> = {
-  primary: "bg-sea text-white shadow-soft hover:bg-sea-deep",
-  give: "bg-sun text-ink shadow-soft ring-1 ring-inset ring-sun-deep hover:bg-sun-deep",
-  outline: "border border-ink/15 bg-white text-ink hover:border-ink/40 hover:bg-sky",
-  ghost: "text-ink hover:bg-sky",
-  danger: "bg-danger text-white shadow-soft hover:bg-danger/90",
+  primary: "bg-sea text-white shadow-soft hover:bg-ink",
+  give: "bg-sun text-on-sun shadow-soft ring-1 ring-inset ring-sun-deep hover:bg-sun-deep",
+  outline: "border border-fg/15 bg-surface text-fg hover:border-fg/40 hover:bg-panel",
+  ghost: "text-fg hover:bg-panel",
+  danger: "bg-danger-solid text-white shadow-soft hover:bg-danger-solid/90",
 };
 
 const sizes: Record<ButtonSize, string> = {

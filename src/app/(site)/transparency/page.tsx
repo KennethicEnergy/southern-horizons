@@ -27,7 +27,7 @@ const TransparencyPage = async () => {
       />
       <div className="mx-auto max-w-6xl space-y-20 px-5 py-14">
         {report.length === 0 ? (
-          <p className="text-ink-soft">Our first campaign report will appear here once donations start coming in.</p>
+          <p className="text-fg-soft">Our first campaign report will appear here once donations start coming in.</p>
         ) : null}
 
         {report.map(({ campaign, received, spent, donors, entries }) => {
@@ -55,7 +55,7 @@ const TransparencyPage = async () => {
                 <div className="mt-8 overflow-x-auto rounded-2xl ring-1 ring-line">
                   <table className="w-full min-w-[36rem] text-left text-[0.95rem]">
                     <caption className="sr-only">Ledger for {campaign.title}</caption>
-                    <thead className="bg-sky text-sm text-ink-soft">
+                    <thead className="bg-panel text-sm text-fg-soft">
                       <tr>
                         <th scope="col" className="px-4 py-3 font-medium">Date</th>
                         <th scope="col" className="px-4 py-3 font-medium">Description</th>
@@ -65,8 +65,8 @@ const TransparencyPage = async () => {
                     </thead>
                     <tbody className="divide-y divide-line">
                       {entries.map(({ id, occurredAt, description, kind, amount, receipt }) => (
-                        <tr key={id} className="transition-colors hover:bg-sky/50">
-                          <td className="whitespace-nowrap px-4 py-3 text-ink-soft">{formatDate(occurredAt)}</td>
+                        <tr key={id} className="transition-colors hover:bg-panel/50">
+                          <td className="whitespace-nowrap px-4 py-3 text-fg-soft">{formatDate(occurredAt)}</td>
                           <td className="px-4 py-3">{description}</td>
                           <td className={`px-4 py-3 text-right tabular-nums ${kind === "income" ? "text-leaf" : ""}`}>
                             {kind === "income" ? "+" : "−"}
@@ -78,13 +78,13 @@ const TransparencyPage = async () => {
                                 href={receipt.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 font-medium text-sea hover:text-sea-deep"
+                                className="inline-flex items-center gap-1.5 font-medium text-accent hover:text-sea-deep"
                               >
                                 <Icon icon={actionIcons.ledger} size={16} />
                                 View
                               </a>
                             ) : (
-                              <span className="text-ink-soft">Pending</span>
+                              <span className="text-fg-soft">Pending</span>
                             )}
                           </td>
                         </tr>
@@ -93,7 +93,7 @@ const TransparencyPage = async () => {
                   </table>
                 </div>
               ) : (
-                <p className="mt-6 text-ink-soft">No expenses posted for this campaign yet.</p>
+                <p className="mt-6 text-fg-soft">No expenses posted for this campaign yet.</p>
               )}
             </section>
           );

@@ -39,7 +39,7 @@ export const SuggestionDeleteButton = ({ suggestionId, title }: { suggestionId: 
     <button
       type="button"
       disabled={pending}
-      className="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-danger disabled:opacity-50"
+      className="inline-flex items-center gap-1.5 text-sm text-fg-soft hover:text-danger disabled:opacity-50"
       onClick={() =>
         start(async () => {
           if (!confirm(`Delete "${title}"?`)) return;

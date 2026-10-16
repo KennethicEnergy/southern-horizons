@@ -6,6 +6,7 @@ import { requireUser } from "@/lib/session";
 import { can } from "@/lib/rbac";
 import { formatDateTime } from "@/lib/dates";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { filterChipClass } from "@/components/ui/filter-chip";
 
 const tabs = [
   { value: "unread", label: "Unread" },
@@ -42,7 +43,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
             key={t.value}
             href={`/admin/messages?show=${t.value}`}
             aria-current={t.value === show ? "page" : undefined}
-            className={`rounded-full px-3.5 py-1.5 text-sm ${t.value === show ? "bg-ink text-white" : "bg-white text-ink-soft hover:text-ink"}`}
+            className={filterChipClass(t.value === show)}
           >
             {t.label}
           </Link>
@@ -50,25 +51,25 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
       </nav>
 
       {messages.length === 0 ? (
-        <p className="rounded-xl bg-white p-8 text-ink-soft">
+        <p className="rounded-xl bg-surface p-8 text-fg-soft">
           {show === "unread" ? "All caught up. New messages from the contact form appear here." : "No messages yet."}
         </p>
       ) : (
-        <ul className="divide-y divide-line overflow-hidden rounded-xl bg-white">
+        <ul className="divide-y divide-line overflow-hidden rounded-xl bg-surface">
           {messages.map((m) => (
             <li key={m.id}>
-              <Link href={`/admin/messages/${m.id}`} className="grid gap-1 px-5 py-4 hover:bg-sky sm:grid-cols-[1fr_auto] sm:gap-6">
+              <Link href={`/admin/messages/${m.id}`} className="grid gap-1 px-5 py-4 hover:bg-panel sm:grid-cols-[1fr_auto] sm:gap-6">
                 <div className="min-w-0">
                   <p className={`flex items-center gap-2 ${m.isRead ? "" : "font-semibold"}`}>
                     {m.isRead ? null : <span className="size-2 shrink-0 rounded-full bg-sea" aria-hidden="true" />}
                     <span className="truncate">{m.subject}</span>
                     {m.isRead ? null : <span className="sr-only">(unread)</span>}
                   </p>
-                  <p className="truncate text-sm text-ink-soft">
+                  <p className="truncate text-sm text-fg-soft">
                     {m.name} · {m.email} — {m.message}
                   </p>
                 </div>
-                <p className="whitespace-nowrap text-sm text-ink-soft">{formatDateTime(m.createdAt)}</p>
+                <p className="whitespace-nowrap text-sm text-fg-soft">{formatDateTime(m.createdAt)}</p>
               </Link>
             </li>
           ))}

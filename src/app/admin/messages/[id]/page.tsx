@@ -24,14 +24,14 @@ export default async function MessagePage({ params }: { params: Promise<{ id: st
 
   return (
     <>
-      <Link href="/admin/messages" className="inline-flex items-center gap-1.5 text-sm text-sea hover:underline">
+      <Link href="/admin/messages" className="inline-flex items-center gap-1.5 text-sm text-accent hover:underline">
         <span aria-hidden="true">←</span> Messages
       </Link>
-      <article className="mt-3 rounded-xl bg-white p-6 md:p-8">
+      <article className="mt-3 rounded-xl bg-surface p-6 md:p-8">
         <h1 className="text-2xl font-semibold md:text-3xl">{message.subject}</h1>
-        <p className="mt-2 text-ink-soft">
-          From <span className="font-medium text-ink">{message.name}</span> ·{" "}
-          <a href={`mailto:${message.email}`} className="text-sea hover:underline">
+        <p className="mt-2 text-fg-soft">
+          From <span className="font-medium text-fg">{message.name}</span> ·{" "}
+          <a href={`mailto:${message.email}`} className="text-accent hover:underline">
             {message.email}
           </a>{" "}
           · {formatDateTime(message.createdAt)}

@@ -34,7 +34,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="min-h-dvh bg-sky lg:flex">
+    <div className="min-h-dvh bg-panel lg:flex">
       <AdminSidebar user={{ name: user.name, role: user.role, image: user.image }} badges={badges} />
       <div className="min-w-0 flex-1">
         <div className="mx-auto max-w-6xl px-5 py-8 lg:px-10 lg:py-10">{children}</div>

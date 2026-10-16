@@ -18,9 +18,9 @@ export const SiteHeader = ({ donateHref }: { donateHref: string }) => {
   const close = () => setOpen(false);
 
   return (
-    <header className="header-elevate sticky top-0 z-40 border-b border-line bg-white/85 backdrop-blur-md">
+    <header className="header-elevate sticky top-0 z-40 border-b border-line bg-surface/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-5">
-        <Link href="/" className="flex min-w-0 items-center gap-2.5 text-ink" onClick={close}>
+        <Link href="/" className="flex min-w-0 items-center gap-2.5 text-fg" onClick={close}>
           <HorizonMark className="size-8 shrink-0" />
           <span className="truncate font-display text-base font-semibold tracking-tight max-[359px]:sr-only sm:text-lg">{site.name}</span>
         </Link>
@@ -34,7 +34,7 @@ export const SiteHeader = ({ donateHref }: { donateHref: string }) => {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={`rounded-full px-3 py-1.5 text-[0.95rem] transition-colors duration-200 ${
-                  active ? "bg-sea-mist font-medium text-sea-deep" : "text-ink-soft hover:bg-sky hover:text-ink"
+                  active ? "bg-sea-mist font-medium text-sea-deep" : "text-fg-soft hover:bg-panel hover:text-fg"
                 }`}
               >
                 {label}
@@ -65,7 +65,7 @@ export const SiteHeader = ({ donateHref }: { donateHref: string }) => {
         <nav
           id="mobile-nav"
           aria-label="Main"
-          className="border-t border-line bg-white px-4 pb-5 pt-2 shadow-lift transition-[opacity,translate] duration-300 ease-out-soft starting:-translate-y-2 starting:opacity-0 md:hidden"
+          className="border-t border-line bg-surface px-4 pb-5 pt-2 shadow-lift transition-[opacity,translate] duration-300 ease-out-soft starting:-translate-y-2 starting:opacity-0 md:hidden"
         >
           <ul className="space-y-0.5">
             {site.nav.map(({ href, label, icon }) => {
@@ -76,17 +76,17 @@ export const SiteHeader = ({ donateHref }: { donateHref: string }) => {
                     href={href}
                     onClick={close}
                     aria-current={active ? "page" : undefined}
-                    className={`flex min-h-12 items-center gap-3 rounded-xl px-3 text-lg ${active ? "bg-sea-mist font-medium text-sea-deep" : "text-ink hover:bg-sky"}`}
+                    className={`flex min-h-12 items-center gap-3 rounded-xl px-3 text-lg ${active ? "bg-sea-mist font-medium text-sea-deep" : "text-fg hover:bg-panel"}`}
                   >
-                    <Icon icon={icon} size={22} className={active ? "text-sea-deep" : "text-sea"} />
+                    <Icon icon={icon} size={22} className={active ? "text-sea-deep" : "text-accent"} />
                     {label}
                   </Link>
                 </li>
               );
             })}
             <li>
-              <Link href="/join" onClick={close} className="flex min-h-12 items-center gap-3 rounded-xl px-3 text-lg text-ink hover:bg-sky">
-                <Icon icon={actionIcons.join} size={22} className="text-sea" />
+              <Link href="/join" onClick={close} className="flex min-h-12 items-center gap-3 rounded-xl px-3 text-lg text-fg hover:bg-panel">
+                <Icon icon={actionIcons.join} size={22} className="text-accent" />
                 Become a member
               </Link>
             </li>

@@ -25,7 +25,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
   const access = getPostAccess(user, post);
   const requests = await listRequestsForResource("post", post.id);
   const history = requests.length > 0 ? (
-    <section className="mt-8 rounded-xl bg-white p-6">
+    <section className="mt-8 rounded-xl bg-surface p-6">
       <h2 className="text-xl font-semibold">Approval requests</h2>
       <div className="mt-4">
         <ApprovalList items={requests} empty="" hideTitle />
@@ -37,14 +37,14 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
     const waiting = post.status === "in_review";
     return (
       <>
-        <div className="rounded-xl bg-white p-8">
+        <div className="rounded-xl bg-surface p-8">
           <h1 className="text-2xl font-semibold">{waiting ? "Waiting for approval" : "You can't edit this post"}</h1>
-          <p className="mt-2 text-ink-soft">
+          <p className="mt-2 text-fg-soft">
             {waiting
               ? "This post goes live once it's approved. If it's rejected, it returns to drafts so it can be fixed and sent again."
               : "Drafts belong to the person writing them. Your position can edit live posts, with approval."}
           </p>
-          <Link href="/admin/posts" className="mt-4 inline-flex items-center gap-1.5 text-sea hover:underline">
+          <Link href="/admin/posts" className="mt-4 inline-flex items-center gap-1.5 text-accent hover:underline">
             <span aria-hidden="true">←</span> Back to posts
           </Link>
         </div>

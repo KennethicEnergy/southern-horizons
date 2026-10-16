@@ -11,6 +11,7 @@ import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { DonationReviewButtons } from "@/components/admin/donation-review-buttons";
 import { DonorCell } from "@/components/admin/donor-cell";
+import { filterChipClass } from "@/components/ui/filter-chip";
 
 const tabs = [
   { value: "pending", label: "To confirm" },
@@ -45,7 +46,7 @@ const DonationsPage = async ({ searchParams }: { searchParams: Promise<{ status?
             key={t.value}
             href={`/admin/donations?status=${t.value}`}
             aria-current={t.value === status ? "page" : undefined}
-            className={`rounded-full px-3.5 py-1.5 text-sm ${t.value === status ? "bg-ink text-white" : "bg-white text-ink-soft hover:text-ink"}`}
+            className={filterChipClass(t.value === status)}
           >
             {t.label}
           </Link>
@@ -53,13 +54,13 @@ const DonationsPage = async ({ searchParams }: { searchParams: Promise<{ status?
       </nav>
 
       {rows.length === 0 ? (
-        <p className="rounded-xl bg-white p-8 text-ink-soft">
+        <p className="rounded-xl bg-surface p-8 text-fg-soft">
           {status === "pending" ? "All caught up. New donations appear here when donors send their reference number." : "Nothing here yet."}
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-xl bg-white">
+        <div className="overflow-x-auto rounded-xl bg-surface">
           <table className="w-full min-w-[56rem] text-left text-[0.95rem]">
-            <thead className="border-b border-line text-sm text-ink-soft">
+            <thead className="border-b border-line text-sm text-fg-soft">
               <tr>
                 <th scope="col" className="px-5 py-3 font-medium">Received</th>
                 <th scope="col" className="px-5 py-3 font-medium">Donor</th>
@@ -73,13 +74,13 @@ const DonationsPage = async ({ searchParams }: { searchParams: Promise<{ status?
             <tbody className="divide-y divide-line">
               {rows.map((d) => (
                 <tr key={d.id}>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-ink-soft">{formatDateTime(d.createdAt)}</td>
+                  <td className="whitespace-nowrap px-5 py-3.5 text-fg-soft">{formatDateTime(d.createdAt)}</td>
                   <td className="px-5 py-3.5">
                     <DonorCell donor={toDonorView(d, canSeeDonor)} />
                   </td>
                   <td className="px-5 py-3.5">
                     {d.campaign.title}
-                    <span className="block text-sm text-ink-soft">
+                    <span className="block text-sm text-fg-soft">
                       {d.quantity} × {d.item?.name ?? "general"}
                     </span>
                   </td>

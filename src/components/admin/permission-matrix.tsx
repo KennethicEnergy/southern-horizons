@@ -7,7 +7,7 @@ const yesNo = (value: boolean) => (value ? "Yes" : "—");
 export const PermissionMatrix = () => (
   <div className="overflow-x-auto">
     <table className="w-full min-w-[36rem] text-left text-[0.95rem]">
-      <thead className="border-b border-line text-sm text-ink-soft">
+      <thead className="border-b border-line text-sm text-fg-soft">
         <tr>
           <th scope="col" className="py-2 pr-4 font-medium">Position</th>
           <th scope="col" className="px-4 py-2 font-medium">Add</th>
@@ -26,7 +26,7 @@ export const PermissionMatrix = () => (
               <td className="px-4 py-2">{yesNo(canAdd)}</td>
               <td className="px-4 py-2">{yesNo(canEdit)}</td>
               <td className="px-4 py-2">{yesNo(canDelete)}</td>
-              <td className="px-4 py-2 text-ink-soft">
+              <td className="px-4 py-2 text-fg-soft">
                 {!acts ? "View only" : requiresApproval ? `By ${APPROVAL_RULES.default.approvers.map((approver) => roleLabel(approver)).join(" or ")}` : "Not needed"}
               </td>
             </tr>

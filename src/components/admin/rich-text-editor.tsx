@@ -15,7 +15,7 @@ function ToolbarButton({ label, active, onClick, children }: { label: string; ac
       title={label}
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
-      className={`min-w-9 rounded-md px-2 py-1.5 text-sm ${active ? "bg-ink text-white" : "text-ink hover:bg-sky"}`}
+      className={`min-w-9 rounded-md px-2 py-1.5 text-sm ${active ? "bg-fg text-canvas" : "text-fg hover:bg-panel"}`}
     >
       {children}
     </button>
@@ -106,13 +106,13 @@ export function RichTextEditor({
     content: value,
     immediatelyRender: false,
     editorProps: {
-      attributes: { class: "tiptap article prose prose-lg max-w-none px-5 py-4 prose-a:text-sea", "aria-label": "Post body" },
+      attributes: { class: "tiptap article prose prose-lg max-w-none px-5 py-4 prose-a:text-accent", "aria-label": "Post body" },
     },
     onUpdate: ({ editor: e }) => onChange(e.getJSON() as Record<string, unknown>),
   });
 
   return (
-    <div className={`overflow-hidden rounded-lg border bg-white ${invalid ? "border-danger" : "border-line"}`}>
+    <div className={`overflow-hidden rounded-lg border bg-surface ${invalid ? "border-danger" : "border-line"}`}>
       {editor ? <Toolbar editor={editor} /> : null}
       <EditorContent editor={editor} />
     </div>

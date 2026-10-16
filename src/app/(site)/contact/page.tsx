@@ -17,7 +17,7 @@ const ContactPage = async ({ searchParams }: { searchParams: Promise<{ subject?:
       <div className="mx-auto grid max-w-6xl gap-14 px-5 py-14 md:grid-cols-[1.5fr_1fr]">
         <ContactForm defaultSubject={subject?.slice(0, 100)} />
         <aside className="md:pt-1">
-          <div className="rounded-3xl bg-sky p-6 sm:p-7">
+          <div className="rounded-3xl bg-panel p-6 sm:p-7">
             <h2 className="text-xl font-semibold">Other ways to reach us</h2>
             <ContactList className="mt-4" />
           </div>

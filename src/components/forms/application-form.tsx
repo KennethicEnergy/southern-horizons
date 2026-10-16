@@ -20,8 +20,8 @@ export const ApplicationForm = () => {
     return (
       <div className="rounded-2xl bg-leaf-mist p-8 text-leaf">
         <h2 className="text-2xl font-semibold">Application sent</h2>
-        <p className="mt-2 text-ink">{done}</p>
-        <Link href="/" className="mt-6 inline-block text-sea hover:underline">
+        <p className="mt-2 text-fg">{done}</p>
+        <Link href="/" className="mt-6 inline-block text-accent hover:underline">
           Back to the home page
         </Link>
       </div>
