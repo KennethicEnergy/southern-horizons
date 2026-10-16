@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageOpenGraph } from "@/lib/og";
 import { PageHeader } from "@/components/site/page-header";
 import { StatGrid } from "@/components/site/stat-grid";
 import { Icon } from "@/components/ui/icon";
@@ -13,6 +14,7 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: "Transparency",
   description: "Every confirmed donation and every expense, with receipts.",
+  openGraph: pageOpenGraph("/transparency"),
 };
 
 const TransparencyPage = async () => {

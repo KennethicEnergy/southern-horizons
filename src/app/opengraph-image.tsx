@@ -1,8 +1,8 @@
-import { OG_IMAGE_CONTENT_TYPE, OG_IMAGE_SIZE } from "@/config/og";
+import { OG_IMAGE_CONTENT_TYPE, OG_IMAGE_SIZE, SITE_SHARE_CARD } from "@/config/og";
 import { site } from "@/config/site";
 import { renderOgImage } from "@/lib/og-image";
 
-export const alt = `${site.name}: ${site.tagline}`;
+export const alt = SITE_SHARE_CARD.alt;
 export const size = OG_IMAGE_SIZE;
 export const contentType = OG_IMAGE_CONTENT_TYPE;
 

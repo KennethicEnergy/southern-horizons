@@ -10,7 +10,7 @@ import { renderContent } from "@/lib/content/render";
 import { eventPhase, formatDate, formatDateTime } from "@/lib/dates";
 import { AttachmentList } from "@/components/site/attachment-list";
 import { newsPage } from "@/config/news";
-import { baseOpenGraph } from "@/config/og";
+import { pageOpenGraph } from "@/lib/og";
 
 export const revalidate = 300;
 export const generateStaticParams = async () => [];
@@ -25,7 +25,7 @@ export const generateMetadata = async ({ params }: Props): Promise<Metadata> => 
     description: post.excerpt ?? undefined,
     // No `images` key: it would suppress the share card from the sibling opengraph-image.tsx.
     openGraph: {
-      ...baseOpenGraph,
+      ...pageOpenGraph(`/news/${post.slug}`, { hasOwnCard: true }),
       title: post.title,
       description: post.excerpt ?? undefined,
       type: "article",

@@ -1,5 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { getOgCoverUrl, getOgPostEyebrow } from "@/lib/og";
+import { SITE_SHARE_CARD, baseOpenGraph } from "@/config/og";
+import { getOgCoverUrl, getOgPostEyebrow, pageOpenGraph } from "@/lib/og";
+
+describe("pageOpenGraph", () => {
+  it("adds the page's own address and the site-wide share card", () => {
+    expect(pageOpenGraph("/about")).toStrictEqual({ ...baseOpenGraph, url: "/about", images: [SITE_SHARE_CARD] });
+  });
+
+  it("leaves images out for a page with its own share card, so that card isn't replaced", () => {
+    expect(pageOpenGraph("/news/bags-of-hope", { hasOwnCard: true })).toStrictEqual({ ...baseOpenGraph, url: "/news/bags-of-hope" });
+  });
+});
+
+describe("SITE_SHARE_CARD", () => {
+  it("describes the 1200×630 PNG card served at /opengraph-image", () => {
+    expect(SITE_SHARE_CARD).toMatchObject({ url: "/opengraph-image", width: 1200, height: 630, type: "image/png" });
+  });
+});
 
 const cover = {
   url: "https://media.example.com/cover.jpg",

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { pageOpenGraph } from "@/lib/og";
 import { LegalPage } from "@/components/site/legal-page";
 import { site } from "@/config/site";
 
-export const metadata: Metadata = { title: "Privacy policy" };
+export const metadata: Metadata = { title: "Privacy policy", openGraph: pageOpenGraph("/privacy") };
 
 export default function PrivacyPage() {
   return (

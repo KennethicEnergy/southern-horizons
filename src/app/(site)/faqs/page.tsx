@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { pageOpenGraph } from "@/lib/og";
 import { PageHeader } from "@/components/site/page-header";
 import { Icon } from "@/components/ui/icon";
 import { ButtonLink } from "@/components/ui/button";
 import { actionIcons } from "@/config/icons";
 
-export const metadata: Metadata = { title: "FAQs" };
+export const metadata: Metadata = { title: "FAQs", openGraph: pageOpenGraph("/faqs") };
 
 // TODO: review every answer with your officers before launch.
 const faqs = [

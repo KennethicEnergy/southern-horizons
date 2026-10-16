@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { pageOpenGraph } from "@/lib/og";
 import { LegalPage } from "@/components/site/legal-page";
 import { site } from "@/config/site";
 
-export const metadata: Metadata = { title: "Terms and conditions" };
+export const metadata: Metadata = { title: "Terms and conditions", openGraph: pageOpenGraph("/terms") };
 
 export default function TermsPage() {
   return (

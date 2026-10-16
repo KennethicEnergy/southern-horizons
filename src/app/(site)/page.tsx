@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Location01Icon } from "@hugeicons/core-free-icons";
 import { ButtonLink } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -13,8 +14,10 @@ import { getFeaturedCampaign, getPublishedPosts, getTransparencyReport, getUpcom
 import { formatPeso } from "@/lib/money";
 import { actionIcons } from "@/config/icons";
 import { site } from "@/config/site";
+import { pageOpenGraph } from "@/lib/og";
 
 export const revalidate = 300;
+export const metadata: Metadata = { openGraph: pageOpenGraph("/") };
 
 const givingSteps = [
   { title: "Pick what to give", body: "Choose an item, like one school bag, and how many." },

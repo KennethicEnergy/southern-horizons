@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: { default: `${site.name} — Rising Together, Giving Back With Purpose`, template: `%s | ${site.name}` },
   description: site.tagline,
   openGraph: baseOpenGraph,
+  ...(site.facebookAppId ? { facebook: { appId: site.facebookAppId } } : {}),
 };
 
 // The toolbar colour follows the device setting; a manual choice on the site doesn't change it.

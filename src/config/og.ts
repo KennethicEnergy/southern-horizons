@@ -12,3 +12,14 @@ export const OG_COVER_MIME_TYPES: readonly string[] = ["image/jpeg", "image/png"
  * has a real image, or it suppresses the generated opengraph-image.
  */
 export const baseOpenGraph = { siteName: site.name, type: "website", locale: "en_PH" } as const;
+
+/**
+ * The site-wide card drawn by src/app/opengraph-image.tsx. A page that sets its own `openGraph` loses the
+ * inherited card, so pageOpenGraph adds this one back for pages without an opengraph-image of their own.
+ */
+export const SITE_SHARE_CARD = {
+  url: "/opengraph-image",
+  ...OG_IMAGE_SIZE,
+  type: OG_IMAGE_CONTENT_TYPE,
+  alt: `${site.name}: ${site.tagline}`,
+} as const;

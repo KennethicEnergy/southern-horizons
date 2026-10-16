@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageOpenGraph } from "@/lib/og";
 import { PageHeader } from "@/components/site/page-header";
 import { SectionHeading } from "@/components/site/section-heading";
 import { ButtonLink } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { actionIcons } from "@/config/icons";
 import { site } from "@/config/site";
 import { initials } from "@/lib/initials";
 
-export const metadata: Metadata = { title: "About us" };
+export const metadata: Metadata = { title: "About us", openGraph: pageOpenGraph("/about") };
 
 // TODO: replace with your real story, officers, and photos.
 // Each value takes one logo color for its accent bar (literal class names so Tailwind generates them).

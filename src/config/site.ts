@@ -12,6 +12,8 @@ export const site = {
   email: "southernhorizonsph@gmail.com",
   phone: "+63 993 757 7410",
   facebook: "https://www.facebook.com/SouthernHorizons2025",
+  /** Adds the fb:app_id tag to every page when set. Empty means no tag; links still share fine without it. */
+  facebookAppId: process.env.FACEBOOK_APP_ID || null,
   // The icon sits beside each label in the mobile menu.
   nav: [
     { href: "/news", label: "News & events", icon: News01Icon },

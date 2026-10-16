@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { pageOpenGraph } from "@/lib/og";
 import { PageHeader } from "@/components/site/page-header";
 import { StepList } from "@/components/site/step-list";
 import { ApplicationForm } from "@/components/forms/application-form";
 import { TextLink } from "@/components/ui/text-link";
 
-export const metadata: Metadata = { title: "Become a member" };
+export const metadata: Metadata = { title: "Become a member", openGraph: pageOpenGraph("/join") };
 
 const steps = [
   { title: "Apply", body: "Tell us who you are and how you'd like to help." },

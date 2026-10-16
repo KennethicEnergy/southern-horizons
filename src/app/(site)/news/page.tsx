@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageOpenGraph } from "@/lib/og";
 import Link from "next/link";
 import { PageHeader } from "@/components/site/page-header";
 import { PostCard } from "@/components/site/post-card";
@@ -11,6 +12,7 @@ import { actionIcons } from "@/config/icons";
 export const metadata: Metadata = {
   title: newsPage.title,
   description: newsPage.lead,
+  openGraph: pageOpenGraph("/news", { hasOwnCard: true }),
 };
 
 const filters: { value?: PostType; label: string }[] = [

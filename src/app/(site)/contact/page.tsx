@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { pageOpenGraph } from "@/lib/og";
 import { PageHeader } from "@/components/site/page-header";
 import { ContactList } from "@/components/site/contact-list";
 import { ContactForm } from "@/components/forms/contact-form";
 
-export const metadata: Metadata = { title: "Contact us" };
+export const metadata: Metadata = { title: "Contact us", openGraph: pageOpenGraph("/contact") };
 
 const ContactPage = async ({ searchParams }: { searchParams: Promise<{ subject?: string }> }) => {
   const { subject } = await searchParams;

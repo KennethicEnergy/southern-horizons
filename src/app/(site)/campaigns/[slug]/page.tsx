@@ -8,7 +8,7 @@ import { formatPeso } from "@/lib/money";
 import { Eyebrow } from "@/components/site/eyebrow";
 import { ProgressHorizon } from "@/components/site/progress-horizon";
 import { DonationForm } from "@/components/forms/donation-form";
-import { baseOpenGraph } from "@/config/og";
+import { pageOpenGraph } from "@/lib/og";
 
 export const revalidate = 120;
 export const generateStaticParams = async () => [];
@@ -22,7 +22,7 @@ export const generateMetadata = async ({ params }: Props): Promise<Metadata> => 
     title: c.title,
     description: c.summary,
     // Only add `images` when there's a cover: the key alone, even undefined, hides the site-wide share card.
-    openGraph: { ...baseOpenGraph, ...(c.cover ? { images: [{ url: c.cover.url, alt: c.cover.alt ?? "" }] } : {}) },
+    openGraph: { ...pageOpenGraph(`/campaigns/${c.slug}`), ...(c.cover ? { images: [{ url: c.cover.url, alt: c.cover.alt ?? "" }] } : {}) },
   };
 };
 
